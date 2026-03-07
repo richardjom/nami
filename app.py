@@ -12,6 +12,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+
+def rerun_app() -> None:
+    if hasattr(st, "rerun"):
+        st.rerun()
+    else:
+        st.experimental_rerun()
+
 # ---------------------------------------------------------------------------
 # State comparison data
 # ---------------------------------------------------------------------------
@@ -809,6 +816,34 @@ header[data-testid="stHeader"] { background: transparent !important; }
     color: var(--slate-700);
     line-height: 1;
 }
+.compare-chip-help {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    color: var(--slate-500);
+    margin: 0 0 10px;
+}
+/* Clickable compare chips (Streamlit buttons) */
+div[data-testid="stButton"] > button {
+    background: #FFFFFF;
+    border: 1.5px solid var(--slate-300);
+    border-radius: 12px;
+    color: var(--slate-700);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    min-height: 40px;
+    padding: 0.35rem 1rem;
+    box-shadow: none !important;
+}
+div[data-testid="stButton"] > button:hover {
+    border-color: var(--green-400);
+    color: var(--green-700);
+}
+div[data-testid="stButton"] > button[kind="primary"] {
+    background: var(--green-100) !important;
+    border-color: var(--green-600) !important;
+    color: var(--green-800) !important;
+}
 
 /* ---- FOOTER CTA ---- */
 .footer-cta {
@@ -1082,20 +1117,30 @@ if "compare_states" not in st.session_state:
         "Minnesota",
     ]
 
-with st.expander("Edit states shown", expanded=False):
-    chosen_states = st.multiselect(
-        "Select states to compare",
-        state_names,
-        default=st.session_state["compare_states"],
-        max_selections=6,
-    )
-    st.session_state["compare_states"] = chosen_states
-
 selected_states = st.session_state["compare_states"]
 
-if selected_states:
-    state_chips = "".join(f'<span class="state-chip">{escape(s)}</span>' for s in selected_states)
-    st.markdown(f'<div class="state-chip-row">{state_chips}</div>', unsafe_allow_html=True)
+st.markdown('<div class="compare-chip-help">Tap states to compare (up to 6).</div>', unsafe_allow_html=True)
+selected_set = set(selected_states)
+for i in range(0, len(state_names), 6):
+    row_states = state_names[i:i + 6]
+    cols = st.columns(len(row_states))
+    for col, state in zip(cols, row_states):
+        is_selected = state in selected_set
+        with col:
+            if st.button(
+                state,
+                key=f"cmp_state_{state}",
+                type="primary" if is_selected else "secondary",
+            ):
+                if is_selected:
+                    selected_states = [s for s in selected_states if s != state]
+                elif len(selected_states) < 6:
+                    selected_states = selected_states + [state]
+                st.session_state["compare_states"] = selected_states
+                rerun_app()
+
+if len(selected_states) >= 6:
+    st.caption("Maximum of 6 states selected.")
 
 if selected_states:
     # Build comparison table
