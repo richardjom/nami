@@ -187,26 +187,51 @@ header[data-testid="stHeader"] { background: transparent !important; }
 .sh p { font-family:'Source Sans 3',sans-serif; font-size:17px; color:var(--s500); line-height:1.6; max-width:600px; margin:0; }
 
 /* STATE CARD */
-.state-card { background:#FFF; border-radius:24px; padding:30px 34px 34px;
-    box-shadow:0 10px 28px rgba(15,23,42,0.08); border:1px solid #E7EAF0;
-    margin:-86px auto 38px; max-width:1020px; position:relative; z-index:10; }
+.state-panel-content { display:none; }
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) {
+    background:#FFF !important;
+    border-radius:24px !important;
+    border:1px solid #E7EAF0 !important;
+    box-shadow:0 10px 28px rgba(15,23,42,0.08) !important;
+    margin:-86px auto 38px !important;
+    padding:30px 34px 34px !important;
+    max-width:1020px;
+    position:relative;
+    z-index:10;
+}
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) > div {
+    padding:0 !important;
+}
 .state-head-label { font-family:'Source Sans 3',sans-serif; font-size:20px; font-weight:700; color:var(--s900); margin-top:14px; }
 .state-score-wrap { padding-top:15px; }
-.state-card [data-testid="stSelectbox"] { margin-bottom:0 !important; }
-.state-card [data-baseweb="select"] > div {
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) [data-testid="stSelectbox"] { margin-bottom:0 !important; }
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) [data-baseweb="select"] > div {
     background:var(--g50);
     border:2px solid var(--g200);
     border-radius:14px;
     min-height:60px;
     box-shadow:none !important;
 }
-.state-card [data-baseweb="select"] span {
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) [data-baseweb="select"] span {
     color:var(--g700) !important;
     font-weight:700;
     font-size:20px;
 }
-.state-card [data-baseweb="select"] svg {
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) [data-baseweb="select"] svg {
     fill:var(--g700) !important;
+}
+div[role="listbox"] {
+    background:#FFFFFF !important;
+    border:1px solid #DDE3EB !important;
+    box-shadow:0 14px 30px rgba(15,23,42,0.12) !important;
+}
+div[role="option"] {
+    color:var(--s700) !important;
+    background:#FFFFFF !important;
+}
+div[role="option"][aria-selected="true"] {
+    color:var(--g700) !important;
+    background:var(--g50) !important;
 }
 .state-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; margin-top:6px; }
 .sg-item { padding:18px 20px; border-radius:14px; border:1px solid #DDE3EB; min-height:132px;
@@ -229,7 +254,11 @@ header[data-testid="stHeader"] { background: transparent !important; }
     .live-counter { min-width:unset; max-width:100%; width:100%; padding:18px 20px; }
     .live-num { font-size:48px; }
     .live-label { font-size:13px; }
-    .state-card { margin-top:-70px; border-radius:20px; padding:24px 22px 24px; }
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) {
+        margin-top:-70px !important;
+        border-radius:20px !important;
+        padding:24px 22px 24px !important;
+    }
     .state-head-label { font-size:18px; margin-top:12px; }
     .state-score-wrap { padding-top:0; }
     .score-bar-hero .score-txt { font-size:15px; }
@@ -245,7 +274,11 @@ header[data-testid="stHeader"] { background: transparent !important; }
     .live-counter { padding:14px 14px; border-radius:14px; }
     .live-num { font-size:38px; }
     .live-label { font-size:11px; letter-spacing:0.05em; }
-    .state-card { margin-top:-60px; border-radius:16px; padding:18px 16px 18px; }
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) {
+        margin-top:-60px !important;
+        border-radius:16px !important;
+        padding:18px 16px 18px !important;
+    }
     .state-grid { grid-template-columns:1fr; }
     .sg-item { min-height:108px; }
     .sg-val { font-size:34px; }
@@ -427,49 +460,41 @@ st.markdown("""
 # ===========================================================================
 # 2. YOUR STATE PERSONALIZATION
 # ===========================================================================
-st.markdown('<div class="state-card">', unsafe_allow_html=True)
-col_label, col_select, col_score = st.columns([1.0, 1.5, 1.6])
-with col_label:
-    st.markdown('<p class="state-head-label">Your state:</p>', unsafe_allow_html=True)
-with col_select:
-    selected_state = st.selectbox("Pick your state", sorted(STATE_PROFILES.keys()), index=sorted(STATE_PROFILES.keys()).index("Maryland"), label_visibility="collapsed")
+with st.container(border=True):
+    st.markdown('<div class="state-panel-content"></div>', unsafe_allow_html=True)
+    col_label, col_select, col_score = st.columns([1.0, 1.5, 1.6])
+    with col_label:
+        st.markdown('<p class="state-head-label">Your state:</p>', unsafe_allow_html=True)
+    with col_select:
+        selected_state = st.selectbox("Pick your state", sorted(STATE_PROFILES.keys()), index=sorted(STATE_PROFILES.keys()).index("Maryland"), label_visibility="collapsed")
 
-user_state = STATE_PROFILES[selected_state]
+    user_state = STATE_PROFILES[selected_state]
 
-with col_score:
-    st.markdown(f'<div class="state-score-wrap">{score_bar_html(user_state["score"], size="hero")}</div>', unsafe_allow_html=True)
+    with col_score:
+        st.markdown(f'<div class="state-score-wrap">{score_bar_html(user_state["score"], size="hero")}</div>', unsafe_allow_html=True)
 
-# Grid
-fee_bg = "var(--g50)" if user_state["has_fee"] else "#FEF2F2"
-fee_border = "var(--g200)" if user_state["has_fee"] else "#FECACA"
-fee_color = "var(--g700)" if user_state["has_fee"] else "#EF4444"
+    # Grid
+    fee_bg = "var(--g50)" if user_state["has_fee"] else "#FEF2F2"
+    fee_border = "var(--g200)" if user_state["has_fee"] else "#FECACA"
+    fee_color = "var(--g700)" if user_state["has_fee"] else "#EF4444"
 
-items_html = f'''
-<div class="state-grid">
-    <div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}">
-        <div class="sg-label">988 Fee</div>
-        <div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div>
-    </div>
-    <div class="sg-item" style="background:var(--s100)">
-        <div class="sg-label">Est. Revenue</div>
-        <div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div>
-    </div>
-'''
-for label, key in [("Trust Fund", "trust"), ("Mobile Crisis", "mobile"), ("Stabilization", "stab"), ("Youth Services", "youth")]:
-    val = user_state[key]
-    extra_class = " youth" if key == "youth" else ""
-    bg = "var(--g50)" if val else "var(--s100)"
-    bdr = "border:1px solid var(--g200);" if val else ""
-    color = "var(--g700)" if val else "var(--s300)"
-    text = "✓ Active" if val else "— None"
-    items_html += f'''
-    <div class="sg-item{extra_class}" style="background:{bg};{bdr}">
-        <div class="sg-label">{label}</div>
-        <div class="sg-status" style="color:{color}">{text}</div>
-    </div>'''
-items_html += "</div>"
-st.markdown(items_html, unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)
+    item_parts = [
+        '<div class="state-grid">',
+        f'<div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}"><div class="sg-label">988 Fee</div><div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div></div>',
+        f'<div class="sg-item" style="background:var(--s100)"><div class="sg-label">Est. Revenue</div><div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div></div>',
+    ]
+    for label, key in [("Trust Fund", "trust"), ("Mobile Crisis", "mobile"), ("Stabilization", "stab"), ("Youth Services", "youth")]:
+        val = user_state[key]
+        extra_class = " youth" if key == "youth" else ""
+        bg = "var(--g50)" if val else "var(--s100)"
+        bdr = "border:1px solid var(--g200);" if val else ""
+        color = "var(--g700)" if val else "var(--s300)"
+        text = "✓ Active" if val else "— None"
+        item_parts.append(
+            f'<div class="sg-item{extra_class}" style="background:{bg};{bdr}"><div class="sg-label">{label}</div><div class="sg-status" style="color:{color}">{text}</div></div>'
+        )
+    item_parts.append("</div>")
+    st.markdown("".join(item_parts), unsafe_allow_html=True)
 
 
 # ===========================================================================
