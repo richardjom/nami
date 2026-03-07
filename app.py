@@ -327,6 +327,9 @@ div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] svg {
     border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.03);
     transition:all 0.3s; }
 .pol-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.06); transform:translateY(-2px); }
+.pol-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.pol-close { width:54px; height:54px; border-radius:999px; background:var(--g700); color:#FFF;
+    display:flex; align-items:center; justify-content:center; font-size:34px; line-height:1; font-weight:300; }
 .pol-icon { font-size:28px; margin-bottom:10px; }
 .pol-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--s900); margin-bottom:4px; }
 .pol-sub { font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:500; color:var(--g600);
@@ -702,28 +705,29 @@ st.markdown("""
 <p>Concrete recommendations backed by what's already working.</p></div>
 """, unsafe_allow_html=True)
 
-for pol in POLICIES:
+for i, pol in enumerate(POLICIES):
     states_tags = "".join(f'<span class="pol-state-tag">{s}</span>' for s in pol["states"])
     share_p = share_button_html(pol["share"], "Share stat")
     email_p = email_button_html(
         f"Support {pol['title']} for 988 Crisis Services",
         f"{pol['share']}\n\nI'm writing to ask you to support legislation that would {pol['rec'].lower()}\n\nLearn more: https://reimaginecrisis.org/map/",
     )
-    st.markdown(f"""
-    <div class="pol-card">
-        <div class="pol-icon">{pol["icon"]}</div>
-        <div class="pol-title">{pol["title"]}</div>
-        <div class="pol-sub">{pol["subtitle"]}</div>
-        <div class="pol-desc">{pol["desc"]}</div>
-        <div class="pol-stat"><span class="pol-stat-num">{pol["stat"]}</span><span class="pol-stat-label">{pol["stat_label"]}</span></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">{share_p} {email_p}</div>
-        <div class="pol-states"><span style="font-size:11px;color:#64748B;font-weight:500;margin-right:4px">Leading:</span>{states_tags}</div>
-        <div class="rec-box"><div class="rec-label">NAMI Recommendation</div><div class="rec-text">{pol["rec"]}</div></div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    with st.expander(f"Details: {pol['title']}", expanded=False):
-        st.write("")  # keeps expander functional
+    with st.expander(f"Details: {pol['title']}", expanded=(i == 0)):
+        st.markdown(f"""
+        <div class="pol-card">
+            <div class="pol-head">
+                <div class="pol-icon">{pol["icon"]}</div>
+                <div class="pol-close">×</div>
+            </div>
+            <div class="pol-title">{pol["title"]}</div>
+            <div class="pol-sub">{pol["subtitle"]}</div>
+            <div class="pol-desc">{pol["desc"]}</div>
+            <div class="pol-stat"><span class="pol-stat-num">{pol["stat"]}</span><span class="pol-stat-label">{pol["stat_label"]}</span></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">{share_p} {email_p}</div>
+            <div class="pol-states"><span style="font-size:11px;color:#64748B;font-weight:500;margin-right:4px">Leading:</span>{states_tags}</div>
+            <div class="rec-box"><div class="rec-label">NAMI Recommendation</div><div class="rec-text">{pol["rec"]}</div></div>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 # ===========================================================================
