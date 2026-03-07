@@ -181,6 +181,8 @@ header[data-testid="stHeader"] { background: transparent !important; }
 .sh h2 { font-family:'Playfair Display',serif; font-size:36px; font-weight:900; color:var(--s900);
     line-height:1.15; margin:0 0 12px; letter-spacing:-0.02em; }
 .sh p { font-family:'Source Sans 3',sans-serif; font-size:17px; color:var(--s500); line-height:1.6; max-width:600px; margin:0; }
+.sh-policy h2 { font-size: clamp(52px, 4.8vw, 78px); line-height:1.03; margin-bottom:14px; }
+.sh-policy p { font-size: clamp(19px, 1.9vw, 30px); line-height:1.45; max-width:900px; }
 
 /* STATE CARD */
 div[data-testid="stVerticalBlockBorderWrapper"] {
@@ -755,7 +757,7 @@ for adv in ADVOCATES:
 # 9. POLICY CARDS
 # ===========================================================================
 st.markdown("""
-<div class="sh"><div class="ey">Policy Playbook</div>
+<div class="sh sh-policy"><div class="ey">Policy Playbook</div>
 <h2>Five Moves States Can Make</h2>
 <p>Concrete recommendations backed by what's already working.</p></div>
 """, unsafe_allow_html=True)
