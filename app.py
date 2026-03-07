@@ -609,29 +609,6 @@ st.markdown(tl_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
-# 8. ADVOCATES
-# ===========================================================================
-st.markdown("""
-<div class="sh"><div class="ey">Voices</div>
-<h2>From the Field</h2>
-<p>Leaders shaping the future of crisis response.</p></div>
-""", unsafe_allow_html=True)
-
-for adv in ADVOCATES:
-    share_q = share_button_html(f'"{adv["quote"]}" — {adv["name"]}', "Share quote")
-    st.markdown(f"""
-    <div class="adv-card">
-        <div class="adv-accent" style="background:{adv['accent']}"></div>
-        <div class="adv-text" style="color:{adv['accent']}">{adv["quote"]}</div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px">
-            <div><div class="adv-name">{adv["name"]}</div><div class="adv-role">{adv["role"]}</div></div>
-            {share_q}
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# ===========================================================================
 # 9. POLICY CARDS
 # ===========================================================================
 st.markdown("""
@@ -659,9 +636,6 @@ for pol in POLICIES:
         <div class="rec-box"><div class="rec-label">NAMI Recommendation</div><div class="rec-text">{pol["rec"]}</div></div>
     </div>
     """, unsafe_allow_html=True)
-
-    with st.expander(f"Details: {pol['title']}", expanded=False):
-        st.write("")  # keeps expander functional
 
 
 # ===========================================================================
