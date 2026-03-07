@@ -492,7 +492,7 @@ div[data-testid="stVerticalBlock"] > div { gap: 0; }
 #MainMenu, footer, [data-testid="stToolbar"] { display: none !important; }
 .stDeployButton { display: none !important; }
 div[data-testid="stExpander"] { border: none !important; }
-div[data-testid="stExpander"] summary { display: none !important; }
+div[data-testid="stExpander"] summary { display: block !important; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -503,24 +503,24 @@ div[data-testid="stExpander"] summary { display: none !important; }
 # Helper: render progress track HTML
 # ---------------------------------------------------------------------------
 def progress_html(current_step: int) -> str:
-    dots = ""
+    dots = []
     for i, label in enumerate(STATUS_STEPS):
         step_num = i + 1
         completed = step_num < current_step
         is_current = step_num == current_step
         dot_cls = "completed" if completed else ("current" if is_current else "")
         lbl_cls = "active" if completed or is_current else ""
-        line = ""
+        line_html = ""
         if i < len(STATUS_STEPS) - 1:
             line_cls = "filled" if completed else ""
-            line = f'<div class="progress-line {line_cls}"></div>'
-        dots += f"""
-        <div class="progress-step">
-            {line}
-            <div class="progress-dot {dot_cls}"></div>
-            <div class="progress-label {lbl_cls}">{label}</div>
-        </div>"""
-    return f'<div class="progress-track">{dots}</div>'
+            line_html = f'<div class="progress-line {line_cls}"></div>'
+        dots.append(
+            f'<div class="progress-step">{line_html}'
+            f'<div class="progress-dot {dot_cls}"></div>'
+            f'<div class="progress-label {lbl_cls}">{label}</div>'
+            "</div>"
+        )
+    return f'<div class="progress-track">{"".join(dots)}</div>'
 
 
 # ---------------------------------------------------------------------------
