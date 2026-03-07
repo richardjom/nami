@@ -537,9 +537,12 @@ div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) p {
     font-family:'Source Sans 3',sans-serif !important;
     font-size:14px !important;
     font-weight:600 !important;
-    min-height:52px !important;
+    min-height:48px !important;
     line-height:1.1 !important;
-    padding:0.35rem 0.7rem !important;
+    padding:0.28rem 0.62rem !important;
+}
+.stButton {
+    margin-bottom:0.35rem !important;
 }
 .stButton > button[kind="primary"],
 .stButton > button[data-testid="baseButton-primary"] {
@@ -868,7 +871,7 @@ if "compare_states_warning" not in st.session_state:
     st.session_state.compare_states_warning = ""
 
 st.markdown('<div class="compare-help">Tap states to compare (up to 5).</div>', unsafe_allow_html=True)
-states_per_row = 7
+states_per_row = 8
 for i in range(0, len(all_compare_states), states_per_row):
     row_states = all_compare_states[i:i + states_per_row]
     row_cols = st.columns(len(row_states))
@@ -878,7 +881,7 @@ for i in range(0, len(all_compare_states), states_per_row):
             state_name,
             key=f"compare_state_{state_name}",
             type="primary" if is_selected else "secondary",
-            use_container_width=False,
+            use_container_width=True,
         ):
             current = list(st.session_state.compare_states)
             if state_name in current:
