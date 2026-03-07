@@ -495,7 +495,7 @@ div[data-testid="stTextInput"] [data-baseweb="input"] > div:focus-within,
 div[data-testid="stTextArea"] [data-baseweb="textarea"] > div:focus-within,
 div[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within {
     border-color: #8fb7ae !important;
-    box-shadow: 0 0 0 2px rgba(143, 183, 174, 0.18) !important;
+    box-shadow: 0 0 0 2px rgba(143, 183, 174, 0.14) !important;
 }
 
 div[data-testid="stSelectbox"] [data-baseweb="select"] * {
@@ -538,6 +538,31 @@ div[data-testid="stTextArea"] {
     box-shadow: none !important;
 }
 
+/* BaseWeb can inject fieldset/legend rings; suppress globally for these controls */
+div[data-testid="stTextInput"] fieldset,
+div[data-testid="stTextArea"] fieldset,
+div[data-testid="stSelectbox"] fieldset {
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+div[data-testid="stTextInput"] legend,
+div[data-testid="stTextArea"] legend,
+div[data-testid="stSelectbox"] legend {
+    display: none !important;
+}
+
+/* Extra safety for wrapper shadows in Cloud builds */
+div[data-testid="stTextInput"] [data-baseweb],
+div[data-testid="stTextArea"] [data-baseweb],
+div[data-testid="stSelectbox"] [data-baseweb],
+div[data-testid="stTextInput"] [data-baseweb] > div,
+div[data-testid="stTextArea"] [data-baseweb] > div,
+div[data-testid="stSelectbox"] [data-baseweb] > div {
+    box-shadow: none !important;
+}
+
 div[data-testid="stCheckbox"] label {
     color: #17202a !important;
 }
@@ -549,14 +574,40 @@ div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
 div[data-baseweb="popover"] [role="listbox"] {
     background: #ffffff !important;
     border: 1px solid #d3dbe4 !important;
+    box-shadow: 0 12px 24px rgba(23, 32, 42, 0.08) !important;
+    color: #17202a !important;
 }
 
 div[data-baseweb="popover"] [role="option"] {
+    background: #ffffff !important;
     color: #17202a !important;
 }
 
 div[data-baseweb="popover"] [aria-selected="true"] {
     background: #e9f7f2 !important;
+    color: #17202a !important;
+}
+
+/* Fallback when listbox is rendered outside popover container */
+div[role="listbox"],
+ul[role="listbox"] {
+    background: #ffffff !important;
+    border: 1px solid #d3dbe4 !important;
+    box-shadow: 0 12px 24px rgba(23, 32, 42, 0.08) !important;
+}
+
+div[role="listbox"] [role="option"],
+ul[role="listbox"] [role="option"],
+li[role="option"] {
+    background: #ffffff !important;
+    color: #17202a !important;
+}
+
+div[role="listbox"] [aria-selected="true"],
+ul[role="listbox"] [aria-selected="true"],
+li[role="option"][aria-selected="true"] {
+    background: #e9f7f2 !important;
+    color: #17202a !important;
 }
 
 div.stDownloadButton > button {
