@@ -817,6 +817,9 @@ header[data-testid="stHeader"] { background: transparent !important; }
     line-height: 1;
 }
 /* Clickable compare chips (Streamlit buttons) */
+div[data-testid="stButton"] {
+    margin-bottom: 0.2rem;
+}
 div[data-testid="stButton"] > button {
     background: #FFFFFF;
     border: 1.5px solid var(--slate-300);
@@ -834,9 +837,9 @@ div[data-testid="stButton"] > button:hover {
     color: var(--slate-900);
 }
 div[data-testid="stButton"] > button[kind="primary"] {
-    background: #FFFFFF !important;
-    border-color: var(--slate-300) !important;
-    color: var(--slate-700) !important;
+    background: #EEF7F2 !important;
+    border-color: var(--green-400) !important;
+    color: var(--green-800) !important;
 }
 
 /* ---- FOOTER CTA ---- */
@@ -1111,21 +1114,23 @@ if not selected_states:
 st.session_state["compare_states"] = selected_states
 
 selected_set = set(selected_states)
-cols = st.columns(len(compare_chip_states), gap="small")
-for idx, state in enumerate(compare_chip_states):
-    is_selected = state in selected_set
-    with cols[idx]:
-        if st.button(
-            state,
-            key=f"cmp_state_{state}",
-            type="primary" if is_selected else "secondary",
-        ):
-            if is_selected and len(selected_states) > 1:
-                selected_states = [s for s in selected_states if s != state]
-            elif not is_selected:
-                selected_states = selected_states + [state]
-            st.session_state["compare_states"] = selected_states
-            rerun_app()
+left_pad, chip_col, right_pad = st.columns([0.04, 0.92, 0.04])
+with chip_col:
+    cols = st.columns(len(compare_chip_states), gap="small")
+    for idx, state in enumerate(compare_chip_states):
+        is_selected = state in selected_set
+        with cols[idx]:
+            if st.button(
+                state,
+                key=f"cmp_state_{state}",
+                type="primary" if is_selected else "secondary",
+            ):
+                if is_selected and len(selected_states) > 1:
+                    selected_states = [s for s in selected_states if s != state]
+                elif not is_selected:
+                    selected_states = selected_states + [state]
+                st.session_state["compare_states"] = selected_states
+                rerun_app()
 
 if selected_states:
     # Build comparison table
