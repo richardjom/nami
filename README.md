@@ -1,6 +1,20 @@
-# Mental Health Bill Tracker
+# 988 Issue Brief: Enhanced Interactive Experience
 
-A Streamlit dashboard for tracking mental health legislation.
+A Streamlit reimagining of NAMI's 2024 State Legislation Issue Brief on 988 and crisis response.
+
+## Features
+
+1. **Live Impact Counter** — Animated contact total in the hero section
+2. **State Personalization** — Select your state and see tailored data throughout the page
+3. **Before/After Comparison** — Side by side view of the old vs. new crisis response model
+4. **Success Stories** — Rotating first-person accounts from 988 users
+5. **Fee Data Story** — Visual bar chart of state fees with your state highlighted
+6. **Revenue Calculator** — Project what a 988 fee would generate in states without one
+7. **Timeline** — Key milestones from 988's creation to today
+8. **Advocate Spotlights** — Featured quotes from NAMI leaders
+9. **Policy Playbook** — Five actionable policy cards with share and email buttons
+10. **State Scorecard** — Visual readiness scores for every tracked state
+11. **State Comparison** — Side by side table for up to 5 states
 
 ## Quick Start
 
@@ -9,27 +23,22 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Deploying to Streamlit Cloud
+## Deploy to Streamlit Cloud
 
-1. Push this folder to a GitHub repo
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your repo and point to `app.py`
+1. Push to GitHub
+2. Go to share.streamlit.io
+3. Connect your repo, point to `app.py`
 4. Deploy
 
-## Customizing Bills
+## Customization
 
-Edit the `BILLS` list at the top of `app.py` to add, remove, or update tracked bills. Each bill object supports these fields:
+All data lives in Python dictionaries at the top of `app.py`:
 
-- `id` — Bill identifier (e.g. HR-4321)
-- `title` — Full bill name
-- `status` — Current status label
-- `status_step` — 1 through 5 matching the progress track
-- `chamber` — "House" or "Senate"
-- `introduced` — Date string
-- `sponsors` — Number of co-sponsors
-- `lead_sponsor` — Name and party of lead sponsor
-- `summary` — Plain English summary
-- `impact` — "Why this matters" section
-- `provisions` — List of key provisions (4 recommended)
-- `tags` — List of topic tags
-- `urgency` — "high", "medium", or "low"
+- `STATE_PROFILES` — Add or update state data
+- `FEE_STATES` — Fee bar chart entries
+- `POLICIES` — Policy recommendation cards
+- `SUCCESS_STORIES` — Rotating story carousel
+- `TIMELINE` — Timeline milestones
+- `ADVOCATES` — Quote spotlights
+
+Colors and fonts are controlled via CSS variables in the `<style>` block.
