@@ -322,30 +322,85 @@ div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] svg {
 .adv-name { font-family:'Source Sans 3',sans-serif; font-size:14px; font-weight:700; color:var(--s900); }
 .adv-role { font-family:'Source Sans 3',sans-serif; font-size:13px; color:var(--s500); }
 
-/* POLICY CARD */
-.pol-card { background:#FFF; border-radius:16px; padding:32px; margin-bottom:16px;
-    border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.03);
-    transition:all 0.3s; }
-.pol-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.06); transform:translateY(-2px); }
-.pol-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
-.pol-close { width:54px; height:54px; border-radius:999px; background:var(--g700); color:#FFF;
-    display:flex; align-items:center; justify-content:center; font-size:34px; line-height:1; font-weight:300; }
-.pol-icon { font-size:28px; margin-bottom:10px; }
-.pol-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--s900); margin-bottom:4px; }
-.pol-sub { font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:500; color:var(--g600);
-    letter-spacing:0.04em; text-transform:uppercase; margin-bottom:14px; }
-.pol-desc { font-family:'Source Sans 3',sans-serif; font-size:15px; color:var(--s700); line-height:1.65; margin-bottom:16px; }
-.pol-stat { display:inline-flex; align-items:baseline; gap:6px; background:var(--g50);
-    border:1px solid var(--g200); border-radius:10px; padding:10px 18px; margin-bottom:12px; }
-.pol-stat-num { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; color:var(--g700); line-height:1; }
-.pol-stat-label { font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:500; color:var(--g700); }
-.pol-states { display:flex; gap:6px; flex-wrap:wrap; margin:12px 0 16px; }
-.pol-state-tag { font-family:'Source Sans 3',sans-serif; font-size:11px; font-weight:600; color:var(--g700);
-    background:var(--g100); padding:4px 12px; border-radius:20px; }
-.rec-box { background:var(--s100); border-radius:10px; padding:16px 20px; border-left:3px solid var(--g600); }
-.rec-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--g700);
-    letter-spacing:0.12em; text-transform:uppercase; margin-bottom:6px; }
-.rec-text { font-family:'Source Sans 3',sans-serif; font-size:14px; color:var(--s700); line-height:1.6; }
+/* POLICY CARDS (collapsible) */
+.policy-dd { margin:0 0 16px; }
+.policy-dd > summary { list-style:none; cursor:pointer; outline:none; }
+.policy-dd > summary::-webkit-details-marker { display:none; }
+.policy-dd > summary::marker { content:''; }
+.pol-shell {
+    background:#FFF;
+    border-radius:20px;
+    border:1px solid rgba(0,0,0,0.05);
+    box-shadow:0 2px 10px rgba(0,0,0,0.03);
+    padding:34px;
+    transition:all .2s ease;
+}
+.policy-dd[open] .pol-shell {
+    border:4px solid var(--g700);
+    box-shadow:none;
+    padding:31px;
+}
+.pol-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+.pol-toggle {
+    width:58px; height:58px; border-radius:999px;
+    background:#E2E8F0; color:#64748B;
+    display:flex; align-items:center; justify-content:center;
+    font-size:46px; line-height:1; font-weight:300;
+}
+.pol-toggle::before { content:'+'; transform:translateY(-1px); }
+.policy-dd[open] .pol-toggle { background:var(--g700); color:#FFF; font-size:42px; }
+.policy-dd[open] .pol-toggle::before { content:'×'; transform:translateY(-2px); }
+.pol-icon-wrap { display:flex; align-items:center; }
+.pol-icon { font-size:42px; line-height:1; margin:0; }
+.pol-title { font-family:'Playfair Display',serif; font-size:40px; font-weight:900; color:var(--s900); margin:14px 0 8px; line-height:1.05; }
+.pol-sub { font-family:'Source Sans 3',sans-serif; font-size:18px; font-weight:600; color:var(--g600);
+    letter-spacing:0.06em; text-transform:uppercase; margin-bottom:18px; }
+.pol-desc { font-family:'Source Sans 3',sans-serif; font-size:19px; color:var(--s700); line-height:1.5; margin-bottom:24px; max-width:980px; }
+.pol-stat-row { display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+.pol-stat { display:inline-flex; align-items:baseline; gap:10px; background:var(--g50);
+    border:1.5px solid var(--g200); border-radius:20px; padding:18px 26px; }
+.pol-stat-num { font-family:'Playfair Display',serif; font-size:52px; font-weight:900; color:var(--g700); line-height:1; }
+.pol-stat-label { font-family:'Source Sans 3',sans-serif; font-size:16px; font-weight:600; color:var(--g700); }
+.pol-actions { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+.pol-states { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:14px 0 18px; }
+.pol-state-lead { font-size:16px; color:#64748B; font-weight:500; margin-right:6px; }
+.pol-state-tag { font-family:'Source Sans 3',sans-serif; font-size:14px; font-weight:600; color:var(--g700);
+    background:var(--g100); padding:6px 14px; border-radius:999px; }
+.rec-box { background:var(--s100); border-radius:14px; padding:18px 22px; border-left:4px solid var(--g600); }
+.rec-label { font-family:'Source Sans 3',sans-serif; font-size:12px; font-weight:700; color:var(--g700);
+    letter-spacing:0.12em; text-transform:uppercase; margin-bottom:8px; }
+.rec-text { font-family:'Source Sans 3',sans-serif; font-size:16px; color:var(--s700); line-height:1.45; }
+.pol-expanded { display:none; }
+.policy-dd[open] .pol-expanded { display:block; }
+
+@media (max-width: 980px) {
+    .pol-title { font-size:34px; }
+    .pol-sub { font-size:16px; }
+    .pol-desc { font-size:18px; }
+    .pol-stat-num { font-size:42px; }
+    .pol-stat-label { font-size:16px; }
+    .pol-state-tag { font-size:13px; }
+    .pol-state-lead { font-size:15px; }
+    .rec-label { font-size:11px; }
+    .rec-text { font-size:15px; }
+}
+
+@media (max-width: 640px) {
+    .pol-shell { padding:22px; border-radius:14px; }
+    .policy-dd[open] .pol-shell { padding:19px; border-width:3px; }
+    .pol-title { font-size:28px; }
+    .pol-sub { font-size:14px; }
+    .pol-desc { font-size:16px; margin-bottom:18px; }
+    .pol-toggle { width:46px; height:46px; font-size:34px; }
+    .policy-dd[open] .pol-toggle { font-size:32px; }
+    .pol-stat { padding:12px 14px; border-radius:14px; }
+    .pol-stat-num { font-size:32px; }
+    .pol-stat-label { font-size:15px; }
+    .pol-state-tag { font-size:12px; padding:5px 11px; }
+    .pol-state-lead { font-size:16px; }
+    .rec-label { font-size:10px; }
+    .rec-text { font-size:14px; }
+}
 
 /* SCORECARD */
 .sc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin:20px 0; }
@@ -705,29 +760,38 @@ st.markdown("""
 <p>Concrete recommendations backed by what's already working.</p></div>
 """, unsafe_allow_html=True)
 
-for i, pol in enumerate(POLICIES):
+policy_cards_html = ""
+for pol in POLICIES:
     states_tags = "".join(f'<span class="pol-state-tag">{s}</span>' for s in pol["states"])
     share_p = share_button_html(pol["share"], "Share stat")
     email_p = email_button_html(
         f"Support {pol['title']} for 988 Crisis Services",
         f"{pol['share']}\n\nI'm writing to ask you to support legislation that would {pol['rec'].lower()}\n\nLearn more: https://reimaginecrisis.org/map/",
     )
-    with st.expander(f"Details: {pol['title']}", expanded=(i == 0)):
-        st.markdown(f"""
-        <div class="pol-card">
-            <div class="pol-head">
-                <div class="pol-icon">{pol["icon"]}</div>
-                <div class="pol-close">×</div>
+    policy_cards_html += f"""
+    <details class="policy-dd">
+        <summary>
+            <div class="pol-shell">
+                <div class="pol-head">
+                    <div class="pol-icon-wrap"><div class="pol-icon">{pol["icon"]}</div></div>
+                    <div class="pol-toggle" aria-hidden="true"></div>
+                </div>
+                <div class="pol-title">{pol["title"]}</div>
+                <div class="pol-sub">{pol["subtitle"]}</div>
+                <div class="pol-desc">{pol["desc"]}</div>
+                <div class="pol-stat-row">
+                    <div class="pol-stat"><span class="pol-stat-num">{pol["stat"]}</span><span class="pol-stat-label">{pol["stat_label"]}</span></div>
+                    <div class="pol-actions">{share_p} {email_p}</div>
+                </div>
+                <div class="pol-expanded">
+                    <div class="pol-states"><span class="pol-state-lead">Leading:</span>{states_tags}</div>
+                    <div class="rec-box"><div class="rec-label">NAMI Recommendation</div><div class="rec-text">{pol["rec"]}</div></div>
+                </div>
             </div>
-            <div class="pol-title">{pol["title"]}</div>
-            <div class="pol-sub">{pol["subtitle"]}</div>
-            <div class="pol-desc">{pol["desc"]}</div>
-            <div class="pol-stat"><span class="pol-stat-num">{pol["stat"]}</span><span class="pol-stat-label">{pol["stat_label"]}</span></div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">{share_p} {email_p}</div>
-            <div class="pol-states"><span style="font-size:11px;color:#64748B;font-weight:500;margin-right:4px">Leading:</span>{states_tags}</div>
-            <div class="rec-box"><div class="rec-label">NAMI Recommendation</div><div class="rec-text">{pol["rec"]}</div></div>
-        </div>
-        """, unsafe_allow_html=True)
+        </summary>
+    </details>
+    """
+st.markdown(policy_cards_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
