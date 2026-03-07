@@ -499,6 +499,25 @@ div[data-testid="stTextArea"] textarea {
     border: 1px solid #cfd7df !important;
     border-radius: 12px !important;
     line-height: 1.5 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+div[data-testid="stTextArea"] textarea:focus,
+div[data-testid="stTextArea"] textarea:focus-visible,
+div[data-testid="stTextArea"] textarea:active {
+    border: 1px solid #8fb7ae !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+div[data-testid="stTextArea"] > div {
+    box-shadow: none !important;
+    border: none !important;
+}
+
+div[data-testid="stTextArea"] {
+    box-shadow: none !important;
 }
 
 div[data-testid="stCheckbox"] label {
