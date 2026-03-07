@@ -84,12 +84,14 @@ STATE_PROFILES = {
 # ---------------------------------------------------------------------------
 # HELPERS
 # ---------------------------------------------------------------------------
-def score_bar_html(score, max_score=5, size="compact"):
+def score_bar_html(score, max_score=5):
     bars = ""
     for i in range(max_score):
-        state_class = " active" if i < score else ""
-        bars += f'<div class="sb-seg{state_class}"></div>'
-    return f'<div class="score-bar score-bar-{size}">{bars}<span class="score-txt">{score}/{max_score}</span></div>'
+        color = "#2D6A4F" if i < score else "#E5E7EB"
+        bars += f'<div style="width:24px;height:8px;border-radius:4px;background:{color};display:inline-block;margin-right:3px"></div>'
+    score_color = "#2D6A4F" if score >= 4 else "#E8590C" if score >= 2 else "#EF4444"
+    bars += f'<span style="font-family:JetBrains Mono,monospace;font-size:12px;font-weight:500;color:{score_color};margin-left:8px">{score}/{max_score}</span>'
+    return f'<div style="display:flex;align-items:center">{bars}</div>'
 
 
 def share_button_html(text, label="Share this"):
@@ -138,44 +140,33 @@ header[data-testid="stHeader"] { background: transparent !important; }
 /* HERO */
 .hero {
     background: linear-gradient(160deg, #0F2D1E 0%, #1B4332 35%, #2D6A4F 70%, #40916C 100%);
-    padding: 72px 56px 160px; border-radius: 0 0 34px 34px;
+    padding: 64px 52px 88px; border-radius: 0 0 28px 28px;
     position: relative; overflow: hidden; margin-bottom: 0;
-    min-height: 390px;
 }
 .hero::before { content:''; position:absolute; width:500px; height:500px; border-radius:50%;
-    background:radial-gradient(circle,rgba(183,228,199,0.08) 0%,transparent 70%); top:-200px; right:-100px; z-index:0; }
+    background:radial-gradient(circle,rgba(183,228,199,0.08) 0%,transparent 70%); top:-200px; right:-100px; }
 .hero::after { content:''; position:absolute; width:300px; height:300px; border-radius:50%;
-    border:1px solid rgba(183,228,199,0.1); bottom:-110px; left:5%; z-index:0; }
+    border:1px solid rgba(183,228,199,0.1); bottom:-100px; left:5%; }
 .hero-eyebrow { font-family:'Source Sans 3',sans-serif; font-size:11px; font-weight:600;
     color:var(--g400); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:20px;
     display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
 .hero-eyebrow::before { content:''; display:inline-block; width:28px; height:1.5px; background:var(--g400); }
-.hero h1 { font-family:'Playfair Display',serif; font-size:56px; font-weight:900; color:#FFF;
-    line-height:1.04; margin:0 0 18px; max-width:670px; letter-spacing:-0.02em; position:relative; z-index:1; }
+.hero h1 { font-family:'Playfair Display',serif; font-size:52px; font-weight:900; color:#FFF;
+    line-height:1.05; margin:0 0 20px; max-width:650px; letter-spacing:-0.02em; position:relative; z-index:1; }
 .hero h1 em { color:var(--g200); font-style:italic; font-weight:400; }
-.hero-sub { font-family:'Source Sans 3',sans-serif; font-size:19px; font-weight:300; color:var(--g200);
-    line-height:1.7; max-width:560px; margin:0 0 36px; position:relative; z-index:1; }
+.hero-sub { font-family:'Source Sans 3',sans-serif; font-size:18px; font-weight:300; color:var(--g200);
+    line-height:1.7; max-width:540px; margin:0 0 32px; position:relative; z-index:1; }
 
 /* LIVE COUNTER */
 .live-counter { display:inline-flex; align-items:center; gap:14px;
-    background:rgba(8,31,21,0.68); backdrop-filter:blur(8px); border-radius:18px;
-    padding:22px 34px; border:1px solid rgba(183,228,199,0.14); position:relative; z-index:1;
-    min-width:480px; max-width:560px; }
+    background:rgba(0,0,0,0.25); backdrop-filter:blur(12px); border-radius:14px;
+    padding:20px 28px; border:1px solid rgba(183,228,199,0.12); position:relative; z-index:1; }
 .live-dot { width:10px; height:10px; border-radius:50%; background:#EF4444;
     animation:pulse 2s infinite; box-shadow:0 0 8px rgba(239,68,68,0.5); }
-.live-num { font-family:'Playfair Display',serif; font-size:64px; font-weight:900; color:#FFF; line-height:0.95;
+.live-num { font-family:'Playfair Display',serif; font-size:38px; font-weight:900; color:#FFF; line-height:1;
     animation:countUp 1s ease-out; }
 .live-label { font-family:'Source Sans 3',sans-serif; font-size:12px; color:var(--g400);
-    letter-spacing:0.08em; text-transform:uppercase; margin-top:6px; }
-
-/* SCORE BAR */
-.score-bar { display:flex; align-items:center; gap:5px; }
-.score-bar .sb-seg { width:24px; height:8px; border-radius:999px; background:#DCE3EB; }
-.score-bar .sb-seg.active { background:var(--g700); }
-.score-bar .score-txt { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:500; color:var(--g700); margin-left:6px; }
-.score-bar-hero { gap:8px; }
-.score-bar-hero .sb-seg { width:40px; height:12px; }
-.score-bar-hero .score-txt { font-size:17px; font-weight:600; margin-left:8px; }
+    letter-spacing:0.06em; text-transform:uppercase; margin-top:2px; }
 
 /* SECTION HEADERS */
 .sh { padding:56px 0 8px; }
@@ -186,104 +177,23 @@ header[data-testid="stHeader"] { background: transparent !important; }
     line-height:1.15; margin:0 0 12px; letter-spacing:-0.02em; }
 .sh p { font-family:'Source Sans 3',sans-serif; font-size:17px; color:var(--s500); line-height:1.6; max-width:600px; margin:0; }
 
-/* STATE CARD */
-.state-panel-content { display:none; }
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) {
-    background:#FFF !important;
-    border-radius:24px !important;
-    border:1px solid #E7EAF0 !important;
-    box-shadow:0 10px 28px rgba(15,23,42,0.08) !important;
-    margin:-86px auto 38px !important;
-    padding:30px 34px 34px !important;
-    max-width:1020px;
-    position:relative;
-    z-index:10;
+/* STATE CARD (via st.container border) */
+[data-testid="stVerticalBlockBorderWrapper"] {
+    margin-top: -48px !important;
+    position: relative !important;
+    z-index: 10 !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(0,0,0,0.04) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06) !important;
+    background: #FFF !important;
+    padding: 28px 32px !important;
+    margin-bottom: 28px !important;
 }
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) > div {
-    padding:0 !important;
-}
-.state-head-label { font-family:'Source Sans 3',sans-serif; font-size:20px; font-weight:700; color:var(--s900); margin-top:14px; }
-.state-score-wrap { padding-top:15px; }
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) [data-testid="stSelectbox"] { margin-bottom:0 !important; }
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) [data-baseweb="select"] > div {
-    background:var(--g50);
-    border:2px solid var(--g200);
-    border-radius:14px;
-    min-height:60px;
-    box-shadow:none !important;
-}
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) [data-baseweb="select"] span {
-    color:var(--g700) !important;
-    font-weight:700;
-    font-size:20px;
-}
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) [data-baseweb="select"] svg {
-    fill:var(--g700) !important;
-}
-div[role="listbox"] {
-    background:#FFFFFF !important;
-    border:1px solid #DDE3EB !important;
-    box-shadow:0 14px 30px rgba(15,23,42,0.12) !important;
-}
-div[role="option"] {
-    color:var(--s700) !important;
-    background:#FFFFFF !important;
-}
-div[role="option"][aria-selected="true"] {
-    color:var(--g700) !important;
-    background:var(--g50) !important;
-}
-.state-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; margin-top:6px; }
-.sg-item { padding:18px 20px; border-radius:14px; border:1px solid #DDE3EB; min-height:132px;
-    display:flex; flex-direction:column; justify-content:space-between; }
-.sg-item.youth { grid-column:1 / span 1; }
-.sg-label { font-family:'Source Sans 3',sans-serif; font-size:12px; font-weight:700; color:var(--s500);
-    letter-spacing:0.18em; text-transform:uppercase; margin-bottom:10px; }
-.sg-val { font-family:'Playfair Display',serif; font-size:56px; font-weight:900; line-height:1; }
-.sg-status { font-family:'Source Sans 3',sans-serif; font-size:20px; font-weight:700; line-height:1.2; }
-
-@media (max-width: 1200px) {
-    .state-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
-    .sg-item.youth { grid-column:auto; }
-}
-
-@media (max-width: 900px) {
-    .hero { padding:60px 36px 132px; min-height:360px; border-radius:0 0 28px 28px; }
-    .hero h1 { font-size:46px; }
-    .hero-sub { font-size:17px; }
-    .live-counter { min-width:unset; max-width:100%; width:100%; padding:18px 20px; }
-    .live-num { font-size:48px; }
-    .live-label { font-size:13px; }
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) {
-        margin-top:-70px !important;
-        border-radius:20px !important;
-        padding:24px 22px 24px !important;
-    }
-    .state-head-label { font-size:18px; margin-top:12px; }
-    .state-score-wrap { padding-top:0; }
-    .score-bar-hero .score-txt { font-size:15px; }
-    .state-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-    .sg-val { font-size:42px; }
-}
-
-@media (max-width: 620px) {
-    .hero { padding:52px 20px 122px; min-height:330px; border-radius:0 0 22px 22px; }
-    .hero-eyebrow { font-size:10px; letter-spacing:0.16em; }
-    .hero h1 { font-size:38px; }
-    .hero-sub { font-size:16px; line-height:1.55; }
-    .live-counter { padding:14px 14px; border-radius:14px; }
-    .live-num { font-size:38px; }
-    .live-label { font-size:11px; letter-spacing:0.05em; }
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-panel-content) {
-        margin-top:-60px !important;
-        border-radius:16px !important;
-        padding:18px 16px 18px !important;
-    }
-    .state-grid { grid-template-columns:1fr; }
-    .sg-item { min-height:108px; }
-    .sg-val { font-size:34px; }
-    .sg-status { font-size:18px; }
-}
+.state-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; margin-top:20px; }
+.sg-item { padding:16px; border-radius:10px; }
+.sg-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--s500);
+    letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
+.sg-val { font-family:'Playfair Display',serif; font-size:22px; font-weight:900; }
 
 /* BEFORE/AFTER */
 .ba-container { background:#FFF; border-radius:16px; overflow:hidden;
@@ -461,40 +371,46 @@ st.markdown("""
 # 2. YOUR STATE PERSONALIZATION
 # ===========================================================================
 with st.container(border=True):
-    st.markdown('<div class="state-panel-content"></div>', unsafe_allow_html=True)
-    col_label, col_select, col_score = st.columns([1.0, 1.5, 1.6])
+    col_label, col_select, col_score = st.columns([1, 2, 2])
     with col_label:
-        st.markdown('<p class="state-head-label">Your state:</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-family:Source Sans 3,sans-serif;font-size:15px;font-weight:600;color:#0F172A;padding-top:8px">Your state:</p>', unsafe_allow_html=True)
     with col_select:
         selected_state = st.selectbox("Pick your state", sorted(STATE_PROFILES.keys()), index=sorted(STATE_PROFILES.keys()).index("Maryland"), label_visibility="collapsed")
 
     user_state = STATE_PROFILES[selected_state]
 
     with col_score:
-        st.markdown(f'<div class="state-score-wrap">{score_bar_html(user_state["score"], size="hero")}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="padding-top:8px">{score_bar_html(user_state["score"])}</div>', unsafe_allow_html=True)
 
     # Grid
     fee_bg = "var(--g50)" if user_state["has_fee"] else "#FEF2F2"
     fee_border = "var(--g200)" if user_state["has_fee"] else "#FECACA"
     fee_color = "var(--g700)" if user_state["has_fee"] else "#EF4444"
 
-    item_parts = [
-        '<div class="state-grid">',
-        f'<div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}"><div class="sg-label">988 Fee</div><div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div></div>',
-        f'<div class="sg-item" style="background:var(--s100)"><div class="sg-label">Est. Revenue</div><div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div></div>',
-    ]
+    items_html = f'''
+    <div class="state-grid">
+        <div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}">
+            <div class="sg-label">988 Fee</div>
+            <div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div>
+        </div>
+        <div class="sg-item" style="background:var(--s100)">
+            <div class="sg-label">Est. Revenue</div>
+            <div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div>
+        </div>
+    '''
     for label, key in [("Trust Fund", "trust"), ("Mobile Crisis", "mobile"), ("Stabilization", "stab"), ("Youth Services", "youth")]:
         val = user_state[key]
-        extra_class = " youth" if key == "youth" else ""
         bg = "var(--g50)" if val else "var(--s100)"
         bdr = "border:1px solid var(--g200);" if val else ""
         color = "var(--g700)" if val else "var(--s300)"
         text = "✓ Active" if val else "— None"
-        item_parts.append(
-            f'<div class="sg-item{extra_class}" style="background:{bg};{bdr}"><div class="sg-label">{label}</div><div class="sg-status" style="color:{color}">{text}</div></div>'
-        )
-    item_parts.append("</div>")
-    st.markdown("".join(item_parts), unsafe_allow_html=True)
+        items_html += f'''
+        <div class="sg-item" style="background:{bg};{bdr}">
+            <div class="sg-label">{label}</div>
+            <div style="font-family:'Source Sans 3',sans-serif;font-size:18px;font-weight:700;color:{color}">{text}</div>
+        </div>'''
+    items_html += "</div>"
+    st.markdown(items_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
