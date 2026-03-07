@@ -788,45 +788,25 @@ header[data-testid="stHeader"] { background: transparent !important; }
 .cross { color: var(--slate-300); }
 
 /* ---- STATE CHIP HEADER ---- */
-.state-compare-header {
-    padding: 12px 0 6px;
-}
-.state-compare-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 72px;
-    font-weight: 900;
-    line-height: 1.02;
-    letter-spacing: -0.02em;
-    color: var(--slate-900);
-    margin: 0 0 10px;
-}
-.state-compare-header p {
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 17px;
-    font-weight: 400;
-    line-height: 1.55;
-    color: #60728C;
-    margin: 0 0 24px;
-}
 .state-chip-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
-    margin: 0 0 20px;
+    gap: 10px;
+    margin: 2px 0 18px;
 }
 .state-chip {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 54px;
-    padding: 0 38px;
-    border-radius: 16px;
-    border: 2px solid #D1D5DE;
+    min-height: 40px;
+    padding: 0 20px;
+    border-radius: 12px;
+    border: 1.5px solid var(--slate-300);
     background: #FFFFFF;
     font-family: 'Source Sans 3', sans-serif;
-    font-size: 26px;
-    font-weight: 500;
-    color: #34435A;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--slate-700);
     line-height: 1;
 }
 
@@ -1084,7 +1064,8 @@ for card in POLICY_CARDS:
 # STATE COMPARISON TOOL
 # ===========================================================================
 st.markdown("""
-<div class="state-compare-header">
+<div class="section-header">
+    <div class="eyebrow">Compare</div>
     <h2>State by State</h2>
     <p>See how states stack up on 988 funding and crisis service infrastructure.</p>
 </div>
