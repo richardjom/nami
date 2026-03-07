@@ -1,252 +1,275 @@
+import re
 import streamlit as st
-from html import escape
 
-# ---------------------------------------------------------------------------
-# Page config
-# ---------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Mental Health Bill Tracker",
-    page_icon="🧠",
+    page_title="988 State Policy Tracker",
+    page_icon="\ud83e\udde0",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# ---------------------------------------------------------------------------
-# Bill data
-# ---------------------------------------------------------------------------
-BILLS = [
+STATE_POLICIES = [
     {
-        "id": "HR-4321",
-        "title": "Mental Health Parity Enforcement Act",
-        "status": "In Committee",
-        "status_step": 2,
-        "chamber": "House",
-        "introduced": "Jan 15, 2026",
-        "sponsors": 24,
-        "lead_sponsor": "Rep. Sarah Mitchell (D-CA)",
-        "summary": "Strengthens enforcement of the Mental Health Parity and Addiction Equity Act by requiring insurers to submit annual compliance reports and increasing penalties for violations.",
-        "impact": "Would affect an estimated 150 million Americans with employer-sponsored insurance by ensuring equal coverage for mental health and substance use disorder treatments.",
-        "provisions": [
-            "Annual insurer compliance audits",
-            "Tripled penalties for parity violations",
-            "Patient complaint hotline establishment",
-            "Transparency reports made public",
-        ],
-        "tags": ["Insurance", "Parity", "Enforcement"],
-        "urgency": "high",
+        "state": "California",
+        "funding_model": "Fee enacted",
+        "monthly_fee": "$0.08",
+        "annual_revenue": "$30M est.",
+        "trust_fund": True,
+        "mobile_crisis": "Partial",
+        "stabilization": "Dedicated grants",
+        "youth_services": "In progress",
+        "latest_bill": "AB 988",
+        "year": 2024,
     },
     {
-        "id": "S-2187",
-        "title": "988 Lifeline Expansion & Sustainability Act",
-        "status": "Passed Senate",
-        "status_step": 4,
-        "chamber": "Senate",
-        "introduced": "Nov 3, 2025",
-        "sponsors": 38,
-        "lead_sponsor": "Sen. David Chen (D-WA)",
-        "summary": "Provides permanent federal funding for the 988 Suicide and Crisis Lifeline, expands text and chat capabilities, and mandates response time standards.",
-        "impact": "Would ensure 24/7 crisis support for all Americans, with targeted investments in underserved rural and tribal communities.",
-        "provisions": [
-            "Permanent annual funding of $1.2B",
-            "90-second answer time mandate",
-            "Rural crisis center grants",
-            "Specialized veteran and youth lines",
-        ],
-        "tags": ["Crisis", "Funding", "988"],
-        "urgency": "medium",
+        "state": "Colorado",
+        "funding_model": "Fee enacted",
+        "monthly_fee": "$0.35",
+        "annual_revenue": "$26M est.",
+        "trust_fund": True,
+        "mobile_crisis": "Statewide",
+        "stabilization": "State + Medicaid",
+        "youth_services": "Yes",
+        "latest_bill": "SB24-001",
+        "year": 2024,
     },
     {
-        "id": "HR-7890",
-        "title": "Youth Mental Health & Schools Act",
-        "status": "Introduced",
-        "status_step": 1,
-        "chamber": "House",
-        "introduced": "Feb 28, 2026",
-        "sponsors": 12,
-        "lead_sponsor": "Rep. Maria Torres (D-TX)",
-        "summary": "Establishes a federal grant program to place licensed mental health professionals in K-12 schools and fund evidence-based prevention programs.",
-        "impact": "Targets the youth mental health crisis by aiming for a 1:250 counselor-to-student ratio in every public school district.",
-        "provisions": [
-            "Federal school counselor grants",
-            "Trauma-informed training for educators",
-            "Student mental health screening opt-in",
-            "After-school wellness programs",
-        ],
-        "tags": ["Youth", "Schools", "Prevention"],
-        "urgency": "medium",
+        "state": "Illinois",
+        "funding_model": "Recurring appropriation",
+        "monthly_fee": "$0.00",
+        "annual_revenue": "General fund",
+        "trust_fund": False,
+        "mobile_crisis": "Partial",
+        "stabilization": "Medicaid only",
+        "youth_services": "In progress",
+        "latest_bill": "HB 2450",
+        "year": 2025,
     },
     {
-        "id": "S-5544",
-        "title": "Community Mental Health Infrastructure Act",
-        "status": "Floor Vote Scheduled",
-        "status_step": 3,
-        "chamber": "Senate",
-        "introduced": "Sep 12, 2025",
-        "sponsors": 31,
-        "lead_sponsor": "Sen. James Wright (R-OH)",
-        "summary": "Authorizes $3 billion over 5 years to build and renovate community mental health centers, with priority given to mental health professional shortage areas.",
-        "impact": "Would create over 500 new community mental health centers in underserved areas, reducing average travel time to care by 40%.",
-        "provisions": [
-            "$3B over 5 years for new centers",
-            "Workforce loan forgiveness program",
-            "Telehealth infrastructure grants",
-            "Bipartisan oversight commission",
-        ],
-        "tags": ["Infrastructure", "Community", "Funding"],
-        "urgency": "high",
+        "state": "Minnesota",
+        "funding_model": "Recurring appropriation",
+        "monthly_fee": "$0.00",
+        "annual_revenue": "$20M est.",
+        "trust_fund": False,
+        "mobile_crisis": "Statewide",
+        "stabilization": "Dedicated grants",
+        "youth_services": "Yes",
+        "latest_bill": "SF 2995",
+        "year": 2024,
     },
     {
-        "id": "HR-3210",
-        "title": "Maternal Mental Health Access Act",
-        "status": "In Committee",
-        "status_step": 2,
-        "chamber": "House",
-        "introduced": "Dec 5, 2025",
-        "sponsors": 19,
-        "lead_sponsor": "Rep. Angela Brooks (D-GA)",
-        "summary": "Extends Medicaid postpartum coverage for mental health services to 12 months and creates a national maternal mental health hotline.",
-        "impact": "Would provide critical support to the estimated 1 in 5 new mothers who experience perinatal mood disorders.",
-        "provisions": [
-            "12-month postpartum Medicaid extension",
-            "National maternal mental health hotline",
-            "Provider screening mandate",
-            "Peer support specialist funding",
-        ],
-        "tags": ["Maternal", "Medicaid", "Postpartum"],
-        "urgency": "medium",
+        "state": "Nevada",
+        "funding_model": "Fee enacted",
+        "monthly_fee": "$0.35",
+        "annual_revenue": "$12M est.",
+        "trust_fund": True,
+        "mobile_crisis": "Partial",
+        "stabilization": "State grants",
+        "youth_services": "In progress",
+        "latest_bill": "SB 390",
+        "year": 2023,
     },
     {
-        "id": "S-8877",
-        "title": "Veterans Mental Health Modernization Act",
-        "status": "Signed Into Law",
-        "status_step": 5,
-        "chamber": "Senate",
-        "introduced": "Jun 20, 2025",
-        "sponsors": 67,
-        "lead_sponsor": "Sen. Robert Hayes (R-TX)",
-        "summary": "Modernizes VA mental health services by expanding telehealth, integrating AI-assisted screening tools, and removing barriers to community care referrals.",
-        "impact": "Directly benefits 9.1 million veterans enrolled in VA healthcare, with emphasis on reducing the 17 veteran suicides per day.",
-        "provisions": [
-            "VA telehealth expansion to all facilities",
-            "AI-assisted PTSD screening pilot",
-            "Streamlined community care referrals",
-            "Peer specialist hiring initiative",
-        ],
-        "tags": ["Veterans", "VA", "Telehealth"],
-        "urgency": "low",
+        "state": "New York",
+        "funding_model": "Recurring appropriation",
+        "monthly_fee": "$0.00",
+        "annual_revenue": "$35M est.",
+        "trust_fund": False,
+        "mobile_crisis": "Partial",
+        "stabilization": "State + Medicaid",
+        "youth_services": "Yes",
+        "latest_bill": "S9124",
+        "year": 2025,
+    },
+    {
+        "state": "Ohio",
+        "funding_model": "Recurring appropriation",
+        "monthly_fee": "$0.00",
+        "annual_revenue": "$40M est.",
+        "trust_fund": False,
+        "mobile_crisis": "Statewide",
+        "stabilization": "Dedicated grants",
+        "youth_services": "In progress",
+        "latest_bill": "HB 33",
+        "year": 2023,
+    },
+    {
+        "state": "Oregon",
+        "funding_model": "Fee enacted",
+        "monthly_fee": "$0.40",
+        "annual_revenue": "$14M est.",
+        "trust_fund": True,
+        "mobile_crisis": "Statewide",
+        "stabilization": "State + Medicaid",
+        "youth_services": "Yes",
+        "latest_bill": "SB 955",
+        "year": 2023,
+    },
+    {
+        "state": "Texas",
+        "funding_model": "No dedicated funding",
+        "monthly_fee": "$0.00",
+        "annual_revenue": "One-time grants",
+        "trust_fund": False,
+        "mobile_crisis": "Partial",
+        "stabilization": "Limited",
+        "youth_services": "No",
+        "latest_bill": "HB 13",
+        "year": 2025,
+    },
+    {
+        "state": "Virginia",
+        "funding_model": "Fee enacted",
+        "monthly_fee": "$0.12",
+        "annual_revenue": "$8M est.",
+        "trust_fund": True,
+        "mobile_crisis": "Statewide",
+        "stabilization": "State grants",
+        "youth_services": "In progress",
+        "latest_bill": "SB 429",
+        "year": 2024,
+    },
+    {
+        "state": "Washington",
+        "funding_model": "Fee enacted",
+        "monthly_fee": "$0.40",
+        "annual_revenue": "$38M est.",
+        "trust_fund": True,
+        "mobile_crisis": "Statewide",
+        "stabilization": "State + Medicaid",
+        "youth_services": "Yes",
+        "latest_bill": "HB 1134",
+        "year": 2024,
+    },
+    {
+        "state": "Wisconsin",
+        "funding_model": "No dedicated funding",
+        "monthly_fee": "$0.00",
+        "annual_revenue": "Federal grants",
+        "trust_fund": False,
+        "mobile_crisis": "Pilot",
+        "stabilization": "Limited",
+        "youth_services": "No",
+        "latest_bill": "AB 128",
+        "year": 2025,
     },
 ]
 
-STATUS_STEPS = ["Introduced", "In Committee", "Floor Vote", "Passed Chamber", "Signed Into Law"]
-
-URGENCY_MAP = {
-    "high": {"label": "High Priority", "color": "#EF4444", "bg": "#FEE2E2", "text": "#991B1B"},
-    "medium": {"label": "Medium Priority", "color": "#F59E0B", "bg": "#FEF3C7", "text": "#92400E"},
-    "low": {"label": "Low Priority", "color": "#10B981", "bg": "#D1FAE5", "text": "#065F46"},
-}
-
-TAG_COLORS = [
-    ("#EDE9FE", "#5B21B6"),
-    ("#E0F2FE", "#075985"),
-    ("#FCE7F3", "#9D174D"),
-    ("#ECFDF5", "#065F46"),
-    ("#FFF7ED", "#9A3412"),
+PLAYBOOK = [
+    {
+        "title": "Sustainable 988 Funding",
+        "why": "Without recurring dollars, call centers and crisis teams cannot keep staffing levels stable.",
+        "model": "Create a dedicated 988 fee or protected recurring appropriation in state statute.",
+        "states": ["Colorado", "Oregon", "Washington", "Virginia"],
+        "action": "Ask for a protected funding mechanism tied to annual reporting and transparency.",
+    },
+    {
+        "title": "Mobile Crisis Teams",
+        "why": "Mobile response gives people in crisis care in community settings and reduces law enforcement involvement.",
+        "model": "Require statewide 24/7 mobile crisis coverage with Medicaid and non-Medicaid funding paths.",
+        "states": ["Minnesota", "Ohio", "Washington"],
+        "action": "Push for statewide coverage targets and response-time standards.",
+    },
+    {
+        "title": "Crisis Stabilization Services",
+        "why": "Call diversion only works if states also fund places where people can receive immediate stabilization care.",
+        "model": "Fund crisis receiving and stabilization facilities in shortage regions first.",
+        "states": ["California", "Colorado", "New York"],
+        "action": "Pair 988 legislation with stabilization capacity investments in the same bill.",
+    },
+    {
+        "title": "Youth and Family Access",
+        "why": "Youth-specific crisis protocols reduce barriers to care and improve continuity after the first call.",
+        "model": "Add youth line standards, school referral pathways, and family peer support reimbursement.",
+        "states": ["Minnesota", "Oregon", "Washington"],
+        "action": "Require youth response metrics in annual 988 performance reports.",
+    },
 ]
 
-# ---------------------------------------------------------------------------
-# Custom CSS
-# ---------------------------------------------------------------------------
+
+def slugify(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+
+
+def state_row(record: dict) -> dict:
+    return {
+        "State": record["state"],
+        "Funding": record["funding_model"],
+        "Monthly 988 Fee": record["monthly_fee"],
+        "Annual Revenue": record["annual_revenue"],
+        "Trust Fund": "Yes" if record["trust_fund"] else "No",
+        "Mobile Crisis": record["mobile_crisis"],
+        "Stabilization": record["stabilization"],
+        "Youth Services": record["youth_services"],
+        "Latest Bill": record["latest_bill"],
+        "Year": record["year"],
+    }
+
+
 st.markdown(
     """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&display=swap');
 
-/* Global overrides */
 html, body, [data-testid="stAppViewContainer"] {
-    background-color: #FAFAF8 !important;
+    background: #F6F7F4 !important;
     font-family: 'DM Sans', sans-serif;
 }
-header[data-testid="stHeader"] { background: transparent !important; }
-[data-testid="stSidebar"] { display: none; }
-.block-container { padding-top: 0 !important; max-width: 1100px; }
-div[data-testid="stVerticalBlock"] > div { gap: 0; }
+header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stToolbar"] {
+    display: none !important;
+}
+.block-container {
+    max-width: 1150px;
+    padding-top: 0.5rem;
+}
 
-/* Hero banner */
-.hero-banner {
-    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 40%, #40916C 100%);
-    padding: 52px 48px 44px;
-    border-radius: 0 0 24px 24px;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 28px;
+.hero {
+    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 50%, #40916C 100%);
+    border-radius: 18px;
+    padding: 30px 34px;
+    margin-bottom: 20px;
 }
-.hero-banner::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -40px;
-    width: 280px; height: 280px;
-    border-radius: 50%;
-    background: rgba(183,228,199,0.08);
-}
-.hero-banner::after {
-    content: '';
-    position: absolute;
-    bottom: -90px; left: 8%;
-    width: 380px; height: 380px;
-    border-radius: 50%;
-    background: rgba(183,228,199,0.05);
-}
-.hero-badge {
-    display: inline-flex; align-items: center; gap: 10px;
-    margin-bottom: 14px;
-}
-.hero-badge span {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px; font-weight: 600;
+.hero-kicker {
     color: #B7E4C7;
-    letter-spacing: 0.15em;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+    margin-bottom: 8px;
 }
-.hero-title {
+.hero h1 {
     font-family: 'Fraunces', serif;
-    font-size: 44px; font-weight: 900;
-    color: #FFFFFF; line-height: 1.08;
-    margin: 0 0 12px; max-width: 560px;
-}
-.hero-sub {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px; color: #B7E4C7;
-    line-height: 1.6; max-width: 480px; margin: 0;
-}
-
-/* Stat cards row */
-.stats-row {
-    display: flex; gap: 16px;
-    margin-top: 32px; flex-wrap: wrap;
-    position: relative; z-index: 1;
-}
-.stat-card {
-    background: rgba(255,255,255,0.10);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 18px 22px;
-    min-width: 135px;
-}
-.stat-card .icon { font-size: 15px; margin-bottom: 4px; }
-.stat-card .value {
-    font-family: 'Fraunces', serif;
-    font-size: 30px; font-weight: 900;
+    font-size: 38px;
+    line-height: 1.08;
     color: #FFFFFF;
+    margin: 0 0 8px;
 }
-.stat-card .label {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 10.5px; color: #B7E4C7;
-    letter-spacing: 0.07em;
-    text-transform: uppercase; font-weight: 500;
+.hero p {
+    color: #D8F3DC;
+    font-size: 15px;
+    margin: 0;
+    max-width: 760px;
 }
 
-/* Filter radio bubbles */
+.metric-card {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+.metric-card .label {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6B7280;
+    margin-bottom: 4px;
+}
+.metric-card .value {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    color: #111827;
+}
+
 div[data-testid="stRadio"] [role="radiogroup"] {
     gap: 8px;
     flex-wrap: wrap;
@@ -259,11 +282,6 @@ div[data-testid="stRadio"] [role="radiogroup"] > label {
     border: 1px solid #D1D5DB;
     border-radius: 999px;
     background: #FFFFFF;
-    transition: all 0.2s;
-    min-height: auto;
-}
-div[data-testid="stRadio"] [role="radiogroup"] > label:hover {
-    border-color: #2D6A4F;
 }
 div[data-testid="stRadio"] [role="radiogroup"] > label:has(input:checked) {
     border-color: #2D6A4F;
@@ -275,493 +293,227 @@ div[data-testid="stRadio"] [role="radiogroup"] > label span {
     font-family: 'DM Sans', sans-serif !important;
     font-weight: 600 !important;
     font-size: 11.5px !important;
-    line-height: 1.1 !important;
 }
+
 div[data-testid="stRadio"] [role="radiogroup"] > label input[type="radio"] {
     width: 12px;
     height: 12px;
     margin: 0;
 }
 
-/* Bill card */
-.bill-card {
+.trend-card {
     background: #FFFFFF;
-    border-radius: 16px;
-    padding: 28px 28px 24px;
-    margin-bottom: 16px;
-    border-left: 4px solid;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
-    transition: box-shadow 0.3s, transform 0.2s;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 14px 16px;
+    min-height: 122px;
 }
-.bill-card:hover {
-    box-shadow: 0 8px 30px rgba(0,0,0,0.07);
-    transform: translateY(-1px);
+.trend-title {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6B7280;
+    margin: 0 0 4px;
 }
-.bill-card.urgency-high   { border-left-color: #EF4444; }
-.bill-card.urgency-medium { border-left-color: #F59E0B; }
-.bill-card.urgency-low    { border-left-color: #10B981; }
-.bill-disclosure {
-    margin-bottom: 16px;
-}
-.bill-disclosure > summary {
-    list-style: none;
-    cursor: pointer;
-}
-.bill-disclosure > summary::-webkit-details-marker {
-    display: none;
-}
-.bill-disclosure > summary .bill-card {
-    margin-bottom: 0;
-}
-.bill-disclosure > summary:focus-visible {
-    outline: 3px solid #2D6A4F;
-    outline-offset: 4px;
-    border-radius: 16px;
-}
-.bill-details {
-    background: #FFFFFF;
-    border-radius: 0 0 16px 16px;
-    padding: 20px 28px 24px;
-    margin-bottom: 2px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
-}
-.bill-disclosure[open] > summary .bill-card {
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
-}
-
-/* Bill header row */
-.bill-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-.bill-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-.bill-id {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px; font-weight: 500;
-    color: #6B7280; background: #F3F4F6;
-    padding: 3px 9px; border-radius: 5px;
-    letter-spacing: 0.04em;
-}
-.chamber-badge {
-    font-size: 11px; font-weight: 600;
-    padding: 3px 11px; border-radius: 20px;
-    letter-spacing: 0.03em;
-}
-.chamber-house { color: #1E40AF; background: #DBEAFE; }
-.chamber-senate { color: #7C3AED; background: #EDE9FE; }
-.urgency-badge {
-    font-size: 11px; font-weight: 600;
-    padding: 3px 11px; border-radius: 20px;
-    display: inline-flex; align-items: center; gap: 6px;
-}
-.urgency-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%; display: inline-block;
-}
-.bill-title {
+.trend-value {
     font-family: 'Fraunces', serif;
-    font-size: 20px; font-weight: 700;
-    color: #111827 !important; line-height: 1.3;
+    font-size: 28px;
+    color: #111827;
+    margin: 0 0 2px;
+}
+.trend-detail {
+    font-size: 13px;
+    color: #4B5563;
     margin: 0;
 }
-.bill-summary {
-    font-size: 14px; color: #4B5563;
-    line-height: 1.65; margin: 0 0 16px;
+
+.section-head {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    color: #111827;
+    margin: 26px 0 10px;
 }
 
-/* Tags */
-.tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-.tag {
-    font-size: 10px; font-weight: 600;
-    padding: 3px 10px; border-radius: 6px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    font-family: 'DM Sans', sans-serif;
-}
-
-/* Progress track */
-.progress-track {
-    display: flex; align-items: flex-start;
-    width: 100%; margin-top: 4px;
-}
-.progress-step {
-    display: flex; flex-direction: column;
-    align-items: center; flex: 1;
-    position: relative;
-}
-.progress-dot {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: #D1D5DB;
-    position: relative; z-index: 2;
-    transition: all 0.3s;
-}
-.progress-dot.completed { background: #2D6A4F; }
-.progress-dot.current {
-    width: 18px; height: 18px;
-    background: #2D6A4F;
-    box-shadow: 0 0 0 4px #B7E4C7, 0 0 14px rgba(45,106,79,0.35);
-}
-.progress-label {
-    font-size: 9px; color: #9CA3AF;
-    margin-top: 7px; text-align: center;
-    width: 72px; letter-spacing: 0.02em;
-}
-.progress-label.active { color: #2D6A4F; font-weight: 700; }
-.progress-line {
-    position: absolute;
-    top: 6px; left: 50%; right: -50%;
-    height: 2px; background: #E5E7EB; z-index: 1;
-}
-.progress-line.filled { background: #2D6A4F; }
-
-/* Expanded details */
-.impact-box {
-    background: #F0FDF4;
+.note-box {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
     border-left: 4px solid #2D6A4F;
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 16px;
 }
-.impact-box h4 {
-    font-family: 'Fraunces', serif;
-    font-size: 12px; font-weight: 700;
-    color: #2D6A4F; margin: 0 0 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-.impact-box p {
-    font-size: 14px; color: #1F2937;
-    line-height: 1.65; margin: 0;
-}
-.provision-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px; margin-bottom: 20px;
-}
-.provision-item {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 12px; background: #F9FAFB;
-    border-radius: 8px;
-}
-.provision-num {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: #2D6A4F; color: #FFF;
-    font-size: 10px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    font-family: 'DM Mono', monospace;
-}
-.provision-text {
-    font-size: 13px; color: #374151; line-height: 1.5;
-}
-.meta-row {
-    display: flex; gap: 28px;
-    padding-top: 16px;
-    border-top: 1px solid #F3F4F6;
-    flex-wrap: wrap; align-items: flex-end;
-}
-.meta-item .lbl {
-    font-size: 10.5px; color: #9CA3AF;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-.meta-item .val {
-    font-size: 13px; color: #1F2937;
-    font-weight: 600; margin-top: 3px;
-}
-.action-btn {
-    display: inline-block;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 700;
-    color: #FFF; background: #2D6A4F;
-    border: none; border-radius: 10px;
-    padding: 12px 28px;
-    cursor: pointer; letter-spacing: 0.03em;
-    text-decoration: none;
-    box-shadow: 0 2px 8px rgba(45,106,79,0.3);
-    transition: all 0.2s;
-    margin-left: auto;
-}
-.action-btn:hover { background: #1B4332; transform: translateY(-1px); }
-
-/* Section label */
-.section-label {
-    font-family: 'Fraunces', serif;
-    font-size: 12px; font-weight: 700;
-    color: #374151; margin: 0 0 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-.expand-hint {
-    margin-top: 12px;
-    font-size: 11px;
-    color: #6B7280;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-}
-
-/* Footer CTA */
-.footer-cta {
-    background: #1B4332;
-    border-radius: 16px;
-    padding: 36px;
-    text-align: center;
-    margin-top: 28px;
-    position: relative;
-    overflow: hidden;
-}
-.footer-cta::before {
-    content: '';
-    position: absolute;
-    top: -30px; right: 10%;
-    width: 160px; height: 160px;
-    border-radius: 50%;
-    background: rgba(183,228,199,0.06);
-}
-.footer-cta h3 {
-    font-family: 'Fraunces', serif;
-    font-size: 24px; font-weight: 900;
-    color: #FFF; margin: 0 0 8px;
-    position: relative;
-}
-.footer-cta p {
-    font-size: 14px; color: #B7E4C7;
-    margin: 0 0 20px; position: relative;
-}
-.footer-btn {
-    display: inline-block;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px; font-weight: 700;
-    color: #1B4332; background: #B7E4C7;
-    border: none; border-radius: 10px;
-    padding: 14px 34px;
-    cursor: pointer; letter-spacing: 0.03em;
-    text-decoration: none;
-    position: relative;
-    transition: all 0.2s;
-}
-.footer-btn:hover { background: #FFF; }
-
-/* Hide default streamlit elements */
-#MainMenu, footer, [data-testid="stToolbar"] { display: none !important; }
-.stDeployButton { display: none !important; }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
-
-# ---------------------------------------------------------------------------
-# Helper: render progress track HTML
-# ---------------------------------------------------------------------------
-def progress_html(current_step: int) -> str:
-    dots = []
-    for i, label in enumerate(STATUS_STEPS):
-        step_num = i + 1
-        completed = step_num < current_step
-        is_current = step_num == current_step
-        dot_cls = "completed" if completed else ("current" if is_current else "")
-        lbl_cls = "active" if completed or is_current else ""
-        line_html = ""
-        if i < len(STATUS_STEPS) - 1:
-            line_cls = "filled" if completed else ""
-            line_html = f'<div class="progress-line {line_cls}"></div>'
-        dots.append(
-            f'<div class="progress-step">{line_html}'
-            f'<div class="progress-dot {dot_cls}"></div>'
-            f'<div class="progress-label {lbl_cls}">{label}</div>'
-            "</div>"
-        )
-    return f'<div class="progress-track">{"".join(dots)}</div>'
-
-
-# ---------------------------------------------------------------------------
-# Helper: render tag pills
-# ---------------------------------------------------------------------------
-def tags_html(tags: list) -> str:
-    out = ""
-    for i, t in enumerate(tags):
-        bg, fg = TAG_COLORS[i % len(TAG_COLORS)]
-        out += f'<span class="tag" style="background:{bg};color:{fg}">{escape(str(t))}</span>'
-    return f'<div class="tag-row">{out}</div>'
-
-
-# ---------------------------------------------------------------------------
-# Hero
-# ---------------------------------------------------------------------------
-total = len(BILLS)
-active = sum(1 for b in BILLS if b["status_step"] < 5)
-passed = sum(1 for b in BILLS if b["status_step"] >= 4)
-high_p = sum(1 for b in BILLS if b["urgency"] == "high")
+fee_count = sum(1 for s in STATE_POLICIES if s["funding_model"] == "Fee enacted")
+trust_count = sum(1 for s in STATE_POLICIES if s["trust_fund"])
+statewide_mobile = sum(1 for s in STATE_POLICIES if s["mobile_crisis"] == "Statewide")
+youth_yes = sum(1 for s in STATE_POLICIES if s["youth_services"] == "Yes")
 
 st.markdown(
     f"""
-<div class="hero-banner">
-    <div class="hero-badge">
-        <span>🧠</span>
-        <span>Legislative Tracker</span>
-    </div>
-    <h1 class="hero-title">Mental Health<br>Bill Tracker</h1>
-    <p class="hero-sub">Follow the legislation that shapes mental health care in America. Know what's happening. Make your voice heard.</p>
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="icon">📋</div>
-            <div class="value">{total}</div>
-            <div class="label">Bills Tracked</div>
-        </div>
-        <div class="stat-card">
-            <div class="icon">⚡</div>
-            <div class="value">{active}</div>
-            <div class="label">Currently Active</div>
-        </div>
-        <div class="stat-card">
-            <div class="icon">✅</div>
-            <div class="value">{passed}</div>
-            <div class="label">Passed / Signed</div>
-        </div>
-        <div class="stat-card">
-            <div class="icon">🔴</div>
-            <div class="value">{high_p}</div>
-            <div class="label">High Priority</div>
-        </div>
-    </div>
+<div class="hero">
+    <div class="hero-kicker">NAMI Policy Product Prototype</div>
+    <h1>988 State Policy Tracker</h1>
+    <p>Table-first policy experience for advocates. Explore state funding and crisis response policy, scan annual trends, then use a ready-to-send action script.</p>
 </div>
 """,
     unsafe_allow_html=True,
 )
 
-# ---------------------------------------------------------------------------
-# Filters + search
-# ---------------------------------------------------------------------------
-FILTER_OPTIONS = ["All", "House", "Senate", "High Urgency", "Signed Into Law"]
+metric_cols = st.columns(4)
+metrics = [
+    ("States tracked", str(len(STATE_POLICIES))),
+    ("Fee enacted", str(fee_count)),
+    ("Trust funds", str(trust_count)),
+    ("Statewide mobile", str(statewide_mobile)),
+]
+for col, (label, value) in zip(metric_cols, metrics):
+    with col:
+        st.markdown(
+            f"""
+<div class="metric-card">
+    <div class="label">{label}</div>
+    <div class="value">{value}</div>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
 
-col_filters, col_search = st.columns([3, 1])
+st.markdown('<div class="section-head">State Explorer</div>', unsafe_allow_html=True)
+
+FUNDING_OPTIONS = ["All", "Fee enacted", "Recurring appropriation", "No dedicated funding"]
+col_filters, col_trust, col_search = st.columns([4, 1.5, 2.5])
+
 with col_filters:
-    active_filter = st.radio(
-        "Filter bills",
-        FILTER_OPTIONS,
+    funding_filter = st.radio(
+        "Funding filter",
+        FUNDING_OPTIONS,
         horizontal=True,
         label_visibility="collapsed",
     )
+with col_trust:
+    trust_only = st.checkbox("Trust fund only", value=False)
 with col_search:
-    search = st.text_input("Search bills", placeholder="Search bills...")
+    query = st.text_input("Search", placeholder="State, bill, or policy term")
 
-# ---------------------------------------------------------------------------
-# Filter logic
-# ---------------------------------------------------------------------------
-filtered = BILLS
-if active_filter == "House":
-    filtered = [b for b in filtered if b["chamber"] == "House"]
-elif active_filter == "Senate":
-    filtered = [b for b in filtered if b["chamber"] == "Senate"]
-elif active_filter == "High Urgency":
-    filtered = [b for b in filtered if b["urgency"] == "high"]
-elif active_filter == "Signed Into Law":
-    filtered = [b for b in filtered if b["status_step"] == 5]
+filtered = []
+q = query.strip().lower()
+for row in STATE_POLICIES:
+    if funding_filter != "All" and row["funding_model"] != funding_filter:
+        continue
+    if trust_only and not row["trust_fund"]:
+        continue
+    haystack = " ".join(
+        [
+            row["state"],
+            row["latest_bill"],
+            row["mobile_crisis"],
+            row["stabilization"],
+            row["youth_services"],
+        ]
+    ).lower()
+    if q and q not in haystack:
+        continue
+    filtered.append(row)
 
-if search:
-    q = search.lower()
-    filtered = [
-        b
-        for b in filtered
-        if q in b["title"].lower()
-        or q in b["id"].lower()
-        or any(q in t.lower() for t in b["tags"])
-    ]
-
-# ---------------------------------------------------------------------------
-# Bill cards
-# ---------------------------------------------------------------------------
-if not filtered:
-    st.markdown(
-        """
-    <div style="text-align:center;padding:60px 20px;color:#9CA3AF">
-        <div style="font-size:40px;margin-bottom:12px">🔍</div>
-        <p style="font-size:16px;font-weight:600;color:#6B7280">No bills match your filters</p>
-        <p style="font-size:13px">Try adjusting your search or filter criteria</p>
-    </div>
-    """,
-        unsafe_allow_html=True,
+if filtered:
+    st.dataframe(
+        [state_row(record) for record in filtered],
+        use_container_width=True,
+        hide_index=True,
     )
+else:
+    st.warning("No states matched this filter set. Try broadening the search.")
 
-for bill in filtered:
-    u = URGENCY_MAP[bill["urgency"]]
-    chamber_cls = "chamber-house" if bill["chamber"] == "House" else "chamber-senate"
-    bill_id = escape(str(bill["id"]))
-    chamber = escape(str(bill["chamber"]))
-    urgency_label = escape(str(u["label"]))
-    title = escape(str(bill["title"]))
-    summary = escape(str(bill["summary"]))
-    impact = escape(str(bill["impact"]))
-    lead_sponsor = escape(str(bill["lead_sponsor"]))
-    introduced = escape(str(bill["introduced"]))
-    sponsors = escape(str(bill["sponsors"]))
+st.caption(
+    "Prototype dataset for layout and flow. Replace these rows with verified state records before publishing."
+)
 
-    prov_items = ""
-    for idx, prov in enumerate(bill["provisions"], 1):
-        prov_items += (
-            '<div class="provision-item">'
-            f'<div class="provision-num">{idx}</div>'
-            f'<div class="provision-text">{escape(str(prov))}</div>'
-            "</div>"
-        )
+st.markdown('<div class="section-head">What Changed This Year</div>', unsafe_allow_html=True)
 
-    disclosure_html = f"""
-    <details class="bill-disclosure">
-        <summary>
-            <div class="bill-card urgency-{bill['urgency']}">
-                <div class="bill-meta">
-                    <span class="bill-id">{bill_id}</span>
-                    <span class="chamber-badge {chamber_cls}">{chamber}</span>
-                    <span class="urgency-badge" style="background:{u['bg']};color:{u['text']}">
-                        <span class="urgency-dot" style="background:{u['color']}"></span>
-                        {urgency_label}
-                    </span>
-                </div>
-                <h3 class="bill-title">{title}</h3>
-                {tags_html(bill['tags'])}
-                <p class="bill-summary">{summary}</p>
-                {progress_html(bill['status_step'])}
-                <div class="expand-hint">Click card to view details</div>
-            </div>
-        </summary>
-        <div class="bill-details">
-            <div class="impact-box">
-                <h4>Why This Matters</h4>
-                <p>{impact}</p>
-            </div>
-            <div class="section-label">Key Provisions</div>
-            <div class="provision-grid">{prov_items}</div>
-            <div class="meta-row">
-                <div class="meta-item">
-                    <div class="lbl">Lead Sponsor</div>
-                    <div class="val">{lead_sponsor}</div>
-                </div>
-                <div class="meta-item">
-                    <div class="lbl">Co-sponsors</div>
-                    <div class="val">{sponsors}</div>
-                </div>
-                <div class="meta-item">
-                    <div class="lbl">Introduced</div>
-                    <div class="val">{introduced}</div>
-                </div>
-                <a class="action-btn" href="#">Take Action →</a>
-            </div>
-        </div>
-    </details>
-    """
-    st.markdown(disclosure_html, unsafe_allow_html=True)
+trend_cards = [
+    {
+        "title": "Funding coverage",
+        "value": f"{fee_count} states",
+        "detail": "Use dedicated 988 fees in this prototype dataset.",
+    },
+    {
+        "title": "Trust fund adoption",
+        "value": f"{trust_count} states",
+        "detail": "Protect 988 dollars from being absorbed into general budgets.",
+    },
+    {
+        "title": "Mobile crisis reach",
+        "value": f"{statewide_mobile} statewide",
+        "detail": "Have statewide mobile crisis as the baseline service model.",
+    },
+    {
+        "title": "Youth readiness",
+        "value": f"{youth_yes} states",
+        "detail": "Show explicit youth-focused response standards.",
+    },
+]
 
-# ---------------------------------------------------------------------------
-# Footer CTA
-# ---------------------------------------------------------------------------
-st.markdown(
-    """
-<div class="footer-cta">
-    <h3>Your voice matters.</h3>
-    <p>Contact your representatives and advocate for mental health legislation.</p>
-    <a class="footer-btn" href="#">Find Your Representative →</a>
+trend_cols = st.columns(4)
+for col, card in zip(trend_cols, trend_cards):
+    with col:
+        st.markdown(
+            f"""
+<div class="trend-card">
+    <p class="trend-title">{card['title']}</p>
+    <p class="trend-value">{card['value']}</p>
+    <p class="trend-detail">{card['detail']}</p>
 </div>
 """,
-    unsafe_allow_html=True,
+            unsafe_allow_html=True,
+        )
+
+st.markdown('<div class="section-head">Policy Playbook</div>', unsafe_allow_html=True)
+for item in PLAYBOOK:
+    with st.expander(item["title"], expanded=False):
+        st.markdown(f"**Why this matters**  \n{item['why']}")
+        st.markdown(f"**Model policy language**  \n{item['model']}")
+        st.markdown(f"**States to cite**  \n{', '.join(item['states'])}")
+        st.markdown(f"**Action ask**  \n{item['action']}")
+
+st.markdown('<div class="section-head">Advocate Toolkit</div>', unsafe_allow_html=True)
+
+state_names = sorted([row["state"] for row in STATE_POLICIES])
+selected_state = st.selectbox("Build script for state", state_names)
+current = next(row for row in STATE_POLICIES if row["state"] == selected_state)
+
+script = f"""Subject: Strengthen 988 crisis response policy in {current['state']}
+
+Hello [Legislator Name],
+
+I am your constituent and I support stronger 988 crisis response policy in {current['state']}.
+
+Current tracker snapshot for {current['state']}:
+- Funding model: {current['funding_model']}
+- Monthly 988 fee: {current['monthly_fee']}
+- Trust fund protection: {'Yes' if current['trust_fund'] else 'No'}
+- Mobile crisis coverage: {current['mobile_crisis']}
+- Latest policy vehicle: {current['latest_bill']} ({current['year']})
+
+Please support policy that guarantees sustainable funding, statewide mobile crisis access,
+and transparent annual performance reporting.
+
+Thank you,
+[Your Name]
+[City, ZIP]
+"""
+
+st.markdown('<div class="note-box">Use this script as a base, then personalize with your local context.</div>', unsafe_allow_html=True)
+st.code(script, language="markdown")
+st.download_button(
+    "Download advocacy script",
+    data=script,
+    file_name=f"{slugify(selected_state)}-988-advocacy-script.txt",
+    mime="text/plain",
+)
+
+st.markdown(
+    "[Find your elected officials](https://www.usa.gov/elected-officials) | [NAMI public policy reports](https://www.nami.org/research/publications-reports/public-policy-reports/)"
 )
