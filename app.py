@@ -47,6 +47,38 @@ POLICIES = [
     {"icon": "🛡️", "title": "Trust Fund Protections", "subtitle": "Ensuring funds reach crisis services", "desc": "Without dedicated trust funds, 988 fee revenue can be diverted to unrelated budget items.", "states": ["Colorado", "Nevada", "Ohio"], "stat": "10", "stat_label": "states with 988 trust funds", "rec": "Establish a dedicated 988 trust fund with statutory protections preventing diversion.", "share": "10 states protect 988 fee revenue with trust funds. Every dollar should go to crisis services."},
 ]
 
+BILLS = [
+    # 988 Fee
+    {"state": "Maryland", "bill": "HB 933/SB 974", "cat": "988 Fee", "summary": "Establishes a 988 fee of $0.25/mo per phone line, with Lifeline program exemptions.", "sponsors": "Del. Jessica Feldmark (D), Sen. Guy Guzzone (D)"},
+    {"state": "Ohio", "bill": "SB 211", "cat": "988 Fee", "summary": "Creates a 988 trust fund in the state treasury and codifies a 988 Administrator position.", "sponsors": "Sen. Kristina Roegner (R)"},
+    {"state": "Vermont", "bill": "H 657", "cat": "988 Fee", "summary": "Establishes a $0.72/line charge, with a portion directed to 988 contact centers (~$1M/year).", "sponsors": "Rep. Katherine Sims (D)"},
+    # Appropriations
+    {"state": "Florida", "bill": "SB 7016", "cat": "Appropriations", "summary": "Appropriates $11.5M in recurring funding to expand mobile response teams to every county.", "sponsors": "Senate Health & Fiscal Policy Committees"},
+    {"state": "Maine", "bill": "LD 2214", "cat": "Appropriations", "summary": "Appropriates $600K for mobile crisis and $2M for three new crisis receiving centers.", "sponsors": "Rep. Melanie Sachs (D)"},
+    {"state": "Rhode Island", "bill": "HB 7225", "cat": "Appropriations", "summary": "Appropriates $1.9M for 988 Hotline operations, up from $1.6M the prior year.", "sponsors": "Rep. Marvin Abney (D)"},
+    {"state": "Arizona", "bill": "HB 2897", "cat": "Appropriations", "summary": "Appropriates $16.4M for behavioral health crisis services."},
+    {"state": "Connecticut", "bill": "HB 5523", "cat": "Appropriations", "summary": "Appropriates $13.2M total to enhance and expand mobile crisis services."},
+    {"state": "Washington", "bill": "SB 5950", "cat": "Appropriations", "summary": "Funds youth crisis services, crisis relief center expansion, and digital behavioral health."},
+    {"state": "Wyoming", "bill": "HB 001", "cat": "Appropriations", "summary": "Appropriates $10M from general revenue to the 988 system trust fund account."},
+    # Insurance
+    {"state": "California", "bill": "AB 1316", "cat": "Insurance", "summary": "Clarifies Medi-Cal managed care plans must cover emergency department psychiatric services.", "sponsors": "Assemb. C. Ward (D), Assemb. J. Irwin (D)"},
+    {"state": "Virginia", "bill": "HB 601/SB 543", "cat": "Insurance", "summary": "Adds crisis receiving centers to locations where mobile crisis services must be covered by insurance.", "sponsors": "Del. Terry Kilgore (R), Sen. Lamont Bagby (D)"},
+    # Youth
+    {"state": "New Hampshire", "bill": "HB 1109", "cat": "Youth", "summary": "Requires student ID cards to include 988 and eating disorders helpline for grades 6-12.", "sponsors": "Rep. Rosemarie Rung (D)"},
+    {"state": "Washington", "bill": "SB 5853", "cat": "Youth", "summary": "Extends crisis relief centers to minors with separate treatment areas and 24/7 walk-in access.", "sponsors": "Sen. Manka Dhingra (D)"},
+    {"state": "Delaware", "bill": "HB 137", "cat": "Youth", "summary": "Updates crisis contact info on student ID cards for grades 7-12."},
+    {"state": "Louisiana", "bill": "SB 310", "cat": "Youth", "summary": "Requires public and nonpublic secondary schools to post 988 on their websites."},
+    {"state": "Maine", "bill": "LD 1263", "cat": "Youth", "summary": "Requires schools and postsecondary institutions to include 988 on student ID cards."},
+    {"state": "Maryland", "bill": "HB 284/SB 122", "cat": "Youth", "summary": "Requires 988 on student ID cards and in school handbooks for grades 6-12."},
+    {"state": "New York", "bill": "A 6563A", "cat": "Youth", "summary": "Requires higher education institutions to educate about 988 and include it on student IDs."},
+    # Coordination
+    {"state": "Nebraska", "bill": "LB 1200", "cat": "Coordination", "summary": "Requires statewide standards for 911/988 call transfers and adds 988 counselor liability protections.", "sponsors": "Sen. Mike Moser (R)"},
+    {"state": "Vermont", "bill": "S 189", "cat": "Coordination", "summary": "Instructs Dept. of Mental Health to develop crisis response guidelines for municipalities.", "sponsors": "Sen. Ginny Lyons (D)"},
+    {"state": "Vermont", "bill": "H 883", "cat": "Coordination", "summary": "Reports on embedded mental health worker program collaboration with 988 and mobile crisis."},
+    {"state": "Louisiana", "bill": "SR 14", "cat": "Coordination", "summary": "Establishes Community Responder Taskforce to study law enforcement and behavioral health partnerships."},
+    {"state": "Washington", "bill": "SB 6251", "cat": "Coordination", "summary": "Requires BH-ASOs to coordinate crisis response and dispatch protocols for mobile crisis teams."},
+]
+
 ADVOCATES = [
     {"quote": "Too many people in our country can't get the help they need and don't know where to turn. But 988 is changing that.", "name": "Daniel H. Gillison, Jr.", "role": "CEO, NAMI", "accent": "#2D6A4F"},
     {"quote": "Sustainable funding is the backbone of any effective crisis system. Without it, call centers can't hire enough counselors.", "name": "Sue Abderholden", "role": "Executive Director, NAMI Minnesota", "accent": "#1E40AF"},
@@ -84,18 +116,13 @@ STATE_PROFILES = {
 # ---------------------------------------------------------------------------
 # HELPERS
 # ---------------------------------------------------------------------------
-def score_bar_html(score, max_score=5, variant="default"):
-    if variant == "hero":
-        bar_w, bar_h, txt_size, txt_weight, gap = 36, 10, 17, 600, 7
-    else:
-        bar_w, bar_h, txt_size, txt_weight, gap = 24, 8, 12, 500, 4
-
+def score_bar_html(score, max_score=5):
     bars = ""
     for i in range(max_score):
         color = "#2D6A4F" if i < score else "#E5E7EB"
-        bars += f'<div style="width:{bar_w}px;height:{bar_h}px;border-radius:999px;background:{color};display:inline-block;margin-right:{gap}px"></div>'
+        bars += f'<div style="width:24px;height:8px;border-radius:4px;background:{color};display:inline-block;margin-right:3px"></div>'
     score_color = "#2D6A4F" if score >= 4 else "#E8590C" if score >= 2 else "#EF4444"
-    bars += f'<span style="font-family:JetBrains Mono,monospace;font-size:{txt_size}px;font-weight:{txt_weight};color:{score_color};margin-left:8px">{score}/{max_score}</span>'
+    bars += f'<span style="font-family:JetBrains Mono,monospace;font-size:12px;font-weight:500;color:{score_color};margin-left:8px">{score}/{max_score}</span>'
     return f'<div style="display:flex;align-items:center">{bars}</div>'
 
 
@@ -181,61 +208,44 @@ header[data-testid="stHeader"] { background: transparent !important; }
 .sh h2 { font-family:'Playfair Display',serif; font-size:36px; font-weight:900; color:var(--s900);
     line-height:1.15; margin:0 0 12px; letter-spacing:-0.02em; }
 .sh p { font-family:'Source Sans 3',sans-serif; font-size:17px; color:var(--s500); line-height:1.6; max-width:600px; margin:0; }
-.sh-policy h2 { font-size: clamp(52px, 4.8vw, 78px); line-height:1.03; margin-bottom:14px; }
-.sh-policy p { font-size: clamp(19px, 1.9vw, 30px); line-height:1.45; max-width:900px; }
 
-/* STATE CARD */
-div[data-testid="stVerticalBlockBorderWrapper"] {
-    margin-top: -46px !important;
-    margin-bottom: 26px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+/* STATE CARD — scoped to container with marker */
+.state-card-marker { display:none; }
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) {
+    margin-top: -48px !important;
     position: relative !important;
     z-index: 10 !important;
-    width: 100% !important;
-    max-width: 1080px !important;
-    border-radius: 22px !important;
+    border-radius: 16px !important;
     border: 1px solid rgba(0,0,0,0.04) !important;
     box-shadow: 0 8px 30px rgba(0,0,0,0.06) !important;
     background: #FFF !important;
-    padding: 24px 24px 22px !important;
+    padding: 28px 32px !important;
+    margin-bottom: 28px !important;
 }
-div[data-testid="stVerticalBlockBorderWrapper"] > div {
-    padding: 0 !important;
-}
-.state-head-label { font-family:'Source Sans 3',sans-serif; font-size:15px; font-weight:700; color:var(--s900); padding-top:8px; }
-div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] > div {
-    background:#E3F1E8 !important;
-    border:2px solid #A9D8BE !important;
-    border-radius:14px !important;
-}
-div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] span {
-    color:var(--g700) !important;
-    font-weight:700 !important;
-}
-div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] svg {
-    fill:var(--g700) !important;
-}
-.state-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:14px; }
-.sg-item { padding:16px 18px; border-radius:10px; min-height:126px; display:flex; flex-direction:column; justify-content:space-between; }
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) > div { padding:0 !important; }
+.state-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px; }
+.sg-item { padding:16px; border-radius:10px; }
 .sg-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--s500);
-    letter-spacing:0.12em; text-transform:uppercase; margin-bottom:6px; }
-.sg-val { font-family:'Playfair Display',serif; font-size:34px; font-weight:900; line-height:1; }
-.sg-status { font-family:'Source Sans 3',sans-serif; font-size:16px; font-weight:700; }
+    letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
+.sg-val { font-family:'Playfair Display',serif; font-size:22px; font-weight:900; }
+.sg-status { font-family:'Source Sans 3',sans-serif; font-size:18px; font-weight:700; }
 
-@media (max-width: 980px) {
-    .state-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-}
-@media (max-width: 700px) {
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        margin-top:-36px !important;
-        max-width:100% !important;
-        padding:20px 18px !important;
-    }
-}
-@media (max-width: 520px) {
-    .state-grid { grid-template-columns:1fr; }
-}
+/* BILL CARDS */
+.bill-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-top:8px; }
+.bill-card { background:#FFF; border-radius:14px; padding:20px 22px; border:1px solid rgba(0,0,0,0.06);
+    box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:transform 0.15s, box-shadow 0.15s; }
+.bill-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+.bill-state { font-family:'Playfair Display',serif; font-size:20px; font-weight:900; color:var(--s900); margin-bottom:2px; }
+.bill-num { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:var(--g700); margin-bottom:8px; }
+.bill-cat { display:inline-block; font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700;
+    color:var(--g700); background:var(--g50); padding:3px 10px; border-radius:20px;
+    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
+.bill-cat.approp { background:#EFF6FF; color:#1E40AF; }
+.bill-cat.ins { background:#FEF3C7; color:#92400E; }
+.bill-cat.youth { background:#F0FDF4; color:#166534; }
+.bill-cat.coord { background:#F5F3FF; color:#5B21B6; }
+.bill-summary { font-family:'Source Sans 3',sans-serif; font-size:14px; color:var(--s500); line-height:1.5; }
+.bill-sponsor { font-family:'Source Sans 3',sans-serif; font-size:12px; color:var(--s400); margin-top:8px; font-style:italic; }
 
 /* BEFORE/AFTER */
 .ba-container { background:#FFF; border-radius:16px; overflow:hidden;
@@ -324,85 +334,27 @@ div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] svg {
 .adv-name { font-family:'Source Sans 3',sans-serif; font-size:14px; font-weight:700; color:var(--s900); }
 .adv-role { font-family:'Source Sans 3',sans-serif; font-size:13px; color:var(--s500); }
 
-/* POLICY CARDS (collapsible) */
-.policy-dd { margin:0 0 16px; }
-.policy-dd > summary { list-style:none; cursor:pointer; outline:none; }
-.policy-dd > summary::-webkit-details-marker { display:none; }
-.policy-dd > summary::marker { content:''; }
-.pol-shell {
-    background:#FFF;
-    border-radius:20px;
-    border:1px solid rgba(0,0,0,0.05);
-    box-shadow:0 2px 10px rgba(0,0,0,0.03);
-    padding:34px;
-    transition:all .2s ease;
-}
-.policy-dd[open] .pol-shell {
-    border:4px solid var(--g700);
-    box-shadow:none;
-    padding:31px;
-}
-.pol-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
-.pol-toggle {
-    width:58px; height:58px; border-radius:999px;
-    background:#E2E8F0; color:#64748B;
-    display:flex; align-items:center; justify-content:center;
-    font-size:46px; line-height:1; font-weight:300;
-}
-.pol-toggle::before { content:'+'; transform:translateY(-1px); }
-.policy-dd[open] .pol-toggle { background:var(--g700); color:#FFF; font-size:42px; }
-.policy-dd[open] .pol-toggle::before { content:'×'; transform:translateY(-2px); }
-.pol-icon-wrap { display:flex; align-items:center; }
-.pol-icon { font-size:42px; line-height:1; margin:0; }
-.pol-title { font-family:'Playfair Display',serif; font-size:40px; font-weight:900; color:var(--s900); margin:14px 0 8px; line-height:1.05; }
-.pol-sub { font-family:'Source Sans 3',sans-serif; font-size:18px; font-weight:600; color:var(--g600);
-    letter-spacing:0.06em; text-transform:uppercase; margin-bottom:18px; }
-.pol-desc { font-family:'Source Sans 3',sans-serif; font-size:19px; color:var(--s700); line-height:1.5; margin-bottom:24px; max-width:980px; }
-.pol-stat-row { display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
-.pol-stat { display:inline-flex; align-items:baseline; gap:10px; background:var(--g50);
-    border:1.5px solid var(--g200); border-radius:20px; padding:18px 26px; }
-.pol-stat-num { font-family:'Playfair Display',serif; font-size:52px; font-weight:900; color:var(--g700); line-height:1; }
-.pol-stat-label { font-family:'Source Sans 3',sans-serif; font-size:16px; font-weight:600; color:var(--g700); }
-.pol-actions { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
-.pol-states { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:14px 0 18px; }
-.pol-state-lead { font-size:16px; color:#64748B; font-weight:500; margin-right:6px; }
-.pol-state-tag { font-family:'Source Sans 3',sans-serif; font-size:14px; font-weight:600; color:var(--g700);
-    background:var(--g100); padding:6px 14px; border-radius:999px; }
-.rec-box { background:var(--s100); border-radius:14px; padding:18px 22px; border-left:4px solid var(--g600); }
-.rec-label { font-family:'Source Sans 3',sans-serif; font-size:12px; font-weight:700; color:var(--g700);
-    letter-spacing:0.12em; text-transform:uppercase; margin-bottom:8px; }
-.rec-text { font-family:'Source Sans 3',sans-serif; font-size:16px; color:var(--s700); line-height:1.45; }
-.pol-expanded { display:none; }
-.policy-dd[open] .pol-expanded { display:block; }
-
-@media (max-width: 980px) {
-    .pol-title { font-size:34px; }
-    .pol-sub { font-size:16px; }
-    .pol-desc { font-size:18px; }
-    .pol-stat-num { font-size:42px; }
-    .pol-stat-label { font-size:16px; }
-    .pol-state-tag { font-size:13px; }
-    .pol-state-lead { font-size:15px; }
-    .rec-label { font-size:11px; }
-    .rec-text { font-size:15px; }
-}
-
-@media (max-width: 640px) {
-    .pol-shell { padding:22px; border-radius:14px; }
-    .policy-dd[open] .pol-shell { padding:19px; border-width:3px; }
-    .pol-title { font-size:28px; }
-    .pol-sub { font-size:14px; }
-    .pol-desc { font-size:16px; margin-bottom:18px; }
-    .pol-toggle { width:46px; height:46px; font-size:34px; }
-    .policy-dd[open] .pol-toggle { font-size:32px; }
-    .pol-stat { padding:12px 14px; border-radius:14px; }
-    .pol-stat-num { font-size:32px; }
-    .pol-stat-label { font-size:15px; }
-    .pol-state-tag { font-size:12px; padding:5px 11px; }
-    .pol-state-lead { font-size:16px; }
-    .rec-label { font-size:10px; }
-    .rec-text { font-size:14px; }
-}
+/* POLICY CARD */
+.pol-card { background:#FFF; border-radius:16px; padding:32px; margin-bottom:16px;
+    border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.03);
+    transition:all 0.3s; }
+.pol-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.06); transform:translateY(-2px); }
+.pol-icon { font-size:28px; margin-bottom:10px; }
+.pol-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--s900); margin-bottom:4px; }
+.pol-sub { font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:500; color:var(--g600);
+    letter-spacing:0.04em; text-transform:uppercase; margin-bottom:14px; }
+.pol-desc { font-family:'Source Sans 3',sans-serif; font-size:15px; color:var(--s700); line-height:1.65; margin-bottom:16px; }
+.pol-stat { display:inline-flex; align-items:baseline; gap:6px; background:var(--g50);
+    border:1px solid var(--g200); border-radius:10px; padding:10px 18px; margin-bottom:12px; }
+.pol-stat-num { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; color:var(--g700); line-height:1; }
+.pol-stat-label { font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:500; color:var(--g700); }
+.pol-states { display:flex; gap:6px; flex-wrap:wrap; margin:12px 0 16px; }
+.pol-state-tag { font-family:'Source Sans 3',sans-serif; font-size:11px; font-weight:600; color:var(--g700);
+    background:var(--g100); padding:4px 12px; border-radius:20px; }
+.rec-box { background:var(--s100); border-radius:10px; padding:16px 20px; border-left:3px solid var(--g600); }
+.rec-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--g700);
+    letter-spacing:0.12em; text-transform:uppercase; margin-bottom:6px; }
+.rec-text { font-family:'Source Sans 3',sans-serif; font-size:14px; color:var(--s700); line-height:1.6; }
 
 /* SCORECARD */
 .sc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin:20px 0; }
@@ -444,113 +396,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] svg {
     padding:14px 32px; border-radius:12px; text-decoration:none;
     background:rgba(255,255,255,0.1); color:#FFF; border:1.5px solid rgba(255,255,255,0.2);
     cursor:pointer; display:inline-block; }
-.cta-primary, .cta-primary:visited { color:var(--g900) !important; text-decoration:none !important; }
-.cta-secondary, .cta-secondary:visited { color:#FFF !important; text-decoration:none !important; }
-
-/* WIDGET THEMING */
-[data-baseweb="select"] > div,
-[data-baseweb="select"] > div:hover {
-    background:#FFFFFF !important;
-    border:1.5px solid #CBD5E1 !important;
-    box-shadow:none !important;
-}
-[data-baseweb="select"] span {
-    color:var(--s900) !important;
-    font-family:'Source Sans 3',sans-serif !important;
-    font-weight:600 !important;
-}
-[data-baseweb="select"] svg {
-    fill:var(--s700) !important;
-}
-div[role="listbox"] {
-    background:#FFFFFF !important;
-    border:1px solid #CBD5E1 !important;
-    box-shadow:0 10px 24px rgba(15,23,42,0.12) !important;
-}
-div[role="option"] {
-    color:var(--s700) !important;
-    background:#FFFFFF !important;
-}
-div[role="option"][aria-selected="true"] {
-    color:var(--g700) !important;
-    background:var(--g50) !important;
-}
-[data-baseweb="tag"] {
-    background:var(--g50) !important;
-    border:1px solid var(--g200) !important;
-}
-[data-baseweb="tag"] * {
-    color:var(--g700) !important;
-}
-
-div[data-testid="stSlider"] [role="slider"] {
-    background:var(--g700) !important;
-    border:2px solid var(--g700) !important;
-    box-shadow:none !important;
-}
-div[data-testid="stSlider"] [data-baseweb="slider"] > div > div:nth-child(2) {
-    background:var(--g700) !important;
-}
-
-div[data-testid="stRadio"] div[role="radiogroup"] {
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-}
-div[data-testid="stRadio"] div[role="radiogroup"] label {
-    margin:0;
-    border:1px solid #CBD5E1;
-    border-radius:999px;
-    background:#FFFFFF;
-    padding:7px 14px;
-    min-height:36px;
-}
-div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
-    display:none !important;
-}
-div[data-testid="stRadio"] div[role="radiogroup"] label p {
-    margin:0 !important;
-    color:var(--s700) !important;
-    font-size:13px !important;
-    font-weight:600 !important;
-}
-div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
-    border-color:var(--g700);
-    background:var(--g50);
-}
-div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) p {
-    color:var(--g700) !important;
-}
-
-/* COMPARE STATE PILLS */
-.compare-help {
-    font-family:'Source Sans 3',sans-serif;
-    font-size:14px;
-    color:var(--s500);
-    margin:6px 0 10px;
-}
-.stButton > button {
-    border-radius:14px !important;
-    border:2px solid #D4D9E3 !important;
-    background:#FFFFFF !important;
-    color:#334155 !important;
-    font-family:'Source Sans 3',sans-serif !important;
-    font-size:14px !important;
-    font-weight:600 !important;
-    min-height:48px !important;
-    line-height:1.1 !important;
-    padding:0.28rem 0.62rem !important;
-    white-space:nowrap !important;
-}
-.stButton {
-    margin-bottom:0.35rem !important;
-}
-.stButton > button[kind="primary"],
-.stButton > button[data-testid="baseButton-primary"] {
-    background:var(--g700) !important;
-    border-color:var(--g700) !important;
-    color:#FFFFFF !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -578,38 +423,41 @@ st.markdown("""
 # 2. YOUR STATE PERSONALIZATION
 # ===========================================================================
 with st.container(border=True):
+    st.markdown('<div class="state-card-marker"></div>', unsafe_allow_html=True)
     col_label, col_select, col_score = st.columns([1, 2, 2])
     with col_label:
-        st.markdown('<p class="state-head-label">Your state:</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-family:Source Sans 3,sans-serif;font-size:15px;font-weight:600;color:#0F172A;padding-top:8px">Your state:</p>', unsafe_allow_html=True)
     with col_select:
         selected_state = st.selectbox("Pick your state", sorted(STATE_PROFILES.keys()), index=sorted(STATE_PROFILES.keys()).index("Maryland"), label_visibility="collapsed")
 
     user_state = STATE_PROFILES[selected_state]
 
     with col_score:
-        st.markdown(f'<div style="padding-top:8px">{score_bar_html(user_state["score"], variant="hero")}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="padding-top:8px">{score_bar_html(user_state["score"])}</div>', unsafe_allow_html=True)
 
-    # Grid
+    # Build grid items
     fee_bg = "var(--g50)" if user_state["has_fee"] else "#FEF2F2"
     fee_border = "var(--g200)" if user_state["has_fee"] else "#FECACA"
     fee_color = "var(--g700)" if user_state["has_fee"] else "#EF4444"
 
-    items_html_parts = [
-        '<div class="state-grid">',
-        f'<div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}"><div class="sg-label">988 Fee</div><div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div></div>',
-        f'<div class="sg-item" style="background:var(--s100)"><div class="sg-label">Est. Revenue</div><div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div></div>',
-    ]
-    for label, key in [("Trust Fund", "trust"), ("Mobile Crisis", "mobile"), ("Stabilization", "stab"), ("Youth Services", "youth")]:
-        val = user_state[key]
+    def _status(val, label):
         bg = "var(--g50)" if val else "var(--s100)"
         bdr = "border:1px solid var(--g200);" if val else ""
-        color = "var(--g700)" if val else "var(--s300)"
-        text = "✓ Active" if val else "— None"
-        items_html_parts.append(
-            f'<div class="sg-item" style="background:{bg};{bdr}"><div class="sg-label">{label}</div><div class="sg-status" style="color:{color}">{text}</div></div>'
-        )
-    items_html_parts.append("</div>")
-    st.markdown("".join(items_html_parts), unsafe_allow_html=True)
+        c = "var(--g700)" if val else "var(--s300)"
+        t = "&#10003; Active" if val else "&#8212; None"
+        return f'<div class="sg-item" style="background:{bg};{bdr}"><div class="sg-label">{label}</div><div class="sg-status" style="color:{c}">{t}</div></div>'
+
+    grid_html = (
+        '<div class="state-grid">'
+        f'<div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}"><div class="sg-label">988 Fee</div><div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div></div>'
+        f'<div class="sg-item" style="background:var(--s100)"><div class="sg-label">Est. Revenue</div><div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div></div>'
+        + _status(user_state["trust"], "Trust Fund")
+        + _status(user_state["mobile"], "Mobile Crisis")
+        + _status(user_state["stab"], "Stabilization")
+        + _status(user_state["youth"], "Youth Services")
+        + '</div>'
+    )
+    st.markdown(grid_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
@@ -787,12 +635,11 @@ for adv in ADVOCATES:
 # 9. POLICY CARDS
 # ===========================================================================
 st.markdown("""
-<div class="sh sh-policy"><div class="ey">Policy Playbook</div>
+<div class="sh"><div class="ey">Policy Playbook</div>
 <h2>Five Moves States Can Make</h2>
 <p>Concrete recommendations backed by what's already working.</p></div>
 """, unsafe_allow_html=True)
 
-policy_cards_html = ""
 for pol in POLICIES:
     states_tags = "".join(f'<span class="pol-state-tag">{s}</span>' for s in pol["states"])
     share_p = share_button_html(pol["share"], "Share stat")
@@ -800,34 +647,57 @@ for pol in POLICIES:
         f"Support {pol['title']} for 988 Crisis Services",
         f"{pol['share']}\n\nI'm writing to ask you to support legislation that would {pol['rec'].lower()}\n\nLearn more: https://reimaginecrisis.org/map/",
     )
-    policy_cards_html += f"""
-    <details class="policy-dd">
-        <summary>
-            <div class="pol-shell">
-                <div class="pol-head">
-                    <div class="pol-icon-wrap"><div class="pol-icon">{pol["icon"]}</div></div>
-                    <div class="pol-toggle" aria-hidden="true"></div>
-                </div>
-                <div class="pol-title">{pol["title"]}</div>
-                <div class="pol-sub">{pol["subtitle"]}</div>
-                <div class="pol-desc">{pol["desc"]}</div>
-                <div class="pol-stat-row">
-                    <div class="pol-stat"><span class="pol-stat-num">{pol["stat"]}</span><span class="pol-stat-label">{pol["stat_label"]}</span></div>
-                    <div class="pol-actions">{share_p} {email_p}</div>
-                </div>
-                <div class="pol-expanded">
-                    <div class="pol-states"><span class="pol-state-lead">Leading:</span>{states_tags}</div>
-                    <div class="rec-box"><div class="rec-label">NAMI Recommendation</div><div class="rec-text">{pol["rec"]}</div></div>
-                </div>
-            </div>
-        </summary>
-    </details>
-    """
-st.markdown(policy_cards_html, unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="pol-card">
+        <div class="pol-icon">{pol["icon"]}</div>
+        <div class="pol-title">{pol["title"]}</div>
+        <div class="pol-sub">{pol["subtitle"]}</div>
+        <div class="pol-desc">{pol["desc"]}</div>
+        <div class="pol-stat"><span class="pol-stat-num">{pol["stat"]}</span><span class="pol-stat-label">{pol["stat_label"]}</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">{share_p} {email_p}</div>
+        <div class="pol-states"><span style="font-size:11px;color:#64748B;font-weight:500;margin-right:4px">Leading:</span>{states_tags}</div>
+        <div class="rec-box"><div class="rec-label">NAMI Recommendation</div><div class="rec-text">{pol["rec"]}</div></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.expander(f"Details: {pol['title']}", expanded=False):
+        st.write("")  # keeps expander functional
 
 
 # ===========================================================================
-# 10. SCORECARD
+# 10. 2024 LEGISLATION CARDS
+# ===========================================================================
+st.markdown("""
+<div class="sh"><div class="ey">2024 Legislation</div>
+<h2>Bills That Built the System</h2>
+<p>25 bills enacted across the country in 2024 to strengthen 988 and crisis response.</p></div>
+""", unsafe_allow_html=True)
+
+bill_cats = ["All"] + sorted(set(b["cat"] for b in BILLS))
+bill_filter = st.radio("Filter by category", bill_cats, horizontal=True, label_visibility="collapsed")
+
+cat_class_map = {"988 Fee": "", "Appropriations": " approp", "Insurance": " ins", "Youth": " youth", "Coordination": " coord"}
+filtered = BILLS if bill_filter == "All" else [b for b in BILLS if b["cat"] == bill_filter]
+
+cards_html = '<div class="bill-grid">'
+for b in filtered:
+    cat_cls = cat_class_map.get(b["cat"], "")
+    sponsor_line = f'<div class="bill-sponsor">{b["sponsors"]}</div>' if b.get("sponsors") else ""
+    cards_html += (
+        f'<div class="bill-card">'
+        f'<div class="bill-state">{b["state"]}</div>'
+        f'<div class="bill-num">{b["bill"]}</div>'
+        f'<span class="bill-cat{cat_cls}">{b["cat"]}</span>'
+        f'<div class="bill-summary">{b["summary"]}</div>'
+        f'{sponsor_line}'
+        f'</div>'
+    )
+cards_html += '</div>'
+st.markdown(cards_html, unsafe_allow_html=True)
+
+
+# ===========================================================================
+# 11. SCORECARD
 # ===========================================================================
 st.markdown("""
 <div class="sh"><div class="ey">Scorecard</div>
@@ -856,7 +726,7 @@ st.markdown(sc_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
-# 11. STATE COMPARISON
+# 12. STATE COMPARISON
 # ===========================================================================
 st.markdown("""
 <div class="sh"><div class="ey">Compare</div>
@@ -864,41 +734,7 @@ st.markdown("""
 <p>Select up to 5 states to compare.</p></div>
 """, unsafe_allow_html=True)
 
-all_compare_states = sorted(STATE_PROFILES.keys())
-default_compare_states = ["Colorado", "Washington", "Maryland"]
-if "compare_states" not in st.session_state:
-    st.session_state.compare_states = [s for s in default_compare_states if s in all_compare_states]
-if "compare_states_warning" not in st.session_state:
-    st.session_state.compare_states_warning = ""
-
-st.markdown('<div class="compare-help">Tap states to compare (up to 5).</div>', unsafe_allow_html=True)
-states_per_row = 7
-for i in range(0, len(all_compare_states), states_per_row):
-    row_states = all_compare_states[i:i + states_per_row]
-    row_cols = st.columns(len(row_states))
-    for col, state_name in zip(row_cols, row_states):
-        is_selected = state_name in st.session_state.compare_states
-        if col.button(
-            state_name,
-            key=f"compare_state_{state_name}",
-            type="primary" if is_selected else "secondary",
-            use_container_width=True,
-        ):
-            current = list(st.session_state.compare_states)
-            if state_name in current:
-                current.remove(state_name)
-                st.session_state.compare_states_warning = ""
-            elif len(current) < 5:
-                current.append(state_name)
-                st.session_state.compare_states_warning = ""
-            else:
-                st.session_state.compare_states_warning = "You can compare up to 5 states."
-            st.session_state.compare_states = current
-
-if st.session_state.compare_states_warning:
-    st.caption(st.session_state.compare_states_warning)
-
-compare_states = st.session_state.compare_states
+compare_states = st.multiselect("Select states", sorted(STATE_PROFILES.keys()), default=["Colorado", "Washington", "Maryland"], max_selections=5, label_visibility="collapsed")
 
 if compare_states:
     chk = '<span class="chk">✓</span>'
@@ -930,7 +766,7 @@ if compare_states:
 
 
 # ===========================================================================
-# 12. FOOTER CTA
+# 13. FOOTER CTA
 # ===========================================================================
 st.markdown("""
 <div class="footer-cta">
