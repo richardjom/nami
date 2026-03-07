@@ -182,53 +182,49 @@ header[data-testid="stHeader"] { background: transparent !important; }
     line-height:1.15; margin:0 0 12px; letter-spacing:-0.02em; }
 .sh p { font-family:'Source Sans 3',sans-serif; font-size:17px; color:var(--s500); line-height:1.6; max-width:600px; margin:0; }
 
-/* STATE CARD (scoped marker so only top card is styled) */
-.state-card-marker { display:none; }
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) {
+/* STATE CARD */
+div[data-testid="stVerticalBlockBorderWrapper"] {
     margin-top: -52px !important;
     margin-bottom: 30px !important;
     position: relative !important;
     z-index: 10 !important;
-    border-radius: 18px !important;
+    border-radius: 24px !important;
     border: 1px solid rgba(0,0,0,0.04) !important;
     box-shadow: 0 8px 30px rgba(0,0,0,0.06) !important;
     background: #FFF !important;
-    padding: 28px 32px !important;
+    padding: 30px 34px 32px !important;
 }
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) > div {
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
     padding: 0 !important;
 }
 .state-head-label { font-family:'Source Sans 3',sans-serif; font-size:15px; font-weight:700; color:var(--s900); padding-top:8px; }
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) [data-baseweb="select"] > div {
+div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] > div {
     background:var(--g50) !important;
     border:2px solid var(--g200) !important;
     border-radius:14px !important;
 }
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) [data-baseweb="select"] span {
+div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] span {
     color:var(--g700) !important;
     font-weight:700 !important;
 }
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) [data-baseweb="select"] svg {
+div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] svg {
     fill:var(--g700) !important;
 }
-.state-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:16px; margin-top:20px; }
-.sg-item { padding:16px; border-radius:10px; min-height:126px; display:flex; flex-direction:column; justify-content:space-between; }
-.sg-item.youth { grid-column:1 / span 1; }
+.state-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:20px; }
+.sg-item { padding:16px; border-radius:10px; min-height:154px; display:flex; flex-direction:column; justify-content:space-between; }
 .sg-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--s500);
     letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
-.sg-val { font-family:'Playfair Display',serif; font-size:22px; font-weight:900; }
+.sg-val { font-family:'Playfair Display',serif; font-size:56px; font-weight:900; line-height:1; }
 .sg-status { font-family:'Source Sans 3',sans-serif; font-size:18px; font-weight:700; }
 
 @media (max-width: 980px) {
-    .state-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
-    .sg-item.youth { grid-column:auto; }
+    .state-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 700px) {
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) {
+    div[data-testid="stVerticalBlockBorderWrapper"] {
         margin-top:-36px !important;
         padding:20px 18px !important;
     }
-    .state-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 520px) {
     .state-grid { grid-template-columns:1fr; }
@@ -487,7 +483,6 @@ st.markdown("""
 # 2. YOUR STATE PERSONALIZATION
 # ===========================================================================
 with st.container(border=True):
-    st.markdown('<div class="state-card-marker"></div>', unsafe_allow_html=True)
     col_label, col_select, col_score = st.columns([1, 2, 2])
     with col_label:
         st.markdown('<p class="state-head-label">Your state:</p>', unsafe_allow_html=True)
@@ -511,13 +506,12 @@ with st.container(border=True):
     ]
     for label, key in [("Trust Fund", "trust"), ("Mobile Crisis", "mobile"), ("Stabilization", "stab"), ("Youth Services", "youth")]:
         val = user_state[key]
-        extra_class = " youth" if key == "youth" else ""
         bg = "var(--g50)" if val else "var(--s100)"
         bdr = "border:1px solid var(--g200);" if val else ""
         color = "var(--g700)" if val else "var(--s300)"
         text = "✓ Active" if val else "— None"
         items_html_parts.append(
-            f'<div class="sg-item{extra_class}" style="background:{bg};{bdr}"><div class="sg-label">{label}</div><div class="sg-status" style="color:{color}">{text}</div></div>'
+            f'<div class="sg-item" style="background:{bg};{bdr}"><div class="sg-label">{label}</div><div class="sg-status" style="color:{color}">{text}</div></div>'
         )
     items_html_parts.append("</div>")
     st.markdown("".join(items_html_parts), unsafe_allow_html=True)
