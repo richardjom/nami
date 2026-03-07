@@ -47,6 +47,38 @@ POLICIES = [
     {"icon": "🛡️", "title": "Trust Fund Protections", "subtitle": "Ensuring funds reach crisis services", "desc": "Without dedicated trust funds, 988 fee revenue can be diverted to unrelated budget items.", "states": ["Colorado", "Nevada", "Ohio"], "stat": "10", "stat_label": "states with 988 trust funds", "rec": "Establish a dedicated 988 trust fund with statutory protections preventing diversion.", "share": "10 states protect 988 fee revenue with trust funds. Every dollar should go to crisis services."},
 ]
 
+BILLS = [
+    # 988 Fee
+    {"state": "Maryland", "bill": "HB 933/SB 974", "cat": "988 Fee", "summary": "Establishes a 988 fee of $0.25/mo per phone line, with Lifeline program exemptions.", "sponsors": "Del. Jessica Feldmark (D), Sen. Guy Guzzone (D)"},
+    {"state": "Ohio", "bill": "SB 211", "cat": "988 Fee", "summary": "Creates a 988 trust fund in the state treasury and codifies a 988 Administrator position.", "sponsors": "Sen. Kristina Roegner (R)"},
+    {"state": "Vermont", "bill": "H 657", "cat": "988 Fee", "summary": "Establishes a $0.72/line charge, with a portion directed to 988 contact centers (~$1M/year).", "sponsors": "Rep. Katherine Sims (D)"},
+    # Appropriations
+    {"state": "Florida", "bill": "SB 7016", "cat": "Appropriations", "summary": "Appropriates $11.5M in recurring funding to expand mobile response teams to every county.", "sponsors": "Senate Health & Fiscal Policy Committees"},
+    {"state": "Maine", "bill": "LD 2214", "cat": "Appropriations", "summary": "Appropriates $600K for mobile crisis and $2M for three new crisis receiving centers.", "sponsors": "Rep. Melanie Sachs (D)"},
+    {"state": "Rhode Island", "bill": "HB 7225", "cat": "Appropriations", "summary": "Appropriates $1.9M for 988 Hotline operations, up from $1.6M the prior year.", "sponsors": "Rep. Marvin Abney (D)"},
+    {"state": "Arizona", "bill": "HB 2897", "cat": "Appropriations", "summary": "Appropriates $16.4M for behavioral health crisis services."},
+    {"state": "Connecticut", "bill": "HB 5523", "cat": "Appropriations", "summary": "Appropriates $13.2M total to enhance and expand mobile crisis services."},
+    {"state": "Washington", "bill": "SB 5950", "cat": "Appropriations", "summary": "Funds youth crisis services, crisis relief center expansion, and digital behavioral health."},
+    {"state": "Wyoming", "bill": "HB 001", "cat": "Appropriations", "summary": "Appropriates $10M from general revenue to the 988 system trust fund account."},
+    # Insurance
+    {"state": "California", "bill": "AB 1316", "cat": "Insurance", "summary": "Clarifies Medi-Cal managed care plans must cover emergency department psychiatric services.", "sponsors": "Assemb. C. Ward (D), Assemb. J. Irwin (D)"},
+    {"state": "Virginia", "bill": "HB 601/SB 543", "cat": "Insurance", "summary": "Adds crisis receiving centers to locations where mobile crisis services must be covered by insurance.", "sponsors": "Del. Terry Kilgore (R), Sen. Lamont Bagby (D)"},
+    # Youth
+    {"state": "New Hampshire", "bill": "HB 1109", "cat": "Youth", "summary": "Requires student ID cards to include 988 and eating disorders helpline for grades 6-12.", "sponsors": "Rep. Rosemarie Rung (D)"},
+    {"state": "Washington", "bill": "SB 5853", "cat": "Youth", "summary": "Extends crisis relief centers to minors with separate treatment areas and 24/7 walk-in access.", "sponsors": "Sen. Manka Dhingra (D)"},
+    {"state": "Delaware", "bill": "HB 137", "cat": "Youth", "summary": "Updates crisis contact info on student ID cards for grades 7-12."},
+    {"state": "Louisiana", "bill": "SB 310", "cat": "Youth", "summary": "Requires public and nonpublic secondary schools to post 988 on their websites."},
+    {"state": "Maine", "bill": "LD 1263", "cat": "Youth", "summary": "Requires schools and postsecondary institutions to include 988 on student ID cards."},
+    {"state": "Maryland", "bill": "HB 284/SB 122", "cat": "Youth", "summary": "Requires 988 on student ID cards and in school handbooks for grades 6-12."},
+    {"state": "New York", "bill": "A 6563A", "cat": "Youth", "summary": "Requires higher education institutions to educate about 988 and include it on student IDs."},
+    # Coordination
+    {"state": "Nebraska", "bill": "LB 1200", "cat": "Coordination", "summary": "Requires statewide standards for 911/988 call transfers and adds 988 counselor liability protections.", "sponsors": "Sen. Mike Moser (R)"},
+    {"state": "Vermont", "bill": "S 189", "cat": "Coordination", "summary": "Instructs Dept. of Mental Health to develop crisis response guidelines for municipalities.", "sponsors": "Sen. Ginny Lyons (D)"},
+    {"state": "Vermont", "bill": "H 883", "cat": "Coordination", "summary": "Reports on embedded mental health worker program collaboration with 988 and mobile crisis."},
+    {"state": "Louisiana", "bill": "SR 14", "cat": "Coordination", "summary": "Establishes Community Responder Taskforce to study law enforcement and behavioral health partnerships."},
+    {"state": "Washington", "bill": "SB 6251", "cat": "Coordination", "summary": "Requires BH-ASOs to coordinate crisis response and dispatch protocols for mobile crisis teams."},
+]
+
 ADVOCATES = [
     {"quote": "Too many people in our country can't get the help they need and don't know where to turn. But 988 is changing that.", "name": "Daniel H. Gillison, Jr.", "role": "CEO, NAMI", "accent": "#2D6A4F"},
     {"quote": "Sustainable funding is the backbone of any effective crisis system. Without it, call centers can't hire enough counselors.", "name": "Sue Abderholden", "role": "Executive Director, NAMI Minnesota", "accent": "#1E40AF"},
@@ -177,8 +209,9 @@ header[data-testid="stHeader"] { background: transparent !important; }
     line-height:1.15; margin:0 0 12px; letter-spacing:-0.02em; }
 .sh p { font-family:'Source Sans 3',sans-serif; font-size:17px; color:var(--s500); line-height:1.6; max-width:600px; margin:0; }
 
-/* STATE CARD (via st.container border) */
-[data-testid="stVerticalBlockBorderWrapper"] {
+/* STATE CARD — scoped to container with marker */
+.state-card-marker { display:none; }
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) {
     margin-top: -48px !important;
     position: relative !important;
     z-index: 10 !important;
@@ -189,11 +222,30 @@ header[data-testid="stHeader"] { background: transparent !important; }
     padding: 28px 32px !important;
     margin-bottom: 28px !important;
 }
-.state-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; margin-top:20px; }
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) > div { padding:0 !important; }
+.state-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px; }
 .sg-item { padding:16px; border-radius:10px; }
 .sg-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--s500);
     letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
 .sg-val { font-family:'Playfair Display',serif; font-size:22px; font-weight:900; }
+.sg-status { font-family:'Source Sans 3',sans-serif; font-size:18px; font-weight:700; }
+
+/* BILL CARDS */
+.bill-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-top:8px; }
+.bill-card { background:#FFF; border-radius:14px; padding:20px 22px; border:1px solid rgba(0,0,0,0.06);
+    box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:transform 0.15s, box-shadow 0.15s; }
+.bill-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+.bill-state { font-family:'Playfair Display',serif; font-size:20px; font-weight:900; color:var(--s900); margin-bottom:2px; }
+.bill-num { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:var(--g700); margin-bottom:8px; }
+.bill-cat { display:inline-block; font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700;
+    color:var(--g700); background:var(--g50); padding:3px 10px; border-radius:20px;
+    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
+.bill-cat.approp { background:#EFF6FF; color:#1E40AF; }
+.bill-cat.ins { background:#FEF3C7; color:#92400E; }
+.bill-cat.youth { background:#F0FDF4; color:#166534; }
+.bill-cat.coord { background:#F5F3FF; color:#5B21B6; }
+.bill-summary { font-family:'Source Sans 3',sans-serif; font-size:14px; color:var(--s500); line-height:1.5; }
+.bill-sponsor { font-family:'Source Sans 3',sans-serif; font-size:12px; color:var(--s400); margin-top:8px; font-style:italic; }
 
 /* BEFORE/AFTER */
 .ba-container { background:#FFF; border-radius:16px; overflow:hidden;
@@ -371,6 +423,7 @@ st.markdown("""
 # 2. YOUR STATE PERSONALIZATION
 # ===========================================================================
 with st.container(border=True):
+    st.markdown('<div class="state-card-marker"></div>', unsafe_allow_html=True)
     col_label, col_select, col_score = st.columns([1, 2, 2])
     with col_label:
         st.markdown('<p style="font-family:Source Sans 3,sans-serif;font-size:15px;font-weight:600;color:#0F172A;padding-top:8px">Your state:</p>', unsafe_allow_html=True)
@@ -382,35 +435,29 @@ with st.container(border=True):
     with col_score:
         st.markdown(f'<div style="padding-top:8px">{score_bar_html(user_state["score"])}</div>', unsafe_allow_html=True)
 
-    # Grid
+    # Build grid items
     fee_bg = "var(--g50)" if user_state["has_fee"] else "#FEF2F2"
     fee_border = "var(--g200)" if user_state["has_fee"] else "#FECACA"
     fee_color = "var(--g700)" if user_state["has_fee"] else "#EF4444"
 
-    items_html = f'''
-    <div class="state-grid">
-        <div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}">
-            <div class="sg-label">988 Fee</div>
-            <div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div>
-        </div>
-        <div class="sg-item" style="background:var(--s100)">
-            <div class="sg-label">Est. Revenue</div>
-            <div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div>
-        </div>
-    '''
-    for label, key in [("Trust Fund", "trust"), ("Mobile Crisis", "mobile"), ("Stabilization", "stab"), ("Youth Services", "youth")]:
-        val = user_state[key]
+    def _status(val, label):
         bg = "var(--g50)" if val else "var(--s100)"
         bdr = "border:1px solid var(--g200);" if val else ""
-        color = "var(--g700)" if val else "var(--s300)"
-        text = "✓ Active" if val else "— None"
-        items_html += f'''
-        <div class="sg-item" style="background:{bg};{bdr}">
-            <div class="sg-label">{label}</div>
-            <div style="font-family:'Source Sans 3',sans-serif;font-size:18px;font-weight:700;color:{color}">{text}</div>
-        </div>'''
-    items_html += "</div>"
-    st.markdown(items_html, unsafe_allow_html=True)
+        c = "var(--g700)" if val else "var(--s300)"
+        t = "&#10003; Active" if val else "&#8212; None"
+        return f'<div class="sg-item" style="background:{bg};{bdr}"><div class="sg-label">{label}</div><div class="sg-status" style="color:{c}">{t}</div></div>'
+
+    grid_html = (
+        '<div class="state-grid">'
+        f'<div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}"><div class="sg-label">988 Fee</div><div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div></div>'
+        f'<div class="sg-item" style="background:var(--s100)"><div class="sg-label">Est. Revenue</div><div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div></div>'
+        + _status(user_state["trust"], "Trust Fund")
+        + _status(user_state["mobile"], "Mobile Crisis")
+        + _status(user_state["stab"], "Stabilization")
+        + _status(user_state["youth"], "Youth Services")
+        + '</div>'
+    )
+    st.markdown(grid_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
@@ -618,7 +665,39 @@ for pol in POLICIES:
 
 
 # ===========================================================================
-# 10. SCORECARD
+# 10. 2024 LEGISLATION CARDS
+# ===========================================================================
+st.markdown("""
+<div class="sh"><div class="ey">2024 Legislation</div>
+<h2>Bills That Built the System</h2>
+<p>25 bills enacted across the country in 2024 to strengthen 988 and crisis response.</p></div>
+""", unsafe_allow_html=True)
+
+bill_cats = ["All"] + sorted(set(b["cat"] for b in BILLS))
+bill_filter = st.radio("Filter by category", bill_cats, horizontal=True, label_visibility="collapsed")
+
+cat_class_map = {"988 Fee": "", "Appropriations": " approp", "Insurance": " ins", "Youth": " youth", "Coordination": " coord"}
+filtered = BILLS if bill_filter == "All" else [b for b in BILLS if b["cat"] == bill_filter]
+
+cards_html = '<div class="bill-grid">'
+for b in filtered:
+    cat_cls = cat_class_map.get(b["cat"], "")
+    sponsor_line = f'<div class="bill-sponsor">{b["sponsors"]}</div>' if b.get("sponsors") else ""
+    cards_html += (
+        f'<div class="bill-card">'
+        f'<div class="bill-state">{b["state"]}</div>'
+        f'<div class="bill-num">{b["bill"]}</div>'
+        f'<span class="bill-cat{cat_cls}">{b["cat"]}</span>'
+        f'<div class="bill-summary">{b["summary"]}</div>'
+        f'{sponsor_line}'
+        f'</div>'
+    )
+cards_html += '</div>'
+st.markdown(cards_html, unsafe_allow_html=True)
+
+
+# ===========================================================================
+# 11. SCORECARD
 # ===========================================================================
 st.markdown("""
 <div class="sh"><div class="ey">Scorecard</div>
@@ -647,7 +726,7 @@ st.markdown(sc_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
-# 11. STATE COMPARISON
+# 12. STATE COMPARISON
 # ===========================================================================
 st.markdown("""
 <div class="sh"><div class="ey">Compare</div>
@@ -687,7 +766,7 @@ if compare_states:
 
 
 # ===========================================================================
-# 12. FOOTER CTA
+# 13. FOOTER CTA
 # ===========================================================================
 st.markdown("""
 <div class="footer-cta">
