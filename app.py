@@ -466,6 +466,76 @@ div[data-testid="stCheckbox"] {
     font-family: 'Sora', sans-serif !important;
 }
 
+label[data-testid="stWidgetLabel"] p {
+    color: #5b6674 !important;
+    font-weight: 600 !important;
+}
+
+div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
+    background: #f8fbff !important;
+    border: 1px solid #cfd7df !important;
+    border-radius: 12px !important;
+    color: #17202a !important;
+}
+
+div[data-testid="stSelectbox"] [data-baseweb="select"] * {
+    color: #17202a !important;
+}
+
+div[data-testid="stTextInput"] input {
+    background: #f8fbff !important;
+    color: #17202a !important;
+    border: 1px solid #cfd7df !important;
+    border-radius: 12px !important;
+}
+
+div[data-testid="stTextInput"] input::placeholder {
+    color: #7a8491 !important;
+}
+
+div[data-testid="stTextArea"] textarea {
+    background: #f8fbff !important;
+    color: #17202a !important;
+    border: 1px solid #cfd7df !important;
+    border-radius: 12px !important;
+    line-height: 1.5 !important;
+}
+
+div[data-testid="stCheckbox"] label {
+    color: #17202a !important;
+}
+
+div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
+    color: #17202a !important;
+}
+
+div[data-baseweb="popover"] [role="listbox"] {
+    background: #ffffff !important;
+    border: 1px solid #d3dbe4 !important;
+}
+
+div[data-baseweb="popover"] [role="option"] {
+    color: #17202a !important;
+}
+
+div[data-baseweb="popover"] [aria-selected="true"] {
+    background: #e9f7f2 !important;
+}
+
+div.stDownloadButton > button {
+    background: linear-gradient(135deg, #1f7a68 0%, #2f8f83 100%) !important;
+    border: 1px solid #1f7a68 !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 8px 20px rgba(31, 122, 104, 0.24);
+}
+
+div.stDownloadButton > button:hover {
+    filter: brightness(0.98) !important;
+    border-color: #186557 !important;
+}
+
 .state-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
