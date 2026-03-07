@@ -521,6 +521,31 @@ div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
 div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) p {
     color:var(--g700) !important;
 }
+
+/* COMPARE STATE PILLS */
+.compare-help {
+    font-family:'Source Sans 3',sans-serif;
+    font-size:14px;
+    color:var(--s500);
+    margin:6px 0 10px;
+}
+.stButton > button {
+    border-radius:16px !important;
+    border:3px solid #D4D9E3 !important;
+    background:#FFFFFF !important;
+    color:#334155 !important;
+    font-family:'Source Sans 3',sans-serif !important;
+    font-size:18px !important;
+    font-weight:600 !important;
+    min-height:76px !important;
+    line-height:1.1 !important;
+}
+.stButton > button[kind="primary"],
+.stButton > button[data-testid="baseButton-primary"] {
+    background:var(--g700) !important;
+    border-color:var(--g700) !important;
+    color:#FFFFFF !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -834,7 +859,41 @@ st.markdown("""
 <p>Select up to 5 states to compare.</p></div>
 """, unsafe_allow_html=True)
 
-compare_states = st.multiselect("Select states", sorted(STATE_PROFILES.keys()), default=["Colorado", "Washington", "Maryland"], max_selections=5, label_visibility="collapsed")
+all_compare_states = sorted(STATE_PROFILES.keys())
+default_compare_states = ["Colorado", "Washington", "Maryland"]
+if "compare_states" not in st.session_state:
+    st.session_state.compare_states = [s for s in default_compare_states if s in all_compare_states]
+if "compare_states_warning" not in st.session_state:
+    st.session_state.compare_states_warning = ""
+
+st.markdown('<div class="compare-help">Tap states to compare (up to 5).</div>', unsafe_allow_html=True)
+states_per_row = 6
+for i in range(0, len(all_compare_states), states_per_row):
+    row_states = all_compare_states[i:i + states_per_row]
+    row_cols = st.columns(len(row_states))
+    for col, state_name in zip(row_cols, row_states):
+        is_selected = state_name in st.session_state.compare_states
+        if col.button(
+            state_name,
+            key=f"compare_state_{state_name}",
+            type="primary" if is_selected else "secondary",
+            use_container_width=True,
+        ):
+            current = list(st.session_state.compare_states)
+            if state_name in current:
+                current.remove(state_name)
+                st.session_state.compare_states_warning = ""
+            elif len(current) < 5:
+                current.append(state_name)
+                st.session_state.compare_states_warning = ""
+            else:
+                st.session_state.compare_states_warning = "You can compare up to 5 states."
+            st.session_state.compare_states = current
+
+if st.session_state.compare_states_warning:
+    st.caption(st.session_state.compare_states_warning)
+
+compare_states = st.session_state.compare_states
 
 if compare_states:
     chk = '<span class="chk">✓</span>'
