@@ -816,12 +816,6 @@ header[data-testid="stHeader"] { background: transparent !important; }
     color: var(--slate-700);
     line-height: 1;
 }
-.compare-chip-help {
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 12px;
-    color: var(--slate-500);
-    margin: 0 0 10px;
-}
 /* Clickable compare chips (Streamlit buttons) */
 div[data-testid="stButton"] > button {
     background: #FFFFFF;
@@ -836,13 +830,13 @@ div[data-testid="stButton"] > button {
     box-shadow: none !important;
 }
 div[data-testid="stButton"] > button:hover {
-    border-color: var(--green-400);
-    color: var(--green-700);
+    border-color: var(--slate-500);
+    color: var(--slate-900);
 }
 div[data-testid="stButton"] > button[kind="primary"] {
-    background: var(--green-100) !important;
-    border-color: var(--green-600) !important;
-    color: var(--green-800) !important;
+    background: #FFFFFF !important;
+    border-color: var(--slate-300) !important;
+    color: var(--slate-700) !important;
 }
 
 /* ---- FOOTER CTA ---- */
@@ -1107,41 +1101,31 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 state_names = list(STATE_DATA.keys())
+compare_chip_states = ["Colorado", "Washington", "Maryland", "Ohio", "Virginia", "Minnesota"]
 if "compare_states" not in st.session_state:
-    st.session_state["compare_states"] = [
-        "Colorado",
-        "Washington",
-        "Maryland",
-        "Ohio",
-        "Virginia",
-        "Minnesota",
-    ]
+    st.session_state["compare_states"] = compare_chip_states.copy()
 
-selected_states = st.session_state["compare_states"]
+selected_states = [s for s in st.session_state["compare_states"] if s in compare_chip_states]
+if not selected_states:
+    selected_states = compare_chip_states.copy()
+st.session_state["compare_states"] = selected_states
 
-st.markdown('<div class="compare-chip-help">Tap states to compare (up to 6).</div>', unsafe_allow_html=True)
 selected_set = set(selected_states)
-chips_per_row = 5
-for i in range(0, len(state_names), chips_per_row):
-    row_states = state_names[i:i + chips_per_row]
-    cols = st.columns(chips_per_row, gap="small")
-    for idx, state in enumerate(row_states):
-        is_selected = state in selected_set
-        with cols[idx]:
-            if st.button(
-                state,
-                key=f"cmp_state_{state}",
-                type="primary" if is_selected else "secondary",
-            ):
-                if is_selected:
-                    selected_states = [s for s in selected_states if s != state]
-                elif len(selected_states) < 6:
-                    selected_states = selected_states + [state]
-                st.session_state["compare_states"] = selected_states
-                rerun_app()
-
-if len(selected_states) >= 6:
-    st.caption("Maximum of 6 states selected.")
+cols = st.columns(len(compare_chip_states), gap="small")
+for idx, state in enumerate(compare_chip_states):
+    is_selected = state in selected_set
+    with cols[idx]:
+        if st.button(
+            state,
+            key=f"cmp_state_{state}",
+            type="primary" if is_selected else "secondary",
+        ):
+            if is_selected and len(selected_states) > 1:
+                selected_states = [s for s in selected_states if s != state]
+            elif not is_selected:
+                selected_states = selected_states + [state]
+            st.session_state["compare_states"] = selected_states
+            rerun_app()
 
 if selected_states:
     # Build comparison table
