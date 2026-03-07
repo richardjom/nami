@@ -248,18 +248,19 @@ div[data-testid="stVerticalBlock"] > div { gap: 0; }
 
 /* Filter radio bubbles */
 div[data-testid="stRadio"] [role="radiogroup"] {
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 div[data-testid="stRadio"] [role="radiogroup"] > label {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 7px 14px;
-    border: 1.5px solid #D1D5DB;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid #D1D5DB;
     border-radius: 999px;
     background: #FFFFFF;
     transition: all 0.2s;
+    min-height: auto;
 }
 div[data-testid="stRadio"] [role="radiogroup"] > label:hover {
     border-color: #2D6A4F;
@@ -273,6 +274,13 @@ div[data-testid="stRadio"] [role="radiogroup"] > label span {
     color: #111827 !important;
     font-family: 'DM Sans', sans-serif !important;
     font-weight: 600 !important;
+    font-size: 11.5px !important;
+    line-height: 1.1 !important;
+}
+div[data-testid="stRadio"] [role="radiogroup"] > label input[type="radio"] {
+    width: 12px;
+    height: 12px;
+    margin: 0;
 }
 
 /* Bill card */
