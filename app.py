@@ -620,14 +620,9 @@ FILTER_OPTIONS = ["All", "House", "Senate", "High Urgency", "Signed Into Law"]
 
 col_filters, col_search = st.columns([3, 1])
 with col_filters:
-    active_filter = st.radio(
-        "Filter",
-        FILTER_OPTIONS,
-        horizontal=True,
-        label_visibility="collapsed",
-    )
+    active_filter = st.selectbox("Filter bills", FILTER_OPTIONS, index=0)
 with col_search:
-    search = st.text_input("Search", placeholder="Search bills...", label_visibility="collapsed")
+    search = st.text_input("Search bills", placeholder="Search bills...")
 
 # ---------------------------------------------------------------------------
 # Filter logic
