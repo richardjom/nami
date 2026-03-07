@@ -312,18 +312,20 @@ div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) > div { 
 .calc-sub { font-family:'Source Sans 3',sans-serif; font-size:14px; color:var(--s500); margin-top:8px; }
 
 /* TIMELINE */
-.tl-container { position:relative; padding:20px 0 20px 40px; margin:20px 0; }
-.tl-container::before { content:''; position:absolute; left:18px; top:0; bottom:0; width:2px;
-    background:linear-gradient(to bottom,var(--g200),var(--g600),var(--g200)); }
-.tl-item { position:relative; padding:0 0 32px 36px; }
-.tl-dot { position:absolute; top:6px; border-radius:50%; z-index:2; }
-.tl-dot.normal { left:-30px; width:14px; height:14px; background:#FFF; border:3px solid var(--g600); }
-.tl-dot.milestone { left:-31px; width:16px; height:16px; background:var(--g600); box-shadow:0 0 0 4px var(--g200); }
-.tl-date { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:500; color:var(--g600);
+/* HORIZONTAL TIMELINE */
+.tl-container { display:flex; overflow-x:auto; gap:0; margin:20px 0; padding:20px 0 12px;
+    position:relative; scrollbar-width:thin; }
+.tl-container::before { content:''; position:absolute; left:0; right:0; top:50px; height:2px;
+    background:linear-gradient(to right,var(--g200),var(--g600),var(--g200)); z-index:0; }
+.tl-item { flex:0 0 180px; text-align:center; position:relative; padding:0 8px; }
+.tl-dot { width:14px; height:14px; border-radius:50%; margin:0 auto 12px; position:relative; z-index:2; }
+.tl-dot.normal { background:#FFF; border:3px solid var(--g600); }
+.tl-dot.milestone { width:16px; height:16px; background:var(--g600); box-shadow:0 0 0 4px var(--g200); }
+.tl-date { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; color:var(--g600);
     letter-spacing:0.04em; margin-bottom:4px; }
-.tl-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--s900);
-    margin-bottom:6px; line-height:1.3; }
-.tl-desc { font-family:'Source Sans 3',sans-serif; font-size:14px; color:var(--s500); line-height:1.6; max-width:520px; }
+.tl-title { font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:var(--s900);
+    margin-bottom:4px; line-height:1.3; }
+.tl-desc { font-family:'Source Sans 3',sans-serif; font-size:12px; color:var(--s500); line-height:1.5; }
 
 /* ADVOCATE */
 .adv-card { border-radius:16px; padding:36px; margin-bottom:16px; background:#FFF;
@@ -501,28 +503,7 @@ st.markdown(f"""
 
 
 # ===========================================================================
-# 4. SUCCESS STORIES
-# ===========================================================================
-st.markdown("""
-<div class="sh"><div class="ey">Real Impact</div>
-<h2>988 Changed Their Story</h2>
-<p>Behind the numbers are real people who found help when they needed it most.</p></div>
-""", unsafe_allow_html=True)
-
-story_choice = st.radio("Select a story", [s["tag"] for s in SUCCESS_STORIES], horizontal=True, label_visibility="collapsed")
-story = next(s for s in SUCCESS_STORIES if s["tag"] == story_choice)
-
-st.markdown(f"""
-<div class="story-card">
-    <div class="story-tag">{story["tag"]}</div>
-    <p class="story-text">{story["text"]}</p>
-    <div class="story-attr">{story["attribution"]}</div>
-</div>
-""", unsafe_allow_html=True)
-
-
-# ===========================================================================
-# 5. FEE DATA STORY
+# 4. FUNDING & REVENUE
 # ===========================================================================
 st.markdown("""
 <div class="sh"><div class="ey">The Funding Picture</div>
@@ -545,27 +526,9 @@ for state, fee, color in FEE_STATES:
     </div>'''
 st.markdown(bars_html, unsafe_allow_html=True)
 
-share_3in4 = share_button_html("3 in 4 Americans support a monthly phone fee to fund 988 crisis services. It's time for every state to act.", "Share this stat")
-st.markdown(f"""
-<div class="data-callout">
-    <div class="dc-stat">3 in 4</div>
-    <div class="dc-label">Americans are willing to pay a monthly fee to fund 988 crisis services</div>
-    <div class="dc-ctx">With more than a third willing to pay more than the highest existing fee ($0.72), the public mandate is clear.</div>
-    <div style="margin-top:20px;position:relative">{share_3in4}</div>
-</div>
-""", unsafe_allow_html=True)
-
-
-# ===========================================================================
-# 6. REVENUE CALCULATOR
-# ===========================================================================
-st.markdown("""
-<div class="sh"><div class="ey">What If</div>
-<h2>Revenue Calculator</h2>
-<p>See what a 988 fee could generate in states that haven't enacted one yet.</p></div>
-""", unsafe_allow_html=True)
-
+# Revenue calculator inline
 no_fee_states = sorted([s for s, d in STATE_PROFILES.items() if not d["has_fee"]])
+st.markdown('<div style="margin-top:28px"><div style="font-family:Source Sans 3,sans-serif;font-size:13px;font-weight:600;color:var(--s500);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">What could your state generate?</div></div>', unsafe_allow_html=True)
 col_st, col_fee = st.columns([1, 2])
 with col_st:
     calc_state = st.selectbox("State without a fee", no_fee_states, index=no_fee_states.index("Texas") if "Texas" in no_fee_states else 0)
@@ -673,36 +636,7 @@ st.markdown(cards_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
-# 11. SCORECARD
-# ===========================================================================
-st.markdown("""
-<div class="sh"><div class="ey">Scorecard</div>
-<h2>Crisis System Readiness</h2>
-<p>5 criteria: fee, trust fund, mobile crisis, stabilization, youth services.</p></div>
-""", unsafe_allow_html=True)
-
-sorted_states = sorted(STATE_PROFILES.keys(), key=lambda s: STATE_PROFILES[s]["score"], reverse=True)
-sc_html = '<div class="sc-grid">'
-for s in sorted_states:
-    d = STATE_PROFILES[s]
-    is_user = s == selected_state
-    cls = " you" if is_user else ""
-    badge = '<span class="sc-you-badge">YOU</span>' if is_user else ""
-    fee_text = f"Fee: {d['fee']}" if d["has_fee"] else "No fee enacted"
-    sc_html += f'''
-    <div class="sc-card{cls}">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-            <span class="sc-name">{s}</span>{badge}
-        </div>
-        {score_bar_html(d["score"])}
-        <div class="sc-fee">{fee_text}</div>
-    </div>'''
-sc_html += "</div>"
-st.markdown(sc_html, unsafe_allow_html=True)
-
-
-# ===========================================================================
-# 12. STATE COMPARISON
+# 11. STATE COMPARISON
 # ===========================================================================
 st.markdown("""
 <div class="sh"><div class="ey">Compare</div>
