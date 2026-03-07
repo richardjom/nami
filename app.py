@@ -84,13 +84,18 @@ STATE_PROFILES = {
 # ---------------------------------------------------------------------------
 # HELPERS
 # ---------------------------------------------------------------------------
-def score_bar_html(score, max_score=5):
+def score_bar_html(score, max_score=5, variant="default"):
+    if variant == "hero":
+        bar_w, bar_h, txt_size, txt_weight, gap = 36, 10, 17, 600, 7
+    else:
+        bar_w, bar_h, txt_size, txt_weight, gap = 24, 8, 12, 500, 4
+
     bars = ""
     for i in range(max_score):
         color = "#2D6A4F" if i < score else "#E5E7EB"
-        bars += f'<div style="width:24px;height:8px;border-radius:4px;background:{color};display:inline-block;margin-right:3px"></div>'
+        bars += f'<div style="width:{bar_w}px;height:{bar_h}px;border-radius:999px;background:{color};display:inline-block;margin-right:{gap}px"></div>'
     score_color = "#2D6A4F" if score >= 4 else "#E8590C" if score >= 2 else "#EF4444"
-    bars += f'<span style="font-family:JetBrains Mono,monospace;font-size:12px;font-weight:500;color:{score_color};margin-left:8px">{score}/{max_score}</span>'
+    bars += f'<span style="font-family:JetBrains Mono,monospace;font-size:{txt_size}px;font-weight:{txt_weight};color:{score_color};margin-left:8px">{score}/{max_score}</span>'
     return f'<div style="display:flex;align-items:center">{bars}</div>'
 
 
@@ -177,23 +182,57 @@ header[data-testid="stHeader"] { background: transparent !important; }
     line-height:1.15; margin:0 0 12px; letter-spacing:-0.02em; }
 .sh p { font-family:'Source Sans 3',sans-serif; font-size:17px; color:var(--s500); line-height:1.6; max-width:600px; margin:0; }
 
-/* STATE CARD (via st.container border) */
-[data-testid="stVerticalBlockBorderWrapper"] {
-    margin-top: -48px !important;
+/* STATE CARD (scoped marker so only top card is styled) */
+.state-card-marker { display:none; }
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) {
+    margin-top: -52px !important;
+    margin-bottom: 30px !important;
     position: relative !important;
     z-index: 10 !important;
-    border-radius: 16px !important;
+    border-radius: 18px !important;
     border: 1px solid rgba(0,0,0,0.04) !important;
     box-shadow: 0 8px 30px rgba(0,0,0,0.06) !important;
     background: #FFF !important;
     padding: 28px 32px !important;
-    margin-bottom: 28px !important;
 }
-.state-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; margin-top:20px; }
-.sg-item { padding:16px; border-radius:10px; }
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) > div {
+    padding: 0 !important;
+}
+.state-head-label { font-family:'Source Sans 3',sans-serif; font-size:15px; font-weight:700; color:var(--s900); padding-top:8px; }
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) [data-baseweb="select"] > div {
+    background:var(--g50) !important;
+    border:2px solid var(--g200) !important;
+    border-radius:14px !important;
+}
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) [data-baseweb="select"] span {
+    color:var(--g700) !important;
+    font-weight:700 !important;
+}
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) [data-baseweb="select"] svg {
+    fill:var(--g700) !important;
+}
+.state-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:16px; margin-top:20px; }
+.sg-item { padding:16px; border-radius:10px; min-height:126px; display:flex; flex-direction:column; justify-content:space-between; }
+.sg-item.youth { grid-column:1 / span 1; }
 .sg-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--s500);
     letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
 .sg-val { font-family:'Playfair Display',serif; font-size:22px; font-weight:900; }
+.sg-status { font-family:'Source Sans 3',sans-serif; font-size:18px; font-weight:700; }
+
+@media (max-width: 980px) {
+    .state-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .sg-item.youth { grid-column:auto; }
+}
+@media (max-width: 700px) {
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) {
+        margin-top:-36px !important;
+        padding:20px 18px !important;
+    }
+    .state-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 520px) {
+    .state-grid { grid-template-columns:1fr; }
+}
 
 /* BEFORE/AFTER */
 .ba-container { background:#FFF; border-radius:16px; overflow:hidden;
@@ -344,6 +383,83 @@ header[data-testid="stHeader"] { background: transparent !important; }
     padding:14px 32px; border-radius:12px; text-decoration:none;
     background:rgba(255,255,255,0.1); color:#FFF; border:1.5px solid rgba(255,255,255,0.2);
     cursor:pointer; display:inline-block; }
+.cta-primary, .cta-primary:visited { color:var(--g900) !important; text-decoration:none !important; }
+.cta-secondary, .cta-secondary:visited { color:#FFF !important; text-decoration:none !important; }
+
+/* WIDGET THEMING */
+[data-baseweb="select"] > div,
+[data-baseweb="select"] > div:hover {
+    background:#FFFFFF !important;
+    border:1.5px solid #CBD5E1 !important;
+    box-shadow:none !important;
+}
+[data-baseweb="select"] span {
+    color:var(--s900) !important;
+    font-family:'Source Sans 3',sans-serif !important;
+    font-weight:600 !important;
+}
+[data-baseweb="select"] svg {
+    fill:var(--s700) !important;
+}
+div[role="listbox"] {
+    background:#FFFFFF !important;
+    border:1px solid #CBD5E1 !important;
+    box-shadow:0 10px 24px rgba(15,23,42,0.12) !important;
+}
+div[role="option"] {
+    color:var(--s700) !important;
+    background:#FFFFFF !important;
+}
+div[role="option"][aria-selected="true"] {
+    color:var(--g700) !important;
+    background:var(--g50) !important;
+}
+[data-baseweb="tag"] {
+    background:var(--g50) !important;
+    border:1px solid var(--g200) !important;
+}
+[data-baseweb="tag"] * {
+    color:var(--g700) !important;
+}
+
+div[data-testid="stSlider"] [role="slider"] {
+    background:var(--g700) !important;
+    border:2px solid var(--g700) !important;
+    box-shadow:none !important;
+}
+div[data-testid="stSlider"] [data-baseweb="slider"] > div > div:nth-child(2) {
+    background:var(--g700) !important;
+}
+
+div[data-testid="stRadio"] div[role="radiogroup"] {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label {
+    margin:0;
+    border:1px solid #CBD5E1;
+    border-radius:999px;
+    background:#FFFFFF;
+    padding:7px 14px;
+    min-height:36px;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
+    display:none !important;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label p {
+    margin:0 !important;
+    color:var(--s700) !important;
+    font-size:13px !important;
+    font-weight:600 !important;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+    border-color:var(--g700);
+    background:var(--g50);
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) p {
+    color:var(--g700) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -371,46 +487,40 @@ st.markdown("""
 # 2. YOUR STATE PERSONALIZATION
 # ===========================================================================
 with st.container(border=True):
+    st.markdown('<div class="state-card-marker"></div>', unsafe_allow_html=True)
     col_label, col_select, col_score = st.columns([1, 2, 2])
     with col_label:
-        st.markdown('<p style="font-family:Source Sans 3,sans-serif;font-size:15px;font-weight:600;color:#0F172A;padding-top:8px">Your state:</p>', unsafe_allow_html=True)
+        st.markdown('<p class="state-head-label">Your state:</p>', unsafe_allow_html=True)
     with col_select:
         selected_state = st.selectbox("Pick your state", sorted(STATE_PROFILES.keys()), index=sorted(STATE_PROFILES.keys()).index("Maryland"), label_visibility="collapsed")
 
     user_state = STATE_PROFILES[selected_state]
 
     with col_score:
-        st.markdown(f'<div style="padding-top:8px">{score_bar_html(user_state["score"])}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="padding-top:8px">{score_bar_html(user_state["score"], variant="hero")}</div>', unsafe_allow_html=True)
 
     # Grid
     fee_bg = "var(--g50)" if user_state["has_fee"] else "#FEF2F2"
     fee_border = "var(--g200)" if user_state["has_fee"] else "#FECACA"
     fee_color = "var(--g700)" if user_state["has_fee"] else "#EF4444"
 
-    items_html = f'''
-    <div class="state-grid">
-        <div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}">
-            <div class="sg-label">988 Fee</div>
-            <div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div>
-        </div>
-        <div class="sg-item" style="background:var(--s100)">
-            <div class="sg-label">Est. Revenue</div>
-            <div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div>
-        </div>
-    '''
+    items_html_parts = [
+        '<div class="state-grid">',
+        f'<div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}"><div class="sg-label">988 Fee</div><div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div></div>',
+        f'<div class="sg-item" style="background:var(--s100)"><div class="sg-label">Est. Revenue</div><div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div></div>',
+    ]
     for label, key in [("Trust Fund", "trust"), ("Mobile Crisis", "mobile"), ("Stabilization", "stab"), ("Youth Services", "youth")]:
         val = user_state[key]
+        extra_class = " youth" if key == "youth" else ""
         bg = "var(--g50)" if val else "var(--s100)"
         bdr = "border:1px solid var(--g200);" if val else ""
         color = "var(--g700)" if val else "var(--s300)"
         text = "✓ Active" if val else "— None"
-        items_html += f'''
-        <div class="sg-item" style="background:{bg};{bdr}">
-            <div class="sg-label">{label}</div>
-            <div style="font-family:'Source Sans 3',sans-serif;font-size:18px;font-weight:700;color:{color}">{text}</div>
-        </div>'''
-    items_html += "</div>"
-    st.markdown(items_html, unsafe_allow_html=True)
+        items_html_parts.append(
+            f'<div class="sg-item{extra_class}" style="background:{bg};{bdr}"><div class="sg-label">{label}</div><div class="sg-status" style="color:{color}">{text}</div></div>'
+        )
+    items_html_parts.append("</div>")
+    st.markdown("".join(items_html_parts), unsafe_allow_html=True)
 
 
 # ===========================================================================
