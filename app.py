@@ -186,8 +186,11 @@ header[data-testid="stHeader"] { background: transparent !important; }
 div[data-testid="stVerticalBlockBorderWrapper"] {
     margin-top: -52px !important;
     margin-bottom: 30px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
     position: relative !important;
     z-index: 10 !important;
+    max-width: 1220px !important;
     border-radius: 24px !important;
     border: 1px solid rgba(0,0,0,0.04) !important;
     box-shadow: 0 8px 30px rgba(0,0,0,0.06) !important;
@@ -214,7 +217,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] svg {
 .sg-item { padding:16px; border-radius:10px; min-height:154px; display:flex; flex-direction:column; justify-content:space-between; }
 .sg-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--s500);
     letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
-.sg-val { font-family:'Playfair Display',serif; font-size:56px; font-weight:900; line-height:1; }
+.sg-val { font-family:'Playfair Display',serif; font-size:48px; font-weight:900; line-height:1; }
 .sg-status { font-family:'Source Sans 3',sans-serif; font-size:18px; font-weight:700; }
 
 @media (max-width: 980px) {
@@ -223,6 +226,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] [data-baseweb="select"] svg {
 @media (max-width: 700px) {
     div[data-testid="stVerticalBlockBorderWrapper"] {
         margin-top:-36px !important;
+        max-width:100% !important;
         padding:20px 18px !important;
     }
 }
