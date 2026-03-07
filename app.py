@@ -1,1057 +1,1096 @@
-import re
-from html import escape
-
 import streamlit as st
+import json
 
+# ---------------------------------------------------------------------------
+# Page config
+# ---------------------------------------------------------------------------
 st.set_page_config(
-    page_title="988 State Policy Tracker",
-    page_icon=None,
+    page_title="988 & Crisis Response | NAMI 2024 Issue Brief",
+    page_icon="📞",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-STATE_POLICIES = [
-    {
-        "state": "California",
-        "funding_model": "Fee enacted",
-        "monthly_fee": "$0.08",
-        "annual_revenue": "$30M est.",
+# ---------------------------------------------------------------------------
+# State comparison data
+# ---------------------------------------------------------------------------
+STATE_DATA = {
+    "Colorado": {
+        "fee": "$0.50",
+        "fee_start": "Jan 2023",
+        "est_revenue": "$34.5M",
         "trust_fund": True,
-        "mobile_crisis": "Partial",
-        "stabilization": "Dedicated grants",
-        "youth_services": "In progress",
-        "latest_bill": "AB 988",
-        "year": 2024,
+        "mobile_crisis": True,
+        "crisis_stabilization": True,
+        "youth_services": True,
+        "key_bill": "HB 22-1302",
+        "highlights": "One of the first states to enact a 988 fee. Comprehensive crisis system investment including mobile teams statewide.",
     },
-    {
-        "state": "Colorado",
-        "funding_model": "Fee enacted",
-        "monthly_fee": "$0.35",
-        "annual_revenue": "$26M est.",
+    "Washington": {
+        "fee": "$0.24",
+        "fee_start": "Oct 2024",
+        "est_revenue": "$43.7M",
         "trust_fund": True,
-        "mobile_crisis": "Statewide",
-        "stabilization": "State + Medicaid",
-        "youth_services": "Yes",
-        "latest_bill": "SB24-001",
-        "year": 2024,
+        "mobile_crisis": True,
+        "crisis_stabilization": True,
+        "youth_services": True,
+        "key_bill": "SB 5120",
+        "highlights": "National leader in crisis system redesign. Established dedicated 988 behavioral health crisis response account.",
     },
-    {
-        "state": "Illinois",
-        "funding_model": "Recurring appropriation",
-        "monthly_fee": "$0.00",
-        "annual_revenue": "General fund",
-        "trust_fund": False,
-        "mobile_crisis": "Partial",
-        "stabilization": "Medicaid only",
-        "youth_services": "In progress",
-        "latest_bill": "HB 2450",
-        "year": 2025,
-    },
-    {
-        "state": "Minnesota",
-        "funding_model": "Recurring appropriation",
-        "monthly_fee": "$0.00",
-        "annual_revenue": "$20M est.",
-        "trust_fund": False,
-        "mobile_crisis": "Statewide",
-        "stabilization": "Dedicated grants",
-        "youth_services": "Yes",
-        "latest_bill": "SF 2995",
-        "year": 2024,
-    },
-    {
-        "state": "Nevada",
-        "funding_model": "Fee enacted",
-        "monthly_fee": "$0.35",
-        "annual_revenue": "$12M est.",
+    "Nevada": {
+        "fee": "$0.35",
+        "fee_start": "Jan 2024",
+        "est_revenue": "$10.5M",
         "trust_fund": True,
-        "mobile_crisis": "Partial",
-        "stabilization": "State grants",
-        "youth_services": "In progress",
-        "latest_bill": "SB 390",
-        "year": 2023,
+        "mobile_crisis": True,
+        "crisis_stabilization": False,
+        "youth_services": False,
+        "key_bill": "AB 51",
+        "highlights": "Enacted fee with trust fund protections against diversion. Building out mobile crisis team infrastructure.",
     },
-    {
-        "state": "New York",
-        "funding_model": "Recurring appropriation",
-        "monthly_fee": "$0.00",
-        "annual_revenue": "$35M est.",
-        "trust_fund": False,
-        "mobile_crisis": "Partial",
-        "stabilization": "State + Medicaid",
-        "youth_services": "Yes",
-        "latest_bill": "S9124",
-        "year": 2025,
-    },
-    {
-        "state": "Ohio",
-        "funding_model": "Recurring appropriation",
-        "monthly_fee": "$0.00",
-        "annual_revenue": "$40M est.",
-        "trust_fund": False,
-        "mobile_crisis": "Statewide",
-        "stabilization": "Dedicated grants",
-        "youth_services": "In progress",
-        "latest_bill": "HB 33",
-        "year": 2023,
-    },
-    {
-        "state": "Oregon",
-        "funding_model": "Fee enacted",
-        "monthly_fee": "$0.40",
-        "annual_revenue": "$14M est.",
+    "Virginia": {
+        "fee": "$0.12",
+        "fee_start": "Jan 2024",
+        "est_revenue": "$12.8M",
         "trust_fund": True,
-        "mobile_crisis": "Statewide",
-        "stabilization": "State + Medicaid",
-        "youth_services": "Yes",
-        "latest_bill": "SB 955",
-        "year": 2023,
+        "mobile_crisis": True,
+        "crisis_stabilization": True,
+        "youth_services": False,
+        "key_bill": "HB 2495",
+        "highlights": "Bipartisan legislation establishing fee and comprehensive crisis care. Investing in Marcus Alert mobile crisis program.",
     },
-    {
-        "state": "Texas",
-        "funding_model": "No dedicated funding",
-        "monthly_fee": "$0.00",
-        "annual_revenue": "One-time grants",
-        "trust_fund": False,
-        "mobile_crisis": "Partial",
-        "stabilization": "Limited",
-        "youth_services": "No",
-        "latest_bill": "HB 13",
-        "year": 2025,
-    },
-    {
-        "state": "Virginia",
-        "funding_model": "Fee enacted",
-        "monthly_fee": "$0.12",
-        "annual_revenue": "$8M est.",
+    "Maryland": {
+        "fee": "$0.25",
+        "fee_start": "Oct 2024",
+        "est_revenue": "$18.2M",
         "trust_fund": True,
-        "mobile_crisis": "Statewide",
-        "stabilization": "State grants",
-        "youth_services": "In progress",
-        "latest_bill": "SB 429",
-        "year": 2024,
+        "mobile_crisis": True,
+        "crisis_stabilization": False,
+        "youth_services": True,
+        "key_bill": "HB 317",
+        "highlights": "Established 988 Trust Fund with dedicated fee revenue. Expanding crisis services with emphasis on youth and underserved communities.",
     },
-    {
-        "state": "Washington",
-        "funding_model": "Fee enacted",
-        "monthly_fee": "$0.40",
-        "annual_revenue": "$38M est.",
+    "Ohio": {
+        "fee": "None",
+        "fee_start": "N/A",
+        "est_revenue": "N/A",
         "trust_fund": True,
-        "mobile_crisis": "Statewide",
-        "stabilization": "State + Medicaid",
-        "youth_services": "Yes",
-        "latest_bill": "HB 1134",
-        "year": 2024,
+        "mobile_crisis": True,
+        "crisis_stabilization": True,
+        "youth_services": True,
+        "key_bill": "HB 33",
+        "highlights": "Created 988 trust fund through budget process with $45M appropriation. Investing in statewide mobile crisis team expansion.",
     },
-    {
-        "state": "Wisconsin",
-        "funding_model": "No dedicated funding",
-        "monthly_fee": "$0.00",
-        "annual_revenue": "Federal grants",
+    "Minnesota": {
+        "fee": "$0.12",
+        "fee_start": "Jan 2024",
+        "est_revenue": "$8.6M",
+        "trust_fund": True,
+        "mobile_crisis": True,
+        "crisis_stabilization": True,
+        "youth_services": True,
+        "key_bill": "HF 2310",
+        "highlights": "Comprehensive crisis system with mobile teams in every county. Strong advocate community driving sustainable funding model.",
+    },
+    "Connecticut": {
+        "fee": "$0.20",
+        "fee_start": "Sept 2024",
+        "est_revenue": "$7.2M",
+        "trust_fund": True,
+        "mobile_crisis": True,
+        "crisis_stabilization": True,
+        "youth_services": False,
+        "key_bill": "SB 2",
+        "highlights": "Enacted fee alongside expanded crisis stabilization requirements. Pioneering integration of 988 with existing mobile crisis teams.",
+    },
+    "California": {
+        "fee": "$0.08",
+        "fee_start": "Jan 2023",
+        "est_revenue": "$120M",
+        "trust_fund": True,
+        "mobile_crisis": True,
+        "crisis_stabilization": True,
+        "youth_services": True,
+        "key_bill": "AB 988",
+        "highlights": "Largest 988 fee revenue in the nation due to population. Building out county-level crisis infrastructure across the state.",
+    },
+    "Vermont": {
+        "fee": "$0.72",
+        "fee_start": "Sept 2024",
+        "est_revenue": "$2.1M",
         "trust_fund": False,
-        "mobile_crisis": "Pilot",
-        "stabilization": "Limited",
-        "youth_services": "No",
-        "latest_bill": "AB 128",
-        "year": 2025,
+        "mobile_crisis": True,
+        "crisis_stabilization": False,
+        "youth_services": False,
+        "key_bill": "S.58",
+        "highlights": "Highest per-line fee in the nation. Funds distributed to support crisis call center operations and telecommunications relay.",
     },
-]
+}
 
-PLAYBOOK = [
+# ---------------------------------------------------------------------------
+# Policy categories
+# ---------------------------------------------------------------------------
+POLICY_CARDS = [
     {
-        "title": "Sustainable 988 Funding",
-        "why": "Without recurring dollars, call centers and crisis teams cannot keep staffing levels stable.",
-        "model": "Create a dedicated 988 fee or protected recurring appropriation in state statute.",
-        "states": ["Colorado", "Oregon", "Washington", "Virginia"],
-        "action": "Ask for protected funding tied to annual transparency and outcomes reporting.",
+        "icon": "💰",
+        "title": "Sustainable Funding",
+        "subtitle": "The foundation of effective crisis care",
+        "description": "States need permanent, dedicated funding streams to keep 988 and crisis services operational. Telecom fees mirror the proven 911 funding model and provide predictable revenue without relying on annual budget fights.",
+        "leading_states": ["Colorado", "Washington", "California"],
+        "stat": "12",
+        "stat_label": "states with 988 telecom fees",
+        "recommendation": "Enact a monthly telecom fee dedicated to 988 and crisis services, protected by a trust fund to prevent fee diversion.",
     },
     {
+        "icon": "🚐",
         "title": "Mobile Crisis Teams",
-        "why": "Mobile response gives people in crisis community-based care and reduces law enforcement involvement.",
-        "model": "Require statewide 24/7 mobile crisis coverage with Medicaid and non-Medicaid funding paths.",
-        "states": ["Minnesota", "Ohio", "Washington"],
-        "action": "Push for statewide coverage targets and response-time standards.",
+        "subtitle": "Someone to respond",
+        "description": "When someone calls 988, they may need more than a phone conversation. Mobile crisis teams bring licensed professionals to the person in distress, providing on-site assessment and de-escalation as an alternative to law enforcement response.",
+        "leading_states": ["Virginia", "Ohio", "Minnesota"],
+        "stat": "18",
+        "stat_label": "states expanded mobile crisis in 2024",
+        "recommendation": "Fund and deploy mobile crisis teams statewide, ensuring response in both urban and rural communities within 60 minutes.",
     },
     {
-        "title": "Crisis Stabilization Services",
-        "why": "Call diversion only works if states also fund places where people can receive immediate stabilization care.",
-        "model": "Fund crisis receiving and stabilization facilities in shortage regions first.",
-        "states": ["California", "Colorado", "New York"],
-        "action": "Pair 988 legislation with stabilization capacity investments in the same bill.",
+        "icon": "🏥",
+        "title": "Crisis Stabilization",
+        "subtitle": "A safe place for help",
+        "description": "Crisis stabilization facilities provide short-term care for individuals experiencing a mental health crisis, offering an alternative to emergency rooms and jails. These facilities can provide up to 23 hours of observation and treatment.",
+        "leading_states": ["Washington", "Ohio", "Connecticut"],
+        "stat": "14",
+        "stat_label": "states funded new stabilization centers",
+        "recommendation": "Invest in crisis stabilization units and crisis residential programs to ensure every community has a safe, therapeutic alternative to ERs.",
     },
     {
-        "title": "Youth and Family Access",
-        "why": "Youth-specific crisis protocols reduce barriers to care and improve continuity after first contact.",
-        "model": "Add youth line standards, school referral pathways, and family peer support reimbursement.",
-        "states": ["Minnesota", "Oregon", "Washington"],
-        "action": "Require youth response metrics in annual 988 performance reports.",
+        "icon": "🧒",
+        "title": "Youth Crisis Services",
+        "subtitle": "Meeting young people where they are",
+        "description": "Youth experiencing mental health crises have unique needs. Specialized crisis services for children and adolescents include school-based crisis teams, youth-specific hotlines, and age-appropriate stabilization programs.",
+        "leading_states": ["Washington", "Maryland", "Minnesota"],
+        "stat": "11",
+        "stat_label": "states passed youth crisis legislation",
+        "recommendation": "Establish youth-specific crisis response protocols and fund specialized training for crisis workers serving children and adolescents.",
+    },
+    {
+        "icon": "🛡️",
+        "title": "Trust Fund Protections",
+        "subtitle": "Ensuring funds reach crisis services",
+        "description": "Without dedicated trust funds, 988 fee revenue can be diverted to unrelated budget items. Trust fund legislation ensures every dollar collected goes directly to supporting crisis call centers, mobile teams, and stabilization services.",
+        "leading_states": ["Colorado", "Nevada", "Ohio"],
+        "stat": "10",
+        "stat_label": "states with 988 trust funds",
+        "recommendation": "Establish a dedicated 988 trust fund with statutory protections preventing fee revenue from being diverted to other purposes.",
     },
 ]
 
-FUNDING_OPTIONS = ["All", "Fee enacted", "Recurring appropriation", "No dedicated funding"]
-MOBILE_OPTIONS = ["All", "Statewide", "Partial", "Pilot"]
-SORT_OPTIONS = ["State A-Z", "Newest policy year", "Highest estimated revenue"]
+# ---------------------------------------------------------------------------
+# Timeline milestones
+# ---------------------------------------------------------------------------
+TIMELINE = [
+    {
+        "date": "Oct 2020",
+        "title": "National Suicide Hotline Designation Act Signed",
+        "description": "Federal law designates 988 as the new three-digit number for the Suicide and Crisis Lifeline, giving states the option to enact telecom fees for funding.",
+        "type": "federal",
+    },
+    {
+        "date": "Jul 2022",
+        "title": "988 Goes Live Nationwide",
+        "description": "The 988 Suicide and Crisis Lifeline officially launches across the country, replacing the previous 10-digit number.",
+        "type": "milestone",
+    },
+    {
+        "date": "Jan 2023",
+        "title": "First State Fees Take Effect",
+        "description": "Colorado and California become among the first states to begin collecting 988 telecom fees, establishing a model for sustainable funding.",
+        "type": "state",
+    },
+    {
+        "date": "Jul 2023",
+        "title": "One Year: 5M+ Contacts",
+        "description": "988 surpasses 5 million calls, texts, and chats in its first year. Answer rates improve but capacity challenges remain in many states.",
+        "type": "milestone",
+    },
+    {
+        "date": "2024 Sessions",
+        "title": "Wave of State Legislation",
+        "description": "Multiple states enact 988 fees, trust funds, mobile crisis team funding, and crisis stabilization investments in their 2024 legislative sessions.",
+        "type": "state",
+    },
+    {
+        "date": "Jul 2024",
+        "title": "Two Years: 10M+ Contacts",
+        "description": "More than 10 million contacts made to 988. Two-thirds of people who contacted 988 report getting the help they needed.",
+        "type": "milestone",
+    },
+    {
+        "date": "Jul 2025",
+        "title": "Three Years: Awareness Peaks",
+        "description": "988 awareness reaches its highest level. 75% of Americans support a monthly phone fee to fund crisis services. 12 states now have 988 fees enacted.",
+        "type": "milestone",
+    },
+    {
+        "date": "2025 & Beyond",
+        "title": "Building Comprehensive Systems",
+        "description": "The focus shifts from launching 988 to building complete crisis care continuums in every state: someone to call, someone to respond, somewhere to go.",
+        "type": "federal",
+    },
+]
 
-FUNDING_TONE = {
-    "Fee enacted": "chip-green",
-    "Recurring appropriation": "chip-amber",
-    "No dedicated funding": "chip-rose",
-}
+# ---------------------------------------------------------------------------
+# Advocate quotes
+# ---------------------------------------------------------------------------
+ADVOCATES = [
+    {
+        "quote": "If you or someone you know is in crisis, please remember you are not alone. Call or text 988 for support. Mental health touches every family and every community.",
+        "name": "Daniel H. Gillison, Jr.",
+        "role": "CEO, NAMI",
+        "accent": "#2D6A4F",
+    },
+    {
+        "quote": "Sustainable funding is the backbone of any effective crisis system. Without it, call centers can't hire enough counselors, and mobile teams can't reach the communities that need them most.",
+        "name": "Sue Abderholden",
+        "role": "Executive Director, NAMI Minnesota",
+        "accent": "#1E40AF",
+    },
+    {
+        "quote": "We need leaders at every level to keep building strong crisis response systems so that when someone needs help, they have someone to contact, someone to respond, and a safe place for help.",
+        "name": "NAMI Reimagine Crisis",
+        "role": "National Initiative",
+        "accent": "#7C3AED",
+    },
+]
 
-MOBILE_TONE = {
-    "Statewide": "chip-navy",
-    "Partial": "chip-slate",
-    "Pilot": "chip-violet",
-}
-
-
-def slugify(value: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
-
-
-def revenue_to_millions(value: str) -> float:
-    match = re.search(r"(\d+(?:\.\d+)?)\s*M", value)
-    return float(match.group(1)) if match else 0.0
-
-
-def chip(label: str, css_class: str) -> str:
-    return f'<span class="chip {css_class}">{escape(label)}</span>'
-
-
-def state_cards_html(records: list[dict]) -> str:
-    cards = []
-    for item in records:
-        funding_class = FUNDING_TONE.get(item["funding_model"], "chip-slate")
-        mobile_class = MOBILE_TONE.get(item["mobile_crisis"], "chip-slate")
-        trust_class = "chip-green" if item["trust_fund"] else "chip-rose"
-        trust_text = "Trust Fund: Yes" if item["trust_fund"] else "Trust Fund: No"
-
-        cards.append(
-            """
-<article class="state-card">
-    <div class="state-card-top">
-        <h3>{state}</h3>
-        <span class="state-year">{year}</span>
-    </div>
-    <div class="chip-row">
-        {funding_chip}
-        {mobile_chip}
-        {trust_chip}
-    </div>
-    <div class="state-kv-grid">
-        <div class="kv"><span>Monthly Fee</span><strong>{fee}</strong></div>
-        <div class="kv"><span>Annual Revenue</span><strong>{revenue}</strong></div>
-        <div class="kv"><span>Stabilization</span><strong>{stabilization}</strong></div>
-        <div class="kv"><span>Youth Services</span><strong>{youth}</strong></div>
-    </div>
-    <div class="state-card-foot">
-        <span>Latest Bill</span>
-        <code>{bill}</code>
-    </div>
-</article>
-""".format(
-                state=escape(item["state"]),
-                year=item["year"],
-                funding_chip=chip(item["funding_model"], funding_class),
-                mobile_chip=chip(f"Mobile: {item['mobile_crisis']}", mobile_class),
-                trust_chip=chip(trust_text, trust_class),
-                fee=escape(item["monthly_fee"]),
-                revenue=escape(item["annual_revenue"]),
-                stabilization=escape(item["stabilization"]),
-                youth=escape(item["youth_services"]),
-                bill=escape(item["latest_bill"]),
-            )
-        )
-
-    return '<div class="state-grid">' + "".join(cards) + "</div>"
-
-
-def playbook_cards_html(items: list[dict]) -> str:
-    cards = []
-    for item in items:
-        state_chips = "".join(chip(state, "chip-slate") for state in item["states"])
-        cards.append(
-            """
-<article class="playbook-card">
-    <h3>{title}</h3>
-    <p><strong>Why:</strong> {why}</p>
-    <p><strong>Model:</strong> {model}</p>
-    <div class="playbook-states">{states}</div>
-    <p class="playbook-ask"><strong>Action Ask:</strong> {action}</p>
-</article>
-""".format(
-                title=escape(item["title"]),
-                why=escape(item["why"]),
-                model=escape(item["model"]),
-                states=state_chips,
-                action=escape(item["action"]),
-            )
-        )
-    return '<div class="playbook-grid">' + "".join(cards) + "</div>"
-
-
-def build_script(item: dict) -> str:
-    return f"""Subject: Strengthen 988 crisis response policy in {item['state']}
-
-Hello [Legislator Name],
-
-I am your constituent and I support stronger 988 crisis response policy in {item['state']}.
-
-Current tracker snapshot for {item['state']}:
-- Funding model: {item['funding_model']}
-- Monthly 988 fee: {item['monthly_fee']}
-- Trust fund protection: {'Yes' if item['trust_fund'] else 'No'}
-- Mobile crisis coverage: {item['mobile_crisis']}
-- Stabilization investment: {item['stabilization']}
-- Latest policy vehicle: {item['latest_bill']} ({item['year']})
-
-Please support policy that guarantees sustainable funding, statewide mobile crisis access,
-and transparent annual performance reporting.
-
-Thank you,
-[Your Name]
-[City, ZIP]
-"""
-
-
-def render_download_button(label: str, data: str, filename: str) -> None:
-    # Newer Streamlit expects `width`; older versions still use `use_container_width`.
-    try:
-        st.download_button(label, data=data, file_name=filename, mime="text/plain", width="content")
-    except TypeError:
-        st.download_button(label, data=data, file_name=filename, mime="text/plain")
-
-
-st.markdown(
-    """
+# ---------------------------------------------------------------------------
+# CSS
+# ---------------------------------------------------------------------------
+st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,700;6..72,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-    --bg: #f4f6f2;
-    --surface: #ffffff;
-    --ink: #17202a;
-    --muted: #5c6672;
-    --line: #dde2e8;
-    --brand-1: #12343b;
-    --brand-2: #1e5f64;
-    --brand-3: #2f8f83;
+    --green-900: #0F2D1E;
+    --green-800: #1B4332;
+    --green-700: #2D6A4F;
+    --green-600: #40916C;
+    --green-400: #74C69D;
+    --green-200: #B7E4C7;
+    --green-100: #D8F3DC;
+    --green-50: #F0FDF4;
+    --slate-900: #0F172A;
+    --slate-700: #334155;
+    --slate-500: #64748B;
+    --slate-300: #CBD5E1;
+    --slate-100: #F1F5F9;
+    --warm-bg: #FAFAF7;
 }
 
 html, body, [data-testid="stAppViewContainer"] {
-    background:
-        radial-gradient(circle at 6% 0%, #d7eadf 0, transparent 24%),
-        radial-gradient(circle at 96% 12%, #d4e8ef 0, transparent 20%),
-        var(--bg) !important;
-    color: var(--ink);
-    font-family: 'Sora', sans-serif;
+    background-color: var(--warm-bg) !important;
+    font-family: 'Source Sans 3', sans-serif !important;
 }
+header[data-testid="stHeader"] { background: transparent !important; }
+.block-container { padding-top: 0 !important; max-width: 1100px !important; }
+#MainMenu, footer, [data-testid="stToolbar"], .stDeployButton { display: none !important; }
 
-header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stToolbar"], .stDeployButton {
-    display: none !important;
+/* ---- HERO ---- */
+.hero {
+    background: linear-gradient(160deg, #0F2D1E 0%, #1B4332 35%, #2D6A4F 70%, #40916C 100%);
+    padding: 60px 52px 56px;
+    border-radius: 0 0 28px 28px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0;
 }
-
-.block-container {
-    max-width: 1180px;
-    padding-top: 0.6rem;
-    padding-bottom: 2rem;
+.hero::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(183,228,199,0.08) 0%, transparent 70%);
+    top: -200px; right: -100px;
 }
-
-.hero-shell {
-    background: linear-gradient(140deg, var(--brand-1) 0%, var(--brand-2) 52%, var(--brand-3) 100%);
-    border-radius: 22px;
-    padding: 34px 34px 28px;
-    color: #e7f7f3;
-    box-shadow: 0 16px 34px rgba(18, 52, 59, 0.22);
-    margin-bottom: 16px;
+.hero::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(183,228,199,0.1);
+    bottom: -100px; left: 5%;
 }
-
-.hero-kicker {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    opacity: 0.9;
+.hero-eyebrow {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px; font-weight: 600;
+    color: var(--green-400);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
 }
-
-.hero-title {
-    font-family: 'Newsreader', serif;
-    font-size: 46px;
-    line-height: 1.02;
-    margin: 8px 0 10px;
-    color: #ffffff;
+.hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px; height: 1.5px;
+    background: var(--green-400);
 }
-
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px; font-weight: 900;
+    color: #FFFFFF; line-height: 1.05;
+    margin: 0 0 20px; max-width: 650px;
+    letter-spacing: -0.02em;
+}
+.hero h1 em {
+    color: var(--green-200);
+    font-style: italic; font-weight: 400;
+}
 .hero-sub {
-    font-size: 15px;
-    line-height: 1.55;
-    margin: 0;
-    max-width: 760px;
-    color: #d9f3ee;
-}
-
-.metric-card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 14px 16px;
-    box-shadow: 0 5px 16px rgba(23, 32, 42, 0.06);
-}
-
-.metric-label {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #6b7380;
-}
-
-.metric-value {
-    font-family: 'Newsreader', serif;
-    font-size: 31px;
-    line-height: 1;
-    margin-top: 6px;
-    color: #121a23;
-}
-
-.panel {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 6px 20px rgba(23, 32, 42, 0.06);
-}
-
-.section-title {
-    font-family: 'Newsreader', serif;
-    font-size: 31px;
-    margin: 24px 0 10px;
-    color: #111924;
-}
-
-.section-sub {
-    margin: 0 0 12px;
-    color: var(--muted);
-    font-size: 14px;
-}
-
-div[data-testid="stRadio"] [role="radiogroup"] {
-    gap: 7px;
-    flex-wrap: wrap;
-}
-
-div[data-testid="stRadio"] [role="radiogroup"] > label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #fdfefe;
-    border: 1px solid #cfd7df;
-    border-radius: 999px;
-    padding: 4px 10px;
-}
-
-div[data-testid="stRadio"] [role="radiogroup"] > label:has(input:checked) {
-    border-color: #1f7a68;
-    background: #e9f7f2;
-}
-
-div[data-testid="stRadio"] [role="radiogroup"] > label p,
-div[data-testid="stRadio"] [role="radiogroup"] > label span {
-    color: #17202a !important;
-    font-family: 'Sora', sans-serif !important;
-    font-size: 11.2px !important;
-    font-weight: 600 !important;
-}
-
-div[data-testid="stRadio"] [role="radiogroup"] > label input[type="radio"] {
-    width: 11px;
-    height: 11px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 18px; font-weight: 300;
+    color: var(--green-200);
+    line-height: 1.7; max-width: 540px;
     margin: 0;
 }
 
-div[data-testid="stTextInput"],
-div[data-testid="stTextArea"],
-div[data-testid="stSelectbox"],
-div[data-testid="stCheckbox"] {
-    font-family: 'Sora', sans-serif !important;
-}
-
-label[data-testid="stWidgetLabel"] p {
-    color: #5b6674 !important;
-    font-weight: 600 !important;
-}
-
-div[data-testid="stTextInput"] [data-baseweb="input"] > div,
-div[data-testid="stTextArea"] [data-baseweb="textarea"] > div,
-div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-    background: #f8fbff !important;
-    border: 1px solid #cfd7df !important;
-    border-radius: 12px !important;
-    color: #17202a !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-div[data-testid="stTextInput"] [data-baseweb="input"] > div:focus-within,
-div[data-testid="stTextArea"] [data-baseweb="textarea"] > div:focus-within,
-div[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within {
-    border-color: #8fb7ae !important;
-    box-shadow: 0 0 0 2px rgba(143, 183, 174, 0.14) !important;
-}
-
-div[data-testid="stSelectbox"] [data-baseweb="select"] * {
-    color: #17202a !important;
-}
-
-div[data-testid="stTextInput"] input,
-div[data-testid="stTextArea"] textarea {
-    background: transparent !important;
-    color: #17202a !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-div[data-testid="stTextInput"] input::placeholder,
-div[data-testid="stTextArea"] textarea::placeholder {
-    color: #7a8491 !important;
-}
-
-div[data-testid="stTextArea"] textarea {
-    line-height: 1.5 !important;
-}
-
-div[data-testid="stTextArea"] textarea:focus,
-div[data-testid="stTextArea"] textarea:focus-visible,
-div[data-testid="stTextArea"] textarea:active {
-    border: 0 !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-div[data-testid="stTextArea"] > div {
-    box-shadow: none !important;
-    border: none !important;
-}
-
-div[data-testid="stTextArea"] {
-    box-shadow: none !important;
-}
-
-/* BaseWeb can inject fieldset/legend rings; suppress globally for these controls */
-div[data-testid="stTextInput"] fieldset,
-div[data-testid="stTextArea"] fieldset,
-div[data-testid="stSelectbox"] fieldset {
-    border: 0 !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-div[data-testid="stTextInput"] legend,
-div[data-testid="stTextArea"] legend,
-div[data-testid="stSelectbox"] legend {
-    display: none !important;
-}
-
-/* Extra safety for wrapper shadows in Cloud builds */
-div[data-testid="stTextInput"] [data-baseweb],
-div[data-testid="stTextArea"] [data-baseweb],
-div[data-testid="stSelectbox"] [data-baseweb],
-div[data-testid="stTextInput"] [data-baseweb] > div,
-div[data-testid="stTextArea"] [data-baseweb] > div,
-div[data-testid="stSelectbox"] [data-baseweb] > div {
-    box-shadow: none !important;
-}
-
-div[data-testid="stCheckbox"] label {
-    color: #17202a !important;
-}
-
-div[data-testid="stCheckbox"] [data-testid="stMarkdownContainer"] p {
-    color: #17202a !important;
-}
-
-div[data-baseweb="popover"] [role="listbox"] {
-    background: #ffffff !important;
-    border: 1px solid #d3dbe4 !important;
-    box-shadow: 0 12px 24px rgba(23, 32, 42, 0.08) !important;
-    color: #17202a !important;
-}
-
-div[data-baseweb="popover"] [role="option"] {
-    background: #ffffff !important;
-    color: #17202a !important;
-}
-
-div[data-baseweb="popover"] [aria-selected="true"] {
-    background: #e9f7f2 !important;
-    color: #17202a !important;
-}
-
-/* Fallback when listbox is rendered outside popover container */
-div[role="listbox"],
-ul[role="listbox"] {
-    background: #ffffff !important;
-    border: 1px solid #d3dbe4 !important;
-    box-shadow: 0 12px 24px rgba(23, 32, 42, 0.08) !important;
-}
-
-div[role="listbox"] [role="option"],
-ul[role="listbox"] [role="option"],
-li[role="option"] {
-    background: #ffffff !important;
-    color: #17202a !important;
-}
-
-div[role="listbox"] [aria-selected="true"],
-ul[role="listbox"] [aria-selected="true"],
-li[role="option"][aria-selected="true"] {
-    background: #e9f7f2 !important;
-    color: #17202a !important;
-}
-
-div.stDownloadButton > button {
-    background: linear-gradient(135deg, #1f7a68 0%, #2f8f83 100%) !important;
-    border: 1px solid #1f7a68 !important;
-    color: #ffffff !important;
-    border-radius: 12px !important;
-    font-weight: 700 !important;
-    box-shadow: 0 8px 20px rgba(31, 122, 104, 0.24);
-}
-
-div.stDownloadButton > button:hover {
-    filter: brightness(0.98) !important;
-    border-color: #186557 !important;
-}
-
-.state-grid {
+/* ---- BIG NUMBERS ---- */
+.big-numbers {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin: -32px 32px 0;
+    position: relative; z-index: 10;
 }
-
-.state-card {
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 14px;
-    background: #fcfdfc;
-    box-shadow: 0 4px 12px rgba(12, 20, 32, 0.04);
+.big-num-card {
+    background: #FFFFFF;
+    padding: 36px 32px;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.04);
 }
-
-.state-card-top {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
+.big-num-card:first-child { border-radius: 16px 0 0 16px; }
+.big-num-card:last-child { border-radius: 0 16px 16px 0; }
+.big-num-card .number {
+    font-family: 'Playfair Display', serif;
+    font-size: 54px; font-weight: 900;
+    color: var(--green-700);
+    line-height: 1;
     margin-bottom: 8px;
 }
-
-.state-card h3 {
-    margin: 0;
-    font-size: 20px;
-    color: #111a24;
-    font-family: 'Newsreader', serif;
+.big-num-card .unit {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; font-weight: 400;
+    color: var(--green-600);
 }
-
-.state-year {
-    font-size: 11px;
-    color: #4d5a68;
-    font-weight: 600;
-}
-
-.chip-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 10px;
-}
-
-.chip {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 999px;
-    font-size: 10px;
-    font-weight: 700;
+.big-num-card .desc {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--slate-500);
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    padding: 4px 8px;
-    border: 1px solid transparent;
+    margin-top: 4px;
+}
+.big-num-card .context {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px; font-weight: 400;
+    color: var(--slate-700);
+    line-height: 1.5;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--slate-100);
 }
 
-.chip-green { color: #1f5f3f; background: #e3f6e9; border-color: #bee6cd; }
-.chip-amber { color: #7a5715; background: #fff1d9; border-color: #f3dcae; }
-.chip-rose { color: #7e2434; background: #ffe5ea; border-color: #f2c5cf; }
-.chip-navy { color: #1f3b6f; background: #e4eefc; border-color: #c8d9f3; }
-.chip-slate { color: #394b5d; background: #e9eff6; border-color: #d4e0ec; }
-.chip-violet { color: #563985; background: #efe8ff; border-color: #dbccff; }
-
-.state-kv-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+/* ---- SECTION HEADERS ---- */
+.section-header {
+    padding: 56px 0 8px;
 }
-
-.kv {
-    background: #f7fafc;
-    border: 1px solid #e7edf4;
-    border-radius: 10px;
-    padding: 8px;
-}
-
-.kv span {
-    font-size: 10px;
-    letter-spacing: 0.05em;
+.section-header .eyebrow {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px; font-weight: 600;
+    color: var(--green-600);
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #6c7481;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+}
+.section-header .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1.5px;
+    background: var(--green-600);
+}
+.section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px; font-weight: 900;
+    color: var(--slate-900);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+}
+.section-header p {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 17px; font-weight: 400;
+    color: var(--slate-500);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0;
 }
 
-.kv strong {
-    display: block;
-    margin-top: 3px;
-    color: #19212a;
-    font-size: 12px;
+/* ---- DATA STORY ---- */
+.data-callout {
+    background: var(--green-800);
+    border-radius: 20px;
+    padding: 48px;
+    margin: 32px 0;
+    position: relative;
+    overflow: hidden;
+}
+.data-callout::before {
+    content: '';
+    position: absolute;
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    background: rgba(183,228,199,0.06);
+    top: -80px; right: -40px;
+}
+.data-callout .big-stat {
+    font-family: 'Playfair Display', serif;
+    font-size: 72px; font-weight: 900;
+    color: var(--green-200);
+    line-height: 1;
+    margin-bottom: 8px;
+    position: relative;
+}
+.data-callout .big-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 22px; font-weight: 400;
+    color: #FFFFFF;
+    line-height: 1.4;
+    max-width: 500px;
+    position: relative;
+}
+.data-callout .big-context {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 15px; font-weight: 300;
+    color: var(--green-400);
+    line-height: 1.6;
+    max-width: 500px;
+    margin-top: 16px;
+    position: relative;
+}
+
+.fee-bar-section {
+    margin: 28px 0;
+}
+.fee-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+.fee-bar-state {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: var(--slate-700);
+    width: 100px; flex-shrink: 0;
+    text-align: right;
+}
+.fee-bar-track {
+    flex: 1;
+    height: 32px;
+    background: var(--slate-100);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+.fee-bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: #FFFFFF;
+    min-width: 60px;
+    transition: width 0.8s ease;
+}
+
+/* ---- TIMELINE ---- */
+.timeline-container {
+    position: relative;
+    padding: 20px 0 20px 40px;
+    margin: 20px 0;
+}
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 18px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--green-200), var(--green-600), var(--green-200));
+}
+.timeline-item {
+    position: relative;
+    padding: 0 0 36px 36px;
+}
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -30px; top: 6px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 3px solid var(--green-600);
+    background: #FFFFFF;
+    z-index: 2;
+}
+.timeline-item.milestone::before {
+    background: var(--green-600);
+    box-shadow: 0 0 0 4px var(--green-200);
+    width: 16px; height: 16px;
+    left: -31px;
+}
+.timeline-item .t-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--green-600);
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+.timeline-item .t-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--slate-900);
+    margin-bottom: 6px;
     line-height: 1.3;
 }
-
-.state-card-foot {
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px dashed #d7dde4;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
+.timeline-item .t-desc {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px; font-weight: 400;
+    color: var(--slate-500);
+    line-height: 1.6;
+    max-width: 520px;
 }
 
-.state-card-foot span {
-    font-size: 10px;
-    letter-spacing: 0.06em;
+/* ---- POLICY CARDS ---- */
+.policy-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+.policy-card:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+}
+.policy-card .p-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+.policy-card .p-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--slate-900);
+    margin-bottom: 4px;
+}
+.policy-card .p-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--green-600);
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #66717f;
+    margin-bottom: 14px;
 }
-
-.state-card-foot code {
-    background: #eef2f8;
-    border-radius: 8px;
-    padding: 3px 7px;
-    font-size: 11px;
-    color: #1e2a37;
+.policy-card .p-desc {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 15px; font-weight: 400;
+    color: var(--slate-700);
+    line-height: 1.65;
+    margin-bottom: 20px;
 }
-
-.trend-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.trend-card {
-    background: #ffffff;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 12px;
-}
-
-.trend-card h4 {
-    margin: 0;
-    color: #5e6977;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.trend-card .number {
-    margin-top: 4px;
-    font-size: 30px;
-    line-height: 1;
-    font-family: 'Newsreader', serif;
-    color: #101822;
-}
-
-.trend-card p {
-    margin: 4px 0 0;
-    color: #4f5b67;
-    font-size: 12.5px;
-}
-
-.playbook-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-}
-
-.playbook-card {
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 14px;
-    background: #fcfffd;
-}
-
-.playbook-card h3 {
-    margin: 0 0 8px;
-    font-family: 'Newsreader', serif;
-    font-size: 24px;
-    color: #121c26;
-}
-
-.playbook-card p {
-    margin: 0 0 8px;
-    color: #495563;
-    font-size: 13.2px;
-    line-height: 1.45;
-}
-
-.playbook-states {
-    margin: 5px 0 7px;
-}
-
-.playbook-ask {
-    padding-top: 8px;
-    border-top: 1px dashed #d5dce4;
-}
-
-.toolkit-shell {
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 14px;
-    background: #ffffff;
-}
-
-.toolkit-note {
-    border-left: 4px solid #1f7a68;
-    background: #ecf8f3;
+.policy-stat-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    background: var(--green-50);
+    border: 1px solid var(--green-200);
     border-radius: 10px;
-    padding: 10px 12px;
-    color: #204442;
-    font-size: 13px;
-    margin-bottom: 10px;
+    padding: 10px 18px;
+    margin-bottom: 16px;
+}
+.policy-stat-badge .ps-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 900;
+    color: var(--green-700);
+    line-height: 1;
+}
+.policy-stat-badge .ps-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--green-700);
+}
+.leading-states {
+    display: flex; gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.leading-states .ls-tag {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px; font-weight: 600;
+    color: var(--green-700);
+    background: var(--green-100);
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.02em;
+}
+.rec-box {
+    background: var(--slate-100);
+    border-radius: 10px;
+    padding: 16px 20px;
+    border-left: 3px solid var(--green-600);
+}
+.rec-box .rec-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 10px; font-weight: 700;
+    color: var(--green-700);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+.rec-box .rec-text {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px; font-weight: 400;
+    color: var(--slate-700);
+    line-height: 1.6;
 }
 
-.snapshot {
-    border: 1px solid #dce3ea;
+/* ---- ADVOCATE QUOTES ---- */
+.advocate-card {
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 20px;
+    position: relative;
+    background: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+.advocate-card::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 80px;
+    position: absolute;
+    top: 16px; left: 28px;
+    line-height: 1;
+    opacity: 0.12;
+}
+.advocate-card .aq-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-weight: 400;
+    font-style: italic;
+    color: var(--slate-900);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    position: relative;
+}
+.advocate-card .aq-name {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--slate-900);
+}
+.advocate-card .aq-role {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px; font-weight: 400;
+    color: var(--slate-500);
+}
+.advocate-accent {
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    border-radius: 16px 0 0 16px;
+}
+
+/* ---- COMPARISON TABLE ---- */
+.compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+    background: #FFFFFF;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.compare-table th {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: var(--slate-500);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 16px 20px;
+    background: var(--slate-100);
+    text-align: left;
+    border-bottom: 2px solid var(--green-200);
+}
+.compare-table td {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    color: var(--slate-700);
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--slate-100);
+    vertical-align: top;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table .state-name {
+    font-weight: 700;
+    color: var(--slate-900);
+}
+.check { color: var(--green-600); font-weight: 700; }
+.cross { color: var(--slate-300); }
+
+/* ---- FOOTER CTA ---- */
+.footer-cta {
+    background: linear-gradient(135deg, var(--green-900) 0%, var(--green-800) 50%, var(--green-700) 100%);
+    border-radius: 20px;
+    padding: 52px;
+    text-align: center;
+    margin: 40px 0 48px;
+    position: relative;
+    overflow: hidden;
+}
+.footer-cta::before {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(183,228,199,0.05);
+    top: -100px; right: -50px;
+}
+.footer-cta h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px; font-weight: 900;
+    color: #FFFFFF;
+    margin: 0 0 12px; position: relative;
+}
+.footer-cta p {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 16px; font-weight: 300;
+    color: var(--green-200);
+    margin: 0 0 28px; position: relative;
+    max-width: 480px;
+    margin-left: auto; margin-right: auto;
+}
+.footer-cta .cta-buttons {
+    display: flex; gap: 14px;
+    justify-content: center; flex-wrap: wrap;
+    position: relative;
+}
+.cta-btn {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px; font-weight: 700;
+    padding: 14px 32px;
     border-radius: 12px;
-    padding: 12px;
-    background: #f7fafc;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-block;
 }
-
-.snapshot h4 {
-    margin: 0 0 8px;
-    font-size: 17px;
-    color: #131d28;
-    font-family: 'Newsreader', serif;
+.cta-btn.primary {
+    background: var(--green-200);
+    color: var(--green-900);
 }
-
-.snapshot ul {
-    margin: 0;
-    padding-left: 16px;
-    color: #45525f;
-    font-size: 13px;
-    line-height: 1.5;
+.cta-btn.primary:hover { background: #FFFFFF; }
+.cta-btn.secondary {
+    background: rgba(255,255,255,0.1);
+    color: #FFFFFF;
+    border: 1.5px solid rgba(255,255,255,0.2);
 }
+.cta-btn.secondary:hover { background: rgba(255,255,255,0.2); }
 
-.source-links {
-    margin-top: 10px;
-    font-size: 13px;
+/* Streamlit overrides */
+.stSelectbox label, .stMultiSelect label {
+    font-family: 'Source Sans 3', sans-serif !important;
+    font-weight: 600 !important;
+    color: var(--slate-700) !important;
 }
-
-@media (max-width: 980px) {
-    .hero-title { font-size: 35px; }
-    .state-grid { grid-template-columns: 1fr; }
-    .trend-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .playbook-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 640px) {
-    .hero-shell { padding: 22px 18px; }
-    .hero-title { font-size: 30px; }
-    .trend-grid { grid-template-columns: 1fr; }
+div[data-testid="stExpander"] {
+    border: none !important;
+    background: transparent !important;
 }
 </style>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
-fee_count = sum(1 for row in STATE_POLICIES if row["funding_model"] == "Fee enacted")
-recurring_count = sum(1 for row in STATE_POLICIES if row["funding_model"] == "Recurring appropriation")
-trust_count = sum(1 for row in STATE_POLICIES if row["trust_fund"])
-statewide_mobile = sum(1 for row in STATE_POLICIES if row["mobile_crisis"] == "Statewide")
 
-top_state = max(STATE_POLICIES, key=lambda row: revenue_to_millions(row["annual_revenue"]))
+# ===========================================================================
+# HERO
+# ===========================================================================
+st.markdown("""
+<div class="hero">
+    <div class="hero-eyebrow">NAMI 2024 State Legislation Issue Brief</div>
+    <h1>Trends in 988 &<br><em>Reimagining Crisis<br>Response</em></h1>
+    <p class="hero-sub">
+        People in a mental health crisis deserve a compassionate and effective response.
+        Here's how states are building the systems to deliver one.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown(
-    f"""
-<section class="hero-shell">
-    <div class="hero-kicker">NAMI Policy Product Prototype</div>
-    <h1 class="hero-title">988 State Policy Tracker</h1>
-    <p class="hero-sub">Policy-first web experience for advocates. Scan funding and crisis infrastructure quickly, identify peer-state examples, and generate outreach language without opening a PDF.</p>
-</section>
-""",
-    unsafe_allow_html=True,
-)
 
-metric_specs = [
-    ("States tracked", str(len(STATE_POLICIES))),
-    ("Fee enacted", str(fee_count)),
-    ("Recurring appropriations", str(recurring_count)),
-    ("Statewide mobile", str(statewide_mobile)),
+# ===========================================================================
+# BIG NUMBERS
+# ===========================================================================
+st.markdown("""
+<div class="big-numbers">
+    <div class="big-num-card">
+        <div class="number">10<span class="unit">M+</span></div>
+        <div class="desc">Contacts to 988</div>
+        <div class="context">Calls, texts, and chats since the lifeline launched in July 2022</div>
+    </div>
+    <div class="big-num-card">
+        <div class="number">12</div>
+        <div class="desc">States with 988 Fees</div>
+        <div class="context">Sustainable telecom fees modeled after the proven 911 funding approach</div>
+    </div>
+    <div class="big-num-card">
+        <div class="number">75<span class="unit">%</span></div>
+        <div class="desc">Public Support</div>
+        <div class="context">Of Americans willing to pay a small monthly fee to fund 988 crisis services</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+
+# ===========================================================================
+# DATA STORY: FEE COMPARISON
+# ===========================================================================
+st.markdown("""
+<div class="section-header">
+    <div class="eyebrow">The Funding Picture</div>
+    <h2>How States Are Funding 988</h2>
+    <p>A small monthly telecom fee on phone bills can generate millions in dedicated crisis funding. Here's what states are charging.</p>
+</div>
+""", unsafe_allow_html=True)
+
+# Fee bar chart
+fee_states = [
+    ("Vermont", 0.72, "#2D6A4F"),
+    ("Colorado", 0.50, "#40916C"),
+    ("Nevada", 0.35, "#52B788"),
+    ("Maryland", 0.25, "#74C69D"),
+    ("Washington", 0.24, "#74C69D"),
+    ("Connecticut", 0.20, "#95D5B2"),
+    ("Alabama", 0.18, "#95D5B2"),
+    ("Minnesota", 0.12, "#B7E4C7"),
+    ("Virginia", 0.12, "#B7E4C7"),
+    ("California", 0.08, "#D8F3DC"),
 ]
 
-metric_cols = st.columns(4)
-for col, (label, value) in zip(metric_cols, metric_specs):
-    with col:
-        st.markdown(
-            f"""
-<div class="metric-card">
-    <div class="metric-label">{escape(label)}</div>
-    <div class="metric-value">{escape(value)}</div>
-</div>
-""",
-            unsafe_allow_html=True,
-        )
+max_fee = 0.80
+bars_html = ""
+for state, fee, color in fee_states:
+    pct = (fee / max_fee) * 100
+    bars_html += f"""
+    <div class="fee-bar-item">
+        <div class="fee-bar-state">{state}</div>
+        <div class="fee-bar-track">
+            <div class="fee-bar-fill" style="width:{pct}%;background:{color};">
+                ${fee:.2f}
+            </div>
+        </div>
+    </div>"""
 
-st.markdown('<h2 class="section-title">State Explorer</h2>', unsafe_allow_html=True)
-st.markdown(
-    '<p class="section-sub">Filter by funding model, service maturity, and trust fund status. Cards are optimized for quick scanning on desktop and mobile.</p>',
-    unsafe_allow_html=True,
+st.markdown(f'<div class="fee-bar-section">{bars_html}</div>', unsafe_allow_html=True)
+
+# Big callout
+st.markdown("""
+<div class="data-callout">
+    <div class="big-stat">3 in 4</div>
+    <div class="big-label">Americans are willing to pay a monthly fee to fund 988 crisis services</div>
+    <div class="big-context">With more than a third willing to pay a fee greater than the highest existing fee ($0.72), there is strong public mandate for states to act.</div>
+</div>
+""", unsafe_allow_html=True)
+
+
+# ===========================================================================
+# TIMELINE
+# ===========================================================================
+st.markdown("""
+<div class="section-header">
+    <div class="eyebrow">The Journey</div>
+    <h2>988: From Concept to Crisis Lifeline</h2>
+    <p>A look at the key milestones in building America's mental health crisis response system.</p>
+</div>
+""", unsafe_allow_html=True)
+
+timeline_html = '<div class="timeline-container">'
+for item in TIMELINE:
+    cls = "milestone" if item["type"] == "milestone" else ""
+    timeline_html += f"""
+    <div class="timeline-item {cls}">
+        <div class="t-date">{item['date']}</div>
+        <div class="t-title">{item['title']}</div>
+        <div class="t-desc">{item['description']}</div>
+    </div>"""
+timeline_html += "</div>"
+st.markdown(timeline_html, unsafe_allow_html=True)
+
+
+# ===========================================================================
+# ADVOCATE SPOTLIGHTS
+# ===========================================================================
+st.markdown("""
+<div class="section-header">
+    <div class="eyebrow">Voices</div>
+    <h2>From the Field</h2>
+    <p>Leaders shaping the future of crisis response in their own words.</p>
+</div>
+""", unsafe_allow_html=True)
+
+for adv in ADVOCATES:
+    st.markdown(f"""
+    <div class="advocate-card">
+        <div class="advocate-accent" style="background:{adv['accent']}"></div>
+        <div class="aq-text">{adv['quote']}</div>
+        <div class="aq-name">{adv['name']}</div>
+        <div class="aq-role">{adv['role']}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ===========================================================================
+# POLICY RECOMMENDATION CARDS
+# ===========================================================================
+st.markdown("""
+<div class="section-header">
+    <div class="eyebrow">Policy Playbook</div>
+    <h2>Five Moves States Can Make</h2>
+    <p>Concrete policy recommendations backed by what's already working across the country.</p>
+</div>
+""", unsafe_allow_html=True)
+
+for card in POLICY_CARDS:
+    states_tags = "".join(
+        f'<span class="ls-tag">{s}</span>' for s in card["leading_states"]
+    )
+    st.markdown(f"""
+    <div class="policy-card">
+        <div class="p-icon">{card['icon']}</div>
+        <div class="p-title">{card['title']}</div>
+        <div class="p-subtitle">{card['subtitle']}</div>
+        <div class="p-desc">{card['description']}</div>
+        <div class="policy-stat-badge">
+            <span class="ps-num">{card['stat']}</span>
+            <span class="ps-label">{card['stat_label']}</span>
+        </div>
+        <div class="leading-states">
+            <span style="font-size:11px;color:#64748B;font-weight:500;margin-right:4px;">Leading:</span>
+            {states_tags}
+        </div>
+        <div class="rec-box">
+            <div class="rec-label">NAMI Recommendation</div>
+            <div class="rec-text">{card['recommendation']}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ===========================================================================
+# STATE COMPARISON TOOL
+# ===========================================================================
+st.markdown("""
+<div class="section-header">
+    <div class="eyebrow">Compare</div>
+    <h2>State by State</h2>
+    <p>See how states stack up on 988 funding and crisis service infrastructure.</p>
+</div>
+""", unsafe_allow_html=True)
+
+state_names = list(STATE_DATA.keys())
+selected_states = st.multiselect(
+    "Select states to compare",
+    state_names,
+    default=["Colorado", "Washington", "Maryland"],
+    max_selections=5,
 )
 
-with st.container(border=False):
-    filter_cols = st.columns([3.4, 2.0, 1.5, 2.4, 1.8])
-    with filter_cols[0]:
-        funding_filter = st.radio(
-            "Funding",
-            FUNDING_OPTIONS,
-            horizontal=True,
-            label_visibility="collapsed",
-        )
-    with filter_cols[1]:
-        mobile_filter = st.selectbox("Mobile coverage", MOBILE_OPTIONS)
-    with filter_cols[2]:
-        trust_only = st.checkbox("Trust only", value=False)
-    with filter_cols[3]:
-        search_query = st.text_input("Search", placeholder="State, bill, stabilization")
-    with filter_cols[4]:
-        sort_by = st.selectbox("Sort", SORT_OPTIONS)
+if selected_states:
+    # Build comparison table
+    rows_html = ""
+    for s in selected_states:
+        d = STATE_DATA[s]
+        check = '<span class="check">✓</span>'
+        cross = '<span class="cross">—</span>'
+        rows_html += f"""
+        <tr>
+            <td class="state-name">{s}</td>
+            <td><strong>{d['fee']}</strong></td>
+            <td>{d['fee_start']}</td>
+            <td>{d['est_revenue']}</td>
+            <td>{check if d['trust_fund'] else cross}</td>
+            <td>{check if d['mobile_crisis'] else cross}</td>
+            <td>{check if d['crisis_stabilization'] else cross}</td>
+            <td>{check if d['youth_services'] else cross}</td>
+        </tr>"""
 
-filtered = []
-search_norm = search_query.strip().lower()
-for row in STATE_POLICIES:
-    if funding_filter != "All" and row["funding_model"] != funding_filter:
-        continue
-    if mobile_filter != "All" and row["mobile_crisis"] != mobile_filter:
-        continue
-    if trust_only and not row["trust_fund"]:
-        continue
+    st.markdown(f"""
+    <table class="compare-table">
+        <thead>
+            <tr>
+                <th>State</th>
+                <th>988 Fee</th>
+                <th>Fee Start</th>
+                <th>Est. Revenue</th>
+                <th>Trust Fund</th>
+                <th>Mobile Crisis</th>
+                <th>Stabilization</th>
+                <th>Youth</th>
+            </tr>
+        </thead>
+        <tbody>{rows_html}</tbody>
+    </table>
+    """, unsafe_allow_html=True)
 
-    haystack = " ".join(
-        [
-            row["state"],
-            row["latest_bill"],
-            row["annual_revenue"],
-            row["stabilization"],
-            row["youth_services"],
-        ]
-    ).lower()
-
-    if search_norm and search_norm not in haystack:
-        continue
-
-    filtered.append(row)
-
-if sort_by == "State A-Z":
-    filtered = sorted(filtered, key=lambda row: row["state"])
-elif sort_by == "Newest policy year":
-    filtered = sorted(filtered, key=lambda row: (row["year"], row["state"]), reverse=True)
+    # Show highlights for selected states
+    for s in selected_states:
+        d = STATE_DATA[s]
+        st.markdown(f"""
+        <div style="
+            background:#FFFFFF;
+            border-radius:12px;
+            padding:20px 24px;
+            margin-bottom:12px;
+            border-left:4px solid var(--green-600);
+            box-shadow:0 1px 6px rgba(0,0,0,0.03);
+        ">
+            <div style="font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:700;color:var(--slate-900);margin-bottom:4px;">
+                {s} <span style="font-weight:400;color:var(--slate-500);">({d['key_bill']})</span>
+            </div>
+            <div style="font-family:'Source Sans 3',sans-serif;font-size:14px;color:var(--slate-700);line-height:1.6;">
+                {d['highlights']}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 else:
-    filtered = sorted(
-        filtered,
-        key=lambda row: (revenue_to_millions(row["annual_revenue"]), row["state"]),
-        reverse=True,
-    )
+    st.info("Select states above to compare their 988 and crisis service infrastructure.")
 
-st.markdown(
-    f"""
-<div class="panel">
-    <div class="section-sub"><strong>{len(filtered)}</strong> state profiles shown. Highest estimated revenue in this dataset: <strong>{escape(top_state['state'])}</strong> ({escape(top_state['annual_revenue'])}).</div>
-    {state_cards_html(filtered) if filtered else '<div class="toolkit-note">No states matched this filter set. Broaden search terms or reset filters.</div>'}
+
+# ===========================================================================
+# FOOTER CTA
+# ===========================================================================
+st.markdown("""
+<div class="footer-cta">
+    <h3>Every crisis deserves a<br>compassionate response.</h3>
+    <p>Your voice can shape the future of mental health crisis care. Contact your legislators and advocate for 988 funding in your state.</p>
+    <div class="cta-buttons">
+        <a class="cta-btn primary" href="https://reimaginecrisis.org/map/" target="_blank">Explore the Legislation Map →</a>
+        <a class="cta-btn secondary" href="https://www.nami.org/advocacy/" target="_blank">Get Involved with NAMI</a>
+    </div>
 </div>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
-st.markdown('<h2 class="section-title">What Changed This Year</h2>', unsafe_allow_html=True)
-
-trend_html = f"""
-<div class="trend-grid">
-    <article class="trend-card">
-        <h4>Funding Coverage</h4>
-        <div class="number">{fee_count}</div>
-        <p>States in this prototype currently using dedicated 988 fees.</p>
-    </article>
-    <article class="trend-card">
-        <h4>Trust Fund Adoption</h4>
-        <div class="number">{trust_count}</div>
-        <p>States with statutory protection for 988 dollars.</p>
-    </article>
-    <article class="trend-card">
-        <h4>Statewide Mobile</h4>
-        <div class="number">{statewide_mobile}</div>
-        <p>States reporting statewide mobile crisis coverage.</p>
-    </article>
-    <article class="trend-card">
-        <h4>Most Recent Bills</h4>
-        <div class="number">2025</div>
-        <p>Latest policy years in this dataset include 2025 sessions.</p>
-    </article>
+# Crisis line note
+st.markdown("""
+<div style="text-align:center;padding:12px 0 40px;font-family:'Source Sans 3',sans-serif;font-size:14px;color:#64748B;">
+    If you or someone you know is in crisis, <strong>call or text 988</strong> for free, confidential support 24/7.
 </div>
-"""
-st.markdown(trend_html, unsafe_allow_html=True)
-
-st.markdown('<h2 class="section-title">Policy Playbook</h2>', unsafe_allow_html=True)
-st.markdown(
-    '<p class="section-sub">Each card includes a policy frame, model direction, peer-state examples, and a concrete ask.</p>',
-    unsafe_allow_html=True,
-)
-st.markdown(playbook_cards_html(PLAYBOOK), unsafe_allow_html=True)
-
-st.markdown('<h2 class="section-title">Advocate Toolkit</h2>', unsafe_allow_html=True)
-
-tool_cols = st.columns([1.05, 1.35])
-with tool_cols[0]:
-    st.markdown(
-        '<div class="toolkit-note">Use this as a starting point. Personalize with local outcomes or provider stories before sending.</div>',
-        unsafe_allow_html=True,
-    )
-    state_names = sorted([row["state"] for row in STATE_POLICIES])
-    selected_state = st.selectbox("Build script for state", state_names)
-    selected = next(row for row in STATE_POLICIES if row["state"] == selected_state)
-    snapshot_html = f"""
-<div class="snapshot">
-    <h4>{escape(selected['state'])} Snapshot</h4>
-    <ul>
-        <li><strong>Funding:</strong> {escape(selected['funding_model'])}</li>
-        <li><strong>Monthly fee:</strong> {escape(selected['monthly_fee'])}</li>
-        <li><strong>Trust fund:</strong> {'Yes' if selected['trust_fund'] else 'No'}</li>
-        <li><strong>Mobile crisis:</strong> {escape(selected['mobile_crisis'])}</li>
-        <li><strong>Latest bill:</strong> {escape(selected['latest_bill'])} ({selected['year']})</li>
-    </ul>
-</div>
-"""
-    st.markdown(snapshot_html, unsafe_allow_html=True)
-
-with tool_cols[1]:
-    draft = st.text_area(
-        "Message draft",
-        value=build_script(selected),
-        height=320,
-    )
-    render_download_button(
-        "Download advocacy script",
-        draft,
-        f"{slugify(selected_state)}-988-advocacy-script.txt",
-    )
-
-st.markdown(
-    '<div class="source-links">Sources: <a href="https://www.usa.gov/elected-officials" target="_blank">Find elected officials</a> | <a href="https://www.nami.org/research/publications-reports/public-policy-reports/" target="_blank">NAMI public policy reports</a></div>',
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
