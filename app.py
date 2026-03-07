@@ -3,7 +3,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="988 State Policy Tracker",
-    page_icon="\ud83e\udde0",
+    page_icon="N",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
