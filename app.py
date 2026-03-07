@@ -140,7 +140,7 @@ header[data-testid="stHeader"] { background: transparent !important; }
 /* HERO */
 .hero {
     background: linear-gradient(160deg, #0F2D1E 0%, #1B4332 35%, #2D6A4F 70%, #40916C 100%);
-    padding: 64px 52px 60px; border-radius: 0 0 28px 28px;
+    padding: 64px 52px 88px; border-radius: 0 0 28px 28px;
     position: relative; overflow: hidden; margin-bottom: 0;
 }
 .hero::before { content:''; position:absolute; width:500px; height:500px; border-radius:50%;
@@ -177,9 +177,18 @@ header[data-testid="stHeader"] { background: transparent !important; }
     line-height:1.15; margin:0 0 12px; letter-spacing:-0.02em; }
 .sh p { font-family:'Source Sans 3',sans-serif; font-size:17px; color:var(--s500); line-height:1.6; max-width:600px; margin:0; }
 
-/* STATE CARD */
-.state-card { background:#FFF; border-radius:16px; padding:28px 32px;
-    box-shadow:0 8px 30px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); margin-bottom:28px; }
+/* STATE CARD (via st.container border) */
+[data-testid="stVerticalBlockBorderWrapper"] {
+    margin-top: -48px !important;
+    position: relative !important;
+    z-index: 10 !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(0,0,0,0.04) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06) !important;
+    background: #FFF !important;
+    padding: 28px 32px !important;
+    margin-bottom: 28px !important;
+}
 .state-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; margin-top:20px; }
 .sg-item { padding:16px; border-radius:10px; }
 .sg-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--s500);
@@ -361,48 +370,47 @@ st.markdown("""
 # ===========================================================================
 # 2. YOUR STATE PERSONALIZATION
 # ===========================================================================
-st.markdown('<div class="state-card" style="margin-top:-28px;position:relative;z-index:10">', unsafe_allow_html=True)
-col_label, col_select = st.columns([1, 3])
-with col_label:
-    st.markdown('<p style="font-family:Source Sans 3,sans-serif;font-size:15px;font-weight:600;color:#0F172A;padding-top:8px">Your state:</p>', unsafe_allow_html=True)
-with col_select:
-    selected_state = st.selectbox("Pick your state", sorted(STATE_PROFILES.keys()), index=sorted(STATE_PROFILES.keys()).index("Maryland"), label_visibility="collapsed")
+with st.container(border=True):
+    col_label, col_select, col_score = st.columns([1, 2, 2])
+    with col_label:
+        st.markdown('<p style="font-family:Source Sans 3,sans-serif;font-size:15px;font-weight:600;color:#0F172A;padding-top:8px">Your state:</p>', unsafe_allow_html=True)
+    with col_select:
+        selected_state = st.selectbox("Pick your state", sorted(STATE_PROFILES.keys()), index=sorted(STATE_PROFILES.keys()).index("Maryland"), label_visibility="collapsed")
 
-user_state = STATE_PROFILES[selected_state]
+    user_state = STATE_PROFILES[selected_state]
 
-# Score bar
-st.markdown(f'<div style="margin-bottom:16px">{score_bar_html(user_state["score"])}</div>', unsafe_allow_html=True)
+    with col_score:
+        st.markdown(f'<div style="padding-top:8px">{score_bar_html(user_state["score"])}</div>', unsafe_allow_html=True)
 
-# Grid
-fee_bg = "var(--g50)" if user_state["has_fee"] else "#FEF2F2"
-fee_border = "var(--g200)" if user_state["has_fee"] else "#FECACA"
-fee_color = "var(--g700)" if user_state["has_fee"] else "#EF4444"
+    # Grid
+    fee_bg = "var(--g50)" if user_state["has_fee"] else "#FEF2F2"
+    fee_border = "var(--g200)" if user_state["has_fee"] else "#FECACA"
+    fee_color = "var(--g700)" if user_state["has_fee"] else "#EF4444"
 
-items_html = f'''
-<div class="state-grid">
-    <div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}">
-        <div class="sg-label">988 Fee</div>
-        <div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div>
-    </div>
-    <div class="sg-item" style="background:var(--s100)">
-        <div class="sg-label">Est. Revenue</div>
-        <div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div>
-    </div>
-'''
-for label, key in [("Trust Fund", "trust"), ("Mobile Crisis", "mobile"), ("Stabilization", "stab"), ("Youth Services", "youth")]:
-    val = user_state[key]
-    bg = "var(--g50)" if val else "var(--s100)"
-    bdr = "border:1px solid var(--g200);" if val else ""
-    color = "var(--g700)" if val else "var(--s300)"
-    text = "✓ Active" if val else "— None"
-    items_html += f'''
-    <div class="sg-item" style="background:{bg};{bdr}">
-        <div class="sg-label">{label}</div>
-        <div style="font-family:'Source Sans 3',sans-serif;font-size:18px;font-weight:700;color:{color}">{text}</div>
-    </div>'''
-items_html += "</div>"
-st.markdown(items_html, unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)
+    items_html = f'''
+    <div class="state-grid">
+        <div class="sg-item" style="background:{fee_bg};border:1px solid {fee_border}">
+            <div class="sg-label">988 Fee</div>
+            <div class="sg-val" style="color:{fee_color}">{user_state["fee"]}</div>
+        </div>
+        <div class="sg-item" style="background:var(--s100)">
+            <div class="sg-label">Est. Revenue</div>
+            <div class="sg-val" style="color:var(--s900)">{user_state["revenue"]}</div>
+        </div>
+    '''
+    for label, key in [("Trust Fund", "trust"), ("Mobile Crisis", "mobile"), ("Stabilization", "stab"), ("Youth Services", "youth")]:
+        val = user_state[key]
+        bg = "var(--g50)" if val else "var(--s100)"
+        bdr = "border:1px solid var(--g200);" if val else ""
+        color = "var(--g700)" if val else "var(--s300)"
+        text = "✓ Active" if val else "— None"
+        items_html += f'''
+        <div class="sg-item" style="background:{bg};{bdr}">
+            <div class="sg-label">{label}</div>
+            <div style="font-family:'Source Sans 3',sans-serif;font-size:18px;font-weight:700;color:{color}">{text}</div>
+        </div>'''
+    items_html += "</div>"
+    st.markdown(items_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
