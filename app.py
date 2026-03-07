@@ -40,11 +40,11 @@ TIMELINE = [
 ]
 
 POLICIES = [
-    {"icon": "💰", "title": "Sustainable Funding", "subtitle": "The foundation of effective crisis care", "desc": "Telecom fees mirror the proven 911 funding model and provide predictable revenue without relying on annual budget fights.", "states": ["Colorado", "Washington", "California"], "stat": "12", "stat_label": "states with 988 fees", "rec": "Enact a monthly telecom fee dedicated to 988 and crisis services, protected by a trust fund.", "share": "12 states have enacted 988 telecom fees to fund mental health crisis services. Your state should be next."},
-    {"icon": "🚐", "title": "Mobile Crisis Teams", "subtitle": "Someone to respond", "desc": "Mobile crisis teams bring licensed professionals to the person in distress as an alternative to law enforcement response.", "states": ["Virginia", "Ohio", "Minnesota"], "stat": "18", "stat_label": "states expanded mobile crisis in 2024", "rec": "Deploy mobile crisis teams statewide with a 60-minute response target.", "share": "18 states expanded mobile crisis teams in 2024. Mental health crises deserve mental health responses."},
-    {"icon": "🏥", "title": "Crisis Stabilization", "subtitle": "A safe place for help", "desc": "Short-term crisis facilities offer an alternative to ERs and jails with up to 23 hours of observation and treatment.", "states": ["Washington", "Ohio", "Connecticut"], "stat": "14", "stat_label": "states funded new stabilization centers", "rec": "Invest in crisis stabilization units so every community has a therapeutic alternative to ERs.", "share": "14 states funded new crisis stabilization centers in 2024. No one in crisis should end up in an ER or a jail."},
-    {"icon": "🧒", "title": "Youth Crisis Services", "subtitle": "Meeting young people where they are", "desc": "Specialized crisis services for children and adolescents include school-based teams, youth-specific hotlines, and age-appropriate programs.", "states": ["Washington", "Maryland", "Minnesota"], "stat": "11", "stat_label": "states passed youth crisis legislation", "rec": "Establish youth-specific crisis protocols and specialized training for crisis workers.", "share": "11 states passed youth crisis legislation in 2024. Young people deserve crisis care designed for them."},
-    {"icon": "🛡️", "title": "Trust Fund Protections", "subtitle": "Ensuring funds reach crisis services", "desc": "Without dedicated trust funds, 988 fee revenue can be diverted to unrelated budget items.", "states": ["Colorado", "Nevada", "Ohio"], "stat": "10", "stat_label": "states with 988 trust funds", "rec": "Establish a dedicated 988 trust fund with statutory protections preventing diversion.", "share": "10 states protect 988 fee revenue with trust funds. Every dollar should go to crisis services."},
+    {"icon": "💰", "title": "Sustainable Funding", "subtitle": "The foundation of effective crisis care", "desc": "Telecom fees mirror the proven 911 funding model and provide predictable revenue without relying on annual budget fights.", "states": ["Colorado", "Washington", "California"], "stat": "12", "stat_label": "states with 988 fees", "rec": "Enact a monthly telecom fee dedicated to 988 and crisis services, protected by a trust fund.", "share": "12 states have enacted 988 telecom fees to fund mental health crisis services. Your state should be next.", "accent": "#2D6A4F", "icon_bg": "#D8F3DC"},
+    {"icon": "🚐", "title": "Mobile Crisis Teams", "subtitle": "Someone to respond", "desc": "Mobile crisis teams bring licensed professionals to the person in distress as an alternative to law enforcement response.", "states": ["Virginia", "Ohio", "Minnesota"], "stat": "18", "stat_label": "states expanded mobile crisis in 2024", "rec": "Deploy mobile crisis teams statewide with a 60-minute response target.", "share": "18 states expanded mobile crisis teams in 2024. Mental health crises deserve mental health responses.", "accent": "#1E40AF", "icon_bg": "#DBEAFE"},
+    {"icon": "🏥", "title": "Crisis Stabilization", "subtitle": "A safe place for help", "desc": "Short-term crisis facilities offer an alternative to ERs and jails with up to 23 hours of observation and treatment.", "states": ["Washington", "Ohio", "Connecticut"], "stat": "14", "stat_label": "states funded new stabilization centers", "rec": "Invest in crisis stabilization units so every community has a therapeutic alternative to ERs.", "share": "14 states funded new crisis stabilization centers in 2024. No one in crisis should end up in an ER or a jail.", "accent": "#7C3AED", "icon_bg": "#EDE9FE"},
+    {"icon": "🧒", "title": "Youth Crisis Services", "subtitle": "Meeting young people where they are", "desc": "Specialized crisis services for children and adolescents include school-based teams, youth-specific hotlines, and age-appropriate programs.", "states": ["Washington", "Maryland", "Minnesota"], "stat": "11", "stat_label": "states passed youth crisis legislation", "rec": "Establish youth-specific crisis protocols and specialized training for crisis workers.", "share": "11 states passed youth crisis legislation in 2024. Young people deserve crisis care designed for them.", "accent": "#B45309", "icon_bg": "#FEF3C7"},
+    {"icon": "🛡️", "title": "Trust Fund Protections", "subtitle": "Ensuring funds reach crisis services", "desc": "Without dedicated trust funds, 988 fee revenue can be diverted to unrelated budget items.", "states": ["Colorado", "Nevada", "Ohio"], "stat": "10", "stat_label": "states with 988 trust funds", "rec": "Establish a dedicated 988 trust fund with statutory protections preventing diversion.", "share": "10 states protect 988 fee revenue with trust funds. Every dollar should go to crisis services.", "accent": "#0F766E", "icon_bg": "#CCFBF1"},
 ]
 
 BILLS = [
@@ -163,7 +163,7 @@ html, body, [data-testid="stAppViewContainer"] {
     font-family: 'Source Sans 3', sans-serif !important;
 }
 header[data-testid="stHeader"] { background: transparent !important; }
-.block-container { padding-top: 0 !important; max-width: 1100px !important; }
+.block-container { padding-top: 0 !important; max-width: 1200px !important; }
 #MainMenu, footer, [data-testid="stToolbar"], .stDeployButton { display: none !important; }
 
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
@@ -338,27 +338,49 @@ div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) > div { 
 .adv-name { font-family:'Source Sans 3',sans-serif; font-size:14px; font-weight:700; color:var(--s900); }
 .adv-role { font-family:'Source Sans 3',sans-serif; font-size:13px; color:var(--s500); }
 
-/* POLICY CARD */
-.pol-card { background:#FFF; border-radius:16px; padding:32px; margin-bottom:16px;
-    border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.03);
-    transition:all 0.3s; }
-.pol-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.06); transform:translateY(-2px); }
-.pol-icon { font-size:28px; margin-bottom:10px; }
-.pol-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--s900); margin-bottom:4px; }
-.pol-sub { font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:500; color:var(--g600);
-    letter-spacing:0.04em; text-transform:uppercase; margin-bottom:14px; }
-.pol-desc { font-family:'Source Sans 3',sans-serif; font-size:15px; color:var(--s700); line-height:1.65; margin-bottom:16px; }
-.pol-stat { display:inline-flex; align-items:baseline; gap:6px; background:var(--g50);
-    border:1px solid var(--g200); border-radius:10px; padding:10px 18px; margin-bottom:12px; }
-.pol-stat-num { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; color:var(--g700); line-height:1; }
-.pol-stat-label { font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:500; color:var(--g700); }
-.pol-states { display:flex; gap:6px; flex-wrap:wrap; margin:12px 0 16px; }
+/* POLICY CARDS — grid layout */
+.pol-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:8px; }
+.pol-grid .pol-card:last-child:nth-child(odd) { grid-column:1 / -1; max-width:calc(50% - 10px); }
+.pol-card { background:#FFF; border-radius:16px; padding:0; overflow:hidden;
+    border:1px solid rgba(0,0,0,0.06); box-shadow:0 2px 12px rgba(0,0,0,0.03);
+    transition:all 0.3s; display:flex; flex-direction:column; }
+.pol-card:hover { box-shadow:0 8px 30px rgba(0,0,0,0.08); transform:translateY(-3px); }
+.pol-accent { height:4px; width:100%; }
+.pol-body { padding:28px 28px 24px; flex:1; display:flex; flex-direction:column; }
+.pol-header { display:flex; align-items:flex-start; gap:14px; margin-bottom:16px; }
+.pol-icon { font-size:32px; line-height:1; flex-shrink:0;
+    width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+.pol-htext {}
+.pol-title { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--s900); line-height:1.2; margin-bottom:2px; }
+.pol-sub { font-family:'Source Sans 3',sans-serif; font-size:12px; font-weight:500; color:var(--s500);
+    letter-spacing:0.04em; }
+.pol-stat { display:flex; align-items:baseline; gap:8px;
+    border-radius:10px; padding:12px 16px; margin-bottom:14px; }
+.pol-stat-num { font-family:'Playfair Display',serif; font-size:32px; font-weight:900; line-height:1; }
+.pol-stat-label { font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:500; }
+.pol-desc { font-family:'Source Sans 3',sans-serif; font-size:14px; color:var(--s700); line-height:1.65; margin-bottom:14px; flex:1; }
+.pol-states { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
+.pol-states-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700;
+    color:var(--s500); letter-spacing:0.1em; text-transform:uppercase; margin-right:2px; }
 .pol-state-tag { font-family:'Source Sans 3',sans-serif; font-size:11px; font-weight:600; color:var(--g700);
-    background:var(--g100); padding:4px 12px; border-radius:20px; }
-.rec-box { background:var(--s100); border-radius:10px; padding:16px 20px; border-left:3px solid var(--g600); }
-.rec-label { font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700; color:var(--g700);
-    letter-spacing:0.12em; text-transform:uppercase; margin-bottom:6px; }
-.rec-text { font-family:'Source Sans 3',sans-serif; font-size:14px; color:var(--s700); line-height:1.6; }
+    background:var(--g100); padding:3px 10px; border-radius:20px; }
+.pol-actions { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+/* expandable rec */
+.pol-details { border:none; margin:0; }
+.pol-details summary { font-family:'Source Sans 3',sans-serif; font-size:12px; font-weight:700;
+    color:var(--g700); letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;
+    list-style:none; display:flex; align-items:center; gap:6px; padding:10px 0 6px;
+    border-top:1px solid rgba(0,0,0,0.06); user-select:none; }
+.pol-details summary::-webkit-details-marker { display:none; }
+.pol-details summary::before { content:'▸'; font-size:11px; transition:transform 0.2s; }
+.pol-details[open] summary::before { transform:rotate(90deg); }
+.rec-box { background:var(--s100); border-radius:10px; padding:14px 18px; border-left:3px solid var(--g600); margin-top:8px; }
+.rec-text { font-family:'Source Sans 3',sans-serif; font-size:13px; color:var(--s700); line-height:1.6; }
+
+@media (max-width:768px) {
+    .pol-grid { grid-template-columns:1fr; }
+    .pol-grid .pol-card:last-child:nth-child(odd) { max-width:100%; }
+}
 
 /* SCORECARD */
 .sc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin:20px 0; }
@@ -582,6 +604,7 @@ st.markdown("""
 <p>Concrete recommendations backed by what's already working.</p></div>
 """, unsafe_allow_html=True)
 
+pol_cards_html = '<div class="pol-grid">'
 for pol in POLICIES:
     states_tags = "".join(f'<span class="pol-state-tag">{s}</span>' for s in pol["states"])
     share_p = share_button_html(pol["share"], "Share stat")
@@ -589,18 +612,29 @@ for pol in POLICIES:
         f"Support {pol['title']} for 988 Crisis Services",
         f"{pol['share']}\n\nI'm writing to ask you to support legislation that would {pol['rec'].lower()}\n\nLearn more: https://reimaginecrisis.org/map/",
     )
-    st.markdown(f"""
-    <div class="pol-card">
-        <div class="pol-icon">{pol["icon"]}</div>
-        <div class="pol-title">{pol["title"]}</div>
-        <div class="pol-sub">{pol["subtitle"]}</div>
-        <div class="pol-desc">{pol["desc"]}</div>
-        <div class="pol-stat"><span class="pol-stat-num">{pol["stat"]}</span><span class="pol-stat-label">{pol["stat_label"]}</span></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">{share_p} {email_p}</div>
-        <div class="pol-states"><span style="font-size:11px;color:#64748B;font-weight:500;margin-right:4px">Leading:</span>{states_tags}</div>
-        <div class="rec-box"><div class="rec-label">NAMI Recommendation</div><div class="rec-text">{pol["rec"]}</div></div>
-    </div>
-    """, unsafe_allow_html=True)
+    accent = pol["accent"]
+    icon_bg = pol["icon_bg"]
+    pol_cards_html += (
+        f'<div class="pol-card">'
+        f'<div class="pol-accent" style="background:{accent}"></div>'
+        f'<div class="pol-body">'
+        f'<div class="pol-header">'
+        f'<div class="pol-icon" style="background:{icon_bg}">{pol["icon"]}</div>'
+        f'<div class="pol-htext"><div class="pol-title">{pol["title"]}</div>'
+        f'<div class="pol-sub">{pol["subtitle"]}</div></div></div>'
+        f'<div class="pol-stat" style="background:{icon_bg}">'
+        f'<span class="pol-stat-num" style="color:{accent}">{pol["stat"]}</span>'
+        f'<span class="pol-stat-label" style="color:{accent}">{pol["stat_label"]}</span></div>'
+        f'<div class="pol-desc">{pol["desc"]}</div>'
+        f'<div class="pol-states"><span class="pol-states-label">Leading:</span>{states_tags}</div>'
+        f'<div class="pol-actions">{share_p} {email_p}</div>'
+        f'<details class="pol-details"><summary>NAMI Recommendation</summary>'
+        f'<div class="rec-box"><div class="rec-text">{pol["rec"]}</div></div>'
+        f'</details>'
+        f'</div></div>'
+    )
+pol_cards_html += '</div>'
+st.markdown(pol_cards_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
