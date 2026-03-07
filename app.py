@@ -1,4 +1,5 @@
 import streamlit as st
+from html import escape
 
 # ---------------------------------------------------------------------------
 # Page config
@@ -282,6 +283,35 @@ div[data-testid="stVerticalBlock"] > div { gap: 0; }
 .bill-card.urgency-high   { border-left-color: #EF4444; }
 .bill-card.urgency-medium { border-left-color: #F59E0B; }
 .bill-card.urgency-low    { border-left-color: #10B981; }
+.bill-disclosure {
+    margin-bottom: 16px;
+}
+.bill-disclosure > summary {
+    list-style: none;
+    cursor: pointer;
+}
+.bill-disclosure > summary::-webkit-details-marker {
+    display: none;
+}
+.bill-disclosure > summary .bill-card {
+    margin-bottom: 0;
+}
+.bill-disclosure > summary:focus-visible {
+    outline: 3px solid #2D6A4F;
+    outline-offset: 4px;
+    border-radius: 16px;
+}
+.bill-details {
+    background: #FFFFFF;
+    border-radius: 0 0 16px 16px;
+    padding: 20px 28px 24px;
+    margin-bottom: 2px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+}
+.bill-disclosure[open] > summary .bill-card {
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
+}
 
 /* Bill header row */
 .bill-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
@@ -312,7 +342,7 @@ div[data-testid="stVerticalBlock"] > div { gap: 0; }
 .bill-title {
     font-family: 'Fraunces', serif;
     font-size: 20px; font-weight: 700;
-    color: #111827; line-height: 1.3;
+    color: #111827 !important; line-height: 1.3;
     margin: 0;
 }
 .bill-summary {
@@ -445,6 +475,13 @@ div[data-testid="stVerticalBlock"] > div { gap: 0; }
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
+.expand-hint {
+    margin-top: 12px;
+    font-size: 11px;
+    color: #6B7280;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
 
 /* Footer CTA */
 .footer-cta {
@@ -491,8 +528,6 @@ div[data-testid="stVerticalBlock"] > div { gap: 0; }
 /* Hide default streamlit elements */
 #MainMenu, footer, [data-testid="stToolbar"] { display: none !important; }
 .stDeployButton { display: none !important; }
-div[data-testid="stExpander"] { border: none !important; }
-div[data-testid="stExpander"] summary { display: block !important; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -530,7 +565,7 @@ def tags_html(tags: list) -> str:
     out = ""
     for i, t in enumerate(tags):
         bg, fg = TAG_COLORS[i % len(TAG_COLORS)]
-        out += f'<span class="tag" style="background:{bg};color:{fg}">{t}</span>'
+        out += f'<span class="tag" style="background:{bg};color:{fg}">{escape(str(t))}</span>'
     return f'<div class="tag-row">{out}</div>'
 
 
@@ -635,76 +670,70 @@ if not filtered:
 for bill in filtered:
     u = URGENCY_MAP[bill["urgency"]]
     chamber_cls = "chamber-house" if bill["chamber"] == "House" else "chamber-senate"
+    bill_id = escape(str(bill["id"]))
+    chamber = escape(str(bill["chamber"]))
+    urgency_label = escape(str(u["label"]))
+    title = escape(str(bill["title"]))
+    summary = escape(str(bill["summary"]))
+    impact = escape(str(bill["impact"]))
+    lead_sponsor = escape(str(bill["lead_sponsor"]))
+    introduced = escape(str(bill["introduced"]))
+    sponsors = escape(str(bill["sponsors"]))
 
-    # Card header + summary + progress (always visible)
-    card_html = f"""
-    <div class="bill-card urgency-{bill['urgency']}">
-        <div class="bill-meta">
-            <span class="bill-id">{bill['id']}</span>
-            <span class="chamber-badge {chamber_cls}">{bill['chamber']}</span>
-            <span class="urgency-badge" style="background:{u['bg']};color:{u['text']}">
-                <span class="urgency-dot" style="background:{u['color']}"></span>
-                {u['label']}
-            </span>
+    prov_items = ""
+    for idx, prov in enumerate(bill["provisions"], 1):
+        prov_items += (
+            '<div class="provision-item">'
+            f'<div class="provision-num">{idx}</div>'
+            f'<div class="provision-text">{escape(str(prov))}</div>'
+            "</div>"
+        )
+
+    disclosure_html = f"""
+    <details class="bill-disclosure">
+        <summary>
+            <div class="bill-card urgency-{bill['urgency']}">
+                <div class="bill-meta">
+                    <span class="bill-id">{bill_id}</span>
+                    <span class="chamber-badge {chamber_cls}">{chamber}</span>
+                    <span class="urgency-badge" style="background:{u['bg']};color:{u['text']}">
+                        <span class="urgency-dot" style="background:{u['color']}"></span>
+                        {urgency_label}
+                    </span>
+                </div>
+                <h3 class="bill-title">{title}</h3>
+                {tags_html(bill['tags'])}
+                <p class="bill-summary">{summary}</p>
+                {progress_html(bill['status_step'])}
+                <div class="expand-hint">Click card to view details</div>
+            </div>
+        </summary>
+        <div class="bill-details">
+            <div class="impact-box">
+                <h4>Why This Matters</h4>
+                <p>{impact}</p>
+            </div>
+            <div class="section-label">Key Provisions</div>
+            <div class="provision-grid">{prov_items}</div>
+            <div class="meta-row">
+                <div class="meta-item">
+                    <div class="lbl">Lead Sponsor</div>
+                    <div class="val">{lead_sponsor}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="lbl">Co-sponsors</div>
+                    <div class="val">{sponsors}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="lbl">Introduced</div>
+                    <div class="val">{introduced}</div>
+                </div>
+                <a class="action-btn" href="#">Take Action →</a>
+            </div>
         </div>
-        <h3 class="bill-title">{bill['title']}</h3>
-        {tags_html(bill['tags'])}
-        <p class="bill-summary">{bill['summary']}</p>
-        {progress_html(bill['status_step'])}
-    </div>
+    </details>
     """
-    st.markdown(card_html, unsafe_allow_html=True)
-
-    # Expandable details
-    with st.expander(f"Details: {bill['title']}", expanded=False):
-        # Impact box
-        st.markdown(
-            f"""
-        <div class="impact-box">
-            <h4>Why This Matters</h4>
-            <p>{bill['impact']}</p>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
-
-        # Provisions
-        prov_items = ""
-        for idx, prov in enumerate(bill["provisions"], 1):
-            prov_items += f"""
-            <div class="provision-item">
-                <div class="provision-num">{idx}</div>
-                <div class="provision-text">{prov}</div>
-            </div>"""
-        st.markdown(
-            f"""
-        <div class="section-label">Key Provisions</div>
-        <div class="provision-grid">{prov_items}</div>
-        """,
-            unsafe_allow_html=True,
-        )
-
-        # Meta row
-        st.markdown(
-            f"""
-        <div class="meta-row">
-            <div class="meta-item">
-                <div class="lbl">Lead Sponsor</div>
-                <div class="val">{bill['lead_sponsor']}</div>
-            </div>
-            <div class="meta-item">
-                <div class="lbl">Co-sponsors</div>
-                <div class="val">{bill['sponsors']}</div>
-            </div>
-            <div class="meta-item">
-                <div class="lbl">Introduced</div>
-                <div class="val">{bill['introduced']}</div>
-            </div>
-            <a class="action-btn" href="#">Take Action →</a>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
+    st.markdown(disclosure_html, unsafe_allow_html=True)
 
 # ---------------------------------------------------------------------------
 # Footer CTA
