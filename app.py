@@ -5,7 +5,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="988 State Policy Tracker",
-    page_icon="N",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -312,6 +312,14 @@ Thank you,
 [Your Name]
 [City, ZIP]
 """
+
+
+def render_download_button(label: str, data: str, filename: str) -> None:
+    # Newer Streamlit expects `width`; older versions still use `use_container_width`.
+    try:
+        st.download_button(label, data=data, file_name=filename, mime="text/plain", width="content")
+    except TypeError:
+        st.download_button(label, data=data, file_name=filename, mime="text/plain")
 
 
 st.markdown(
@@ -986,11 +994,10 @@ with tool_cols[1]:
         value=build_script(selected),
         height=320,
     )
-    st.download_button(
+    render_download_button(
         "Download advocacy script",
-        data=draft,
-        file_name=f"{slugify(selected_state)}-988-advocacy-script.txt",
-        mime="text/plain",
+        draft,
+        f"{slugify(selected_state)}-988-advocacy-script.txt",
     )
 
 st.markdown(
