@@ -49,34 +49,34 @@ POLICIES = [
 
 BILLS = [
     # 988 Fee
-    {"state": "Maryland", "bill": "HB 933/SB 974", "cat": "988 Fee", "summary": "Establishes a 988 fee of $0.25/mo per phone line, with Lifeline program exemptions.", "sponsors": "Del. Jessica Feldmark (D), Sen. Guy Guzzone (D)"},
-    {"state": "Ohio", "bill": "SB 211", "cat": "988 Fee", "summary": "Creates a 988 trust fund in the state treasury and codifies a 988 Administrator position.", "sponsors": "Sen. Kristina Roegner (R)"},
-    {"state": "Vermont", "bill": "H 657", "cat": "988 Fee", "summary": "Establishes a $0.72/line charge, with a portion directed to 988 contact centers (~$1M/year).", "sponsors": "Rep. Katherine Sims (D)"},
+    {"state": "Maryland", "bill": "HB 933/SB 974", "cat": "988 Fee", "url": "https://mgaleg.maryland.gov/mgawebsite/Legislation/Details/hb0933?ys=2024RS", "summary": "Establishes a 988 fee of $0.25/mo per phone line, with Lifeline program exemptions.", "sponsors": "Del. Jessica Feldmark (D), Sen. Guy Guzzone (D)"},
+    {"state": "Ohio", "bill": "SB 211", "cat": "988 Fee", "url": "https://www.legislature.ohio.gov/legislation/135/sb211", "summary": "Creates a 988 trust fund in the state treasury and codifies a 988 Administrator position.", "sponsors": "Sen. Kristina Roegner (R)"},
+    {"state": "Vermont", "bill": "H 657", "cat": "988 Fee", "url": "https://legislature.vermont.gov/bill/status/2024/H.657", "summary": "Establishes a $0.72/line charge, with a portion directed to 988 contact centers (~$1M/year).", "sponsors": "Rep. Katherine Sims (D)"},
     # Appropriations
-    {"state": "Florida", "bill": "SB 7016", "cat": "Appropriations", "summary": "Appropriates $11.5M in recurring funding to expand mobile response teams to every county.", "sponsors": "Senate Health & Fiscal Policy Committees"},
-    {"state": "Maine", "bill": "LD 2214", "cat": "Appropriations", "summary": "Appropriates $600K for mobile crisis and $2M for three new crisis receiving centers.", "sponsors": "Rep. Melanie Sachs (D)"},
-    {"state": "Rhode Island", "bill": "HB 7225", "cat": "Appropriations", "summary": "Appropriates $1.9M for 988 Hotline operations, up from $1.6M the prior year.", "sponsors": "Rep. Marvin Abney (D)"},
-    {"state": "Arizona", "bill": "HB 2897", "cat": "Appropriations", "summary": "Appropriates $16.4M for behavioral health crisis services."},
-    {"state": "Connecticut", "bill": "HB 5523", "cat": "Appropriations", "summary": "Appropriates $13.2M total to enhance and expand mobile crisis services."},
-    {"state": "Washington", "bill": "SB 5950", "cat": "Appropriations", "summary": "Funds youth crisis services, crisis relief center expansion, and digital behavioral health."},
-    {"state": "Wyoming", "bill": "HB 001", "cat": "Appropriations", "summary": "Appropriates $10M from general revenue to the 988 system trust fund account."},
+    {"state": "Florida", "bill": "SB 7016", "cat": "Appropriations", "url": "https://www.flsenate.gov/Session/Bill/2024/7016", "summary": "Appropriates $11.5M in recurring funding to expand mobile response teams to every county.", "sponsors": "Senate Health & Fiscal Policy Committees"},
+    {"state": "Maine", "bill": "LD 2214", "cat": "Appropriations", "url": "https://legislature.maine.gov/LawMakerWeb/summary.asp?ID=280089937", "summary": "Appropriates $600K for mobile crisis and $2M for three new crisis receiving centers.", "sponsors": "Rep. Melanie Sachs (D)"},
+    {"state": "Rhode Island", "bill": "HB 7225", "cat": "Appropriations", "url": "https://webserver.rilegislature.gov/BillText/BillText24/HouseText24/H7225.htm", "summary": "Appropriates $1.9M for 988 Hotline operations, up from $1.6M the prior year.", "sponsors": "Rep. Marvin Abney (D)"},
+    {"state": "Arizona", "bill": "HB 2897", "cat": "Appropriations", "url": "https://www.azleg.gov/legtext/56leg/2R/bills/HB2897S.htm", "summary": "Appropriates $16.4M for behavioral health crisis services."},
+    {"state": "Connecticut", "bill": "HB 5523", "cat": "Appropriations", "url": "https://www.cga.ct.gov/asp/cgabillstatus/cgabillstatus.asp?selBillType=Bill&bill_num=HB05523&which_year=2024", "summary": "Appropriates $13.2M total to enhance and expand mobile crisis services."},
+    {"state": "Washington", "bill": "SB 5950", "cat": "Appropriations", "url": "https://app.leg.wa.gov/billsummary?BillNumber=5950&Year=2023", "summary": "Funds youth crisis services, crisis relief center expansion, and digital behavioral health."},
+    {"state": "Wyoming", "bill": "HB 001", "cat": "Appropriations", "url": "https://www.wyoleg.gov/Legislation/2024/HB0001", "summary": "Appropriates $10M from general revenue to the 988 system trust fund account."},
     # Insurance
-    {"state": "California", "bill": "AB 1316", "cat": "Insurance", "summary": "Clarifies Medi-Cal managed care plans must cover emergency department psychiatric services.", "sponsors": "Assemb. C. Ward (D), Assemb. J. Irwin (D)"},
-    {"state": "Virginia", "bill": "HB 601/SB 543", "cat": "Insurance", "summary": "Adds crisis receiving centers to locations where mobile crisis services must be covered by insurance.", "sponsors": "Del. Terry Kilgore (R), Sen. Lamont Bagby (D)"},
+    {"state": "California", "bill": "AB 1316", "cat": "Insurance", "url": "https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202320240AB1316", "summary": "Clarifies Medi-Cal managed care plans must cover emergency department psychiatric services.", "sponsors": "Assemb. C. Ward (D), Assemb. J. Irwin (D)"},
+    {"state": "Virginia", "bill": "HB 601/SB 543", "cat": "Insurance", "url": "https://lis.virginia.gov/bill-details/20241/HB601", "summary": "Adds crisis receiving centers to locations where mobile crisis services must be covered by insurance.", "sponsors": "Del. Terry Kilgore (R), Sen. Lamont Bagby (D)"},
     # Youth
-    {"state": "New Hampshire", "bill": "HB 1109", "cat": "Youth", "summary": "Requires student ID cards to include 988 and eating disorders helpline for grades 6-12.", "sponsors": "Rep. Rosemarie Rung (D)"},
-    {"state": "Washington", "bill": "SB 5853", "cat": "Youth", "summary": "Extends crisis relief centers to minors with separate treatment areas and 24/7 walk-in access.", "sponsors": "Sen. Manka Dhingra (D)"},
-    {"state": "Delaware", "bill": "HB 137", "cat": "Youth", "summary": "Updates crisis contact info on student ID cards for grades 7-12."},
-    {"state": "Louisiana", "bill": "SB 310", "cat": "Youth", "summary": "Requires public and nonpublic secondary schools to post 988 on their websites."},
-    {"state": "Maine", "bill": "LD 1263", "cat": "Youth", "summary": "Requires schools and postsecondary institutions to include 988 on student ID cards."},
-    {"state": "Maryland", "bill": "HB 284/SB 122", "cat": "Youth", "summary": "Requires 988 on student ID cards and in school handbooks for grades 6-12."},
-    {"state": "New York", "bill": "A 6563A", "cat": "Youth", "summary": "Requires higher education institutions to educate about 988 and include it on student IDs."},
+    {"state": "New Hampshire", "bill": "HB 1109", "cat": "Youth", "url": "https://legiscan.com/NH/bill/HB1109/2024", "summary": "Requires student ID cards to include 988 and eating disorders helpline for grades 6-12.", "sponsors": "Rep. Rosemarie Rung (D)"},
+    {"state": "Washington", "bill": "SB 5853", "cat": "Youth", "url": "https://app.leg.wa.gov/billsummary?BillNumber=5853&Year=2023", "summary": "Extends crisis relief centers to minors with separate treatment areas and 24/7 walk-in access.", "sponsors": "Sen. Manka Dhingra (D)"},
+    {"state": "Delaware", "bill": "HB 137", "cat": "Youth", "url": "https://legis.delaware.gov/BillDetail?LegislationId=140787", "summary": "Updates crisis contact info on student ID cards for grades 7-12."},
+    {"state": "Louisiana", "bill": "SB 310", "cat": "Youth", "url": "https://legis.la.gov/legis/BillInfo.aspx?s=24RS&b=SB310", "summary": "Requires public and nonpublic secondary schools to post 988 on their websites."},
+    {"state": "Maine", "bill": "LD 1263", "cat": "Youth", "url": "https://legislature.maine.gov/LawMakerWeb/summary.asp?ID=280087811", "summary": "Requires schools and postsecondary institutions to include 988 on student ID cards."},
+    {"state": "Maryland", "bill": "HB 284/SB 122", "cat": "Youth", "url": "https://mgaleg.maryland.gov/mgawebsite/Legislation/Details/hb0284?ys=2024RS", "summary": "Requires 988 on student ID cards and in school handbooks for grades 6-12."},
+    {"state": "New York", "bill": "A 6563A", "cat": "Youth", "url": "https://www.nysenate.gov/legislation/bills/2023/A6563", "summary": "Requires higher education institutions to educate about 988 and include it on student IDs."},
     # Coordination
-    {"state": "Nebraska", "bill": "LB 1200", "cat": "Coordination", "summary": "Requires statewide standards for 911/988 call transfers and adds 988 counselor liability protections.", "sponsors": "Sen. Mike Moser (R)"},
-    {"state": "Vermont", "bill": "S 189", "cat": "Coordination", "summary": "Instructs Dept. of Mental Health to develop crisis response guidelines for municipalities.", "sponsors": "Sen. Ginny Lyons (D)"},
-    {"state": "Vermont", "bill": "H 883", "cat": "Coordination", "summary": "Reports on embedded mental health worker program collaboration with 988 and mobile crisis."},
-    {"state": "Louisiana", "bill": "SR 14", "cat": "Coordination", "summary": "Establishes Community Responder Taskforce to study law enforcement and behavioral health partnerships."},
-    {"state": "Washington", "bill": "SB 6251", "cat": "Coordination", "summary": "Requires BH-ASOs to coordinate crisis response and dispatch protocols for mobile crisis teams."},
+    {"state": "Nebraska", "bill": "LB 1200", "cat": "Coordination", "url": "https://nebraskalegislature.gov/bills/view_bill.php?DocumentID=53454", "summary": "Requires statewide standards for 911/988 call transfers and adds 988 counselor liability protections.", "sponsors": "Sen. Mike Moser (R)"},
+    {"state": "Vermont", "bill": "S 189", "cat": "Coordination", "url": "https://legislature.vermont.gov/bill/status/2024/S.189", "summary": "Instructs Dept. of Mental Health to develop crisis response guidelines for municipalities.", "sponsors": "Sen. Ginny Lyons (D)"},
+    {"state": "Vermont", "bill": "H 883", "cat": "Coordination", "url": "https://legislature.vermont.gov/bill/status/2024/H.883", "summary": "Reports on embedded mental health worker program collaboration with 988 and mobile crisis."},
+    {"state": "Louisiana", "bill": "SR 14", "cat": "Coordination", "url": "https://legis.la.gov/legis/BillInfo.aspx?s=24RS&b=SR14", "summary": "Establishes Community Responder Taskforce to study law enforcement and behavioral health partnerships."},
+    {"state": "Washington", "bill": "SB 6251", "cat": "Coordination", "url": "https://app.leg.wa.gov/billsummary?BillNumber=6251&Year=2023", "summary": "Requires BH-ASOs to coordinate crisis response and dispatch protocols for mobile crisis teams."},
 ]
 
 ADVOCATES = [
@@ -236,7 +236,9 @@ div[data-testid="stVerticalBlockBorderWrapper"]:has(.state-card-marker) > div { 
     box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:transform 0.15s, box-shadow 0.15s; }
 .bill-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.08); }
 .bill-state { font-family:'Playfair Display',serif; font-size:20px; font-weight:900; color:var(--s900); margin-bottom:2px; }
-.bill-num { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:var(--g700); margin-bottom:8px; }
+.bill-num { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600;
+    color:var(--g700); margin-bottom:8px; text-decoration:none; }
+.bill-num:hover { color:var(--g900); text-decoration:underline; }
 .bill-cat { display:inline-block; font-family:'Source Sans 3',sans-serif; font-size:10px; font-weight:700;
     color:var(--g700); background:var(--g50); padding:3px 10px; border-radius:20px;
     letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
@@ -660,7 +662,7 @@ for b in filtered:
     cards_html += (
         f'<div class="bill-card">'
         f'<div class="bill-state">{b["state"]}</div>'
-        f'<div class="bill-num">{b["bill"]}</div>'
+        f'<a class="bill-num" href="{b["url"]}" target="_blank">{b["bill"]} ↗</a>'
         f'<span class="bill-cat{cat_cls}">{b["cat"]}</span>'
         f'<div class="bill-summary">{b["summary"]}</div>'
         f'{sponsor_line}'
