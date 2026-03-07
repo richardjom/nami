@@ -1,5 +1,6 @@
 import streamlit as st
 import json
+from html import escape
 
 # ---------------------------------------------------------------------------
 # Page config
@@ -570,10 +571,9 @@ header[data-testid="stHeader"] { background: transparent !important; }
 }
 
 /* ---- POLICY CARDS ---- */
-.policy-card {
+.policy-disclosure {
     background: #FFFFFF;
     border-radius: 16px;
-    padding: 32px;
     margin-bottom: 20px;
     border: 1px solid rgba(0,0,0,0.04);
     box-shadow: 0 2px 12px rgba(0,0,0,0.03);
@@ -581,21 +581,60 @@ header[data-testid="stHeader"] { background: transparent !important; }
     position: relative;
     overflow: hidden;
 }
-.policy-card:hover {
+.policy-disclosure:hover {
     box-shadow: 0 8px 30px rgba(0,0,0,0.06);
     transform: translateY(-2px);
 }
-.policy-card .p-icon {
+.policy-disclosure[open] {
+    border: 2px solid var(--green-700);
+    box-shadow: 0 10px 30px rgba(45,106,79,0.14);
+}
+.policy-disclosure > summary {
+    list-style: none;
+    cursor: pointer;
+    position: relative;
+    padding: 32px;
+}
+.policy-disclosure > summary::-webkit-details-marker {
+    display: none;
+}
+.policy-disclosure > summary::after {
+    content: '+';
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--slate-100);
+    color: var(--slate-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 1;
+}
+.policy-disclosure[open] > summary::after {
+    content: '×';
+    background: var(--green-700);
+    color: #FFFFFF;
+    font-size: 32px;
+}
+.policy-body {
+    padding: 0 32px 32px;
+}
+.policy-disclosure .p-icon {
     font-size: 28px;
     margin-bottom: 12px;
 }
-.policy-card .p-title {
+.policy-disclosure .p-title {
     font-family: 'Playfair Display', serif;
     font-size: 22px; font-weight: 700;
     color: var(--slate-900);
     margin-bottom: 4px;
 }
-.policy-card .p-subtitle {
+.policy-disclosure .p-subtitle {
     font-family: 'Source Sans 3', sans-serif;
     font-size: 13px; font-weight: 500;
     color: var(--green-600);
@@ -603,7 +642,7 @@ header[data-testid="stHeader"] { background: transparent !important; }
     text-transform: uppercase;
     margin-bottom: 14px;
 }
-.policy-card .p-desc {
+.policy-disclosure .p-desc {
     font-family: 'Source Sans 3', sans-serif;
     font-size: 15px; font-weight: 400;
     color: var(--slate-700);
@@ -747,6 +786,49 @@ header[data-testid="stHeader"] { background: transparent !important; }
 }
 .check { color: var(--green-600); font-weight: 700; }
 .cross { color: var(--slate-300); }
+
+/* ---- STATE CHIP HEADER ---- */
+.state-compare-header {
+    padding: 12px 0 6px;
+}
+.state-compare-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: var(--slate-900);
+    margin: 0 0 10px;
+}
+.state-compare-header p {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.55;
+    color: #60728C;
+    margin: 0 0 24px;
+}
+.state-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 0 0 20px;
+}
+.state-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding: 0 38px;
+    border-radius: 16px;
+    border: 2px solid #D1D5DE;
+    background: #FFFFFF;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: #34435A;
+    line-height: 1;
+}
 
 /* ---- FOOTER CTA ---- */
 .footer-cta {
@@ -970,27 +1052,31 @@ st.markdown("""
 
 for card in POLICY_CARDS:
     states_tags = "".join(
-        f'<span class="ls-tag">{s}</span>' for s in card["leading_states"]
+        f'<span class="ls-tag">{escape(s)}</span>' for s in card["leading_states"]
     )
     st.markdown(f"""
-    <div class="policy-card">
-        <div class="p-icon">{card['icon']}</div>
-        <div class="p-title">{card['title']}</div>
-        <div class="p-subtitle">{card['subtitle']}</div>
-        <div class="p-desc">{card['description']}</div>
-        <div class="policy-stat-badge">
-            <span class="ps-num">{card['stat']}</span>
-            <span class="ps-label">{card['stat_label']}</span>
+    <details class="policy-disclosure">
+        <summary>
+            <div class="p-icon">{escape(card['icon'])}</div>
+            <div class="p-title">{escape(card['title'])}</div>
+            <div class="p-subtitle">{escape(card['subtitle'])}</div>
+            <div class="p-desc">{escape(card['description'])}</div>
+            <div class="policy-stat-badge">
+                <span class="ps-num">{escape(card['stat'])}</span>
+                <span class="ps-label">{escape(card['stat_label'])}</span>
+            </div>
+        </summary>
+        <div class="policy-body">
+            <div class="leading-states">
+                <span style="font-size:11px;color:#64748B;font-weight:500;margin-right:4px;">Leading:</span>
+                {states_tags}
+            </div>
+            <div class="rec-box">
+                <div class="rec-label">NAMI Recommendation</div>
+                <div class="rec-text">{escape(card['recommendation'])}</div>
+            </div>
         </div>
-        <div class="leading-states">
-            <span style="font-size:11px;color:#64748B;font-weight:500;margin-right:4px;">Leading:</span>
-            {states_tags}
-        </div>
-        <div class="rec-box">
-            <div class="rec-label">NAMI Recommendation</div>
-            <div class="rec-text">{card['recommendation']}</div>
-        </div>
-    </div>
+    </details>
     """, unsafe_allow_html=True)
 
 
@@ -998,20 +1084,37 @@ for card in POLICY_CARDS:
 # STATE COMPARISON TOOL
 # ===========================================================================
 st.markdown("""
-<div class="section-header">
-    <div class="eyebrow">Compare</div>
+<div class="state-compare-header">
     <h2>State by State</h2>
     <p>See how states stack up on 988 funding and crisis service infrastructure.</p>
 </div>
 """, unsafe_allow_html=True)
 
 state_names = list(STATE_DATA.keys())
-selected_states = st.multiselect(
-    "Select states to compare",
-    state_names,
-    default=["Colorado", "Washington", "Maryland"],
-    max_selections=5,
-)
+if "compare_states" not in st.session_state:
+    st.session_state["compare_states"] = [
+        "Colorado",
+        "Washington",
+        "Maryland",
+        "Ohio",
+        "Virginia",
+        "Minnesota",
+    ]
+
+with st.expander("Edit states shown", expanded=False):
+    chosen_states = st.multiselect(
+        "Select states to compare",
+        state_names,
+        default=st.session_state["compare_states"],
+        max_selections=6,
+    )
+    st.session_state["compare_states"] = chosen_states
+
+selected_states = st.session_state["compare_states"]
+
+if selected_states:
+    state_chips = "".join(f'<span class="state-chip">{escape(s)}</span>' for s in selected_states)
+    st.markdown(f'<div class="state-chip-row">{state_chips}</div>', unsafe_allow_html=True)
 
 if selected_states:
     # Build comparison table
