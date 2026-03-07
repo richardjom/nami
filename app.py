@@ -460,8 +460,9 @@ div[data-testid="stRadio"] [role="radiogroup"] > label input[type="radio"] {
     margin: 0;
 }
 
-div[data-testid="stTextInput"] input,
-div[data-testid="stSelectbox"] [data-baseweb="select"] > div,
+div[data-testid="stTextInput"],
+div[data-testid="stTextArea"],
+div[data-testid="stSelectbox"],
 div[data-testid="stCheckbox"] {
     font-family: 'Sora', sans-serif !important;
 }
@@ -471,42 +472,51 @@ label[data-testid="stWidgetLabel"] p {
     font-weight: 600 !important;
 }
 
+div[data-testid="stTextInput"] [data-baseweb="input"] > div,
+div[data-testid="stTextArea"] [data-baseweb="textarea"] > div,
 div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
     background: #f8fbff !important;
     border: 1px solid #cfd7df !important;
     border-radius: 12px !important;
     color: #17202a !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+div[data-testid="stTextInput"] [data-baseweb="input"] > div:focus-within,
+div[data-testid="stTextArea"] [data-baseweb="textarea"] > div:focus-within,
+div[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within {
+    border-color: #8fb7ae !important;
+    box-shadow: 0 0 0 2px rgba(143, 183, 174, 0.18) !important;
 }
 
 div[data-testid="stSelectbox"] [data-baseweb="select"] * {
     color: #17202a !important;
 }
 
-div[data-testid="stTextInput"] input {
-    background: #f8fbff !important;
+div[data-testid="stTextInput"] input,
+div[data-testid="stTextArea"] textarea {
+    background: transparent !important;
     color: #17202a !important;
-    border: 1px solid #cfd7df !important;
-    border-radius: 12px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
-div[data-testid="stTextInput"] input::placeholder {
+div[data-testid="stTextInput"] input::placeholder,
+div[data-testid="stTextArea"] textarea::placeholder {
     color: #7a8491 !important;
 }
 
 div[data-testid="stTextArea"] textarea {
-    background: #f8fbff !important;
-    color: #17202a !important;
-    border: 1px solid #cfd7df !important;
-    border-radius: 12px !important;
     line-height: 1.5 !important;
-    box-shadow: none !important;
-    outline: none !important;
 }
 
 div[data-testid="stTextArea"] textarea:focus,
 div[data-testid="stTextArea"] textarea:focus-visible,
 div[data-testid="stTextArea"] textarea:active {
-    border: 1px solid #8fb7ae !important;
+    border: 0 !important;
     box-shadow: none !important;
     outline: none !important;
 }
