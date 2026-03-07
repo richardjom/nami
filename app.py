@@ -246,24 +246,33 @@ div[data-testid="stVerticalBlock"] > div { gap: 0; }
     text-transform: uppercase; font-weight: 500;
 }
 
-/* Filter pills */
-.filter-row {
-    display: flex; gap: 8px; flex-wrap: wrap;
-    margin-bottom: 20px; align-items: center;
+/* Filter radio bubbles */
+div[data-testid="stRadio"] [role="radiogroup"] {
+    gap: 10px;
+    flex-wrap: wrap;
 }
-.filter-pill {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12.5px; font-weight: 600;
-    padding: 8px 18px;
-    border-radius: 9px;
-    cursor: pointer; border: 1.5px solid #E5E7EB;
-    background: #FFFFFF; color: #4B5563;
+div[data-testid="stRadio"] [role="radiogroup"] > label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 999px;
+    background: #FFFFFF;
     transition: all 0.2s;
 }
-.filter-pill:hover { border-color: #2D6A4F; color: #2D6A4F; }
-.filter-pill.active {
-    background: #2D6A4F; color: #FFFFFF;
+div[data-testid="stRadio"] [role="radiogroup"] > label:hover {
     border-color: #2D6A4F;
+}
+div[data-testid="stRadio"] [role="radiogroup"] > label:has(input:checked) {
+    border-color: #2D6A4F;
+    background: #F0FDF4;
+}
+div[data-testid="stRadio"] [role="radiogroup"] > label p,
+div[data-testid="stRadio"] [role="radiogroup"] > label span {
+    color: #111827 !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-weight: 600 !important;
 }
 
 /* Bill card */
@@ -620,7 +629,12 @@ FILTER_OPTIONS = ["All", "House", "Senate", "High Urgency", "Signed Into Law"]
 
 col_filters, col_search = st.columns([3, 1])
 with col_filters:
-    active_filter = st.selectbox("Filter bills", FILTER_OPTIONS, index=0)
+    active_filter = st.radio(
+        "Filter bills",
+        FILTER_OPTIONS,
+        horizontal=True,
+        label_visibility="collapsed",
+    )
 with col_search:
     search = st.text_input("Search bills", placeholder="Search bills...")
 
