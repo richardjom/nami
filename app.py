@@ -1121,12 +1121,13 @@ selected_states = st.session_state["compare_states"]
 
 st.markdown('<div class="compare-chip-help">Tap states to compare (up to 6).</div>', unsafe_allow_html=True)
 selected_set = set(selected_states)
-for i in range(0, len(state_names), 6):
-    row_states = state_names[i:i + 6]
-    cols = st.columns(len(row_states))
-    for col, state in zip(cols, row_states):
+chips_per_row = 5
+for i in range(0, len(state_names), chips_per_row):
+    row_states = state_names[i:i + chips_per_row]
+    cols = st.columns(chips_per_row, gap="small")
+    for idx, state in enumerate(row_states):
         is_selected = state in selected_set
-        with col:
+        with cols[idx]:
             if st.button(
                 state,
                 key=f"cmp_state_{state}",
