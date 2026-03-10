@@ -722,27 +722,52 @@ fig.update_layout(
     dragmode=False,
 )
 fig.update_geos(showframe=False)
-st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+event = st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False},
+                        on_select="rerun", selection_mode="points", key="bill_map")
 
-# Compact bill detail table below the map
+# Determine clicked state from map selection
+abbrev_to_name = {v: k for k, v in STATE_ABBREV.items()}
+clicked_state_name = None
+try:
+    if event and event.selection and event.selection.points:
+        pt = event.selection.points[0]
+        loc = pt.get("location", "")
+        clicked_state_name = abbrev_to_name.get(loc)
+except (AttributeError, IndexError, KeyError):
+    pass
+
 cat_class_map = {"988 Fee": "", "Appropriations": " approp", "Insurance": " ins", "Youth": " youth", "Coordination": " coord"}
-bill_table_html = '<div class="bill-grid">'
-for b in filtered:
-    cat_cls = cat_class_map.get(b["cat"], "")
-    sponsor_line = f'<div class="bill-sponsor">{b["sponsors"]}</div>' if b.get("sponsors") else ""
-    bill_table_html += (
-        f'<div class="bill-card">'
-        f'<div class="bill-state">{b["state"]}</div>'
-        f'<a class="bill-num" href="{b["url"]}" target="_blank">{b["bill"]} ↗</a>'
-        f'<span class="bill-cat{cat_cls}">{b["cat"]}</span>'
-        f'<div class="bill-summary">{b["summary"]}</div>'
-        f'{sponsor_line}'
-        f'</div>'
-    )
-bill_table_html += '</div>'
+
+def _render_bill_cards(bills):
+    html = '<div class="bill-grid">'
+    for b in bills:
+        cat_cls = cat_class_map.get(b["cat"], "")
+        sponsor_line = f'<div class="bill-sponsor">{b["sponsors"]}</div>' if b.get("sponsors") else ""
+        html += (
+            f'<div class="bill-card">'
+            f'<div class="bill-state">{b["state"]}</div>'
+            f'<a class="bill-num" href="{b["url"]}" target="_blank">{b["bill"]} ↗</a>'
+            f'<span class="bill-cat{cat_cls}">{b["cat"]}</span>'
+            f'<div class="bill-summary">{b["summary"]}</div>'
+            f'{sponsor_line}'
+            f'</div>'
+        )
+    html += '</div>'
+    return html
+
+if clicked_state_name:
+    state_bills = [b for b in filtered if b["state"] == clicked_state_name]
+    if state_bills:
+        st.markdown(f'<div style="font-family:Playfair Display,serif;font-size:24px;font-weight:900;color:var(--s900);margin:8px 0 4px">{clicked_state_name}</div>'
+                     f'<div style="font-family:Source Sans 3,sans-serif;font-size:14px;color:var(--s500);margin-bottom:12px">{len(state_bills)} bill(s) in 2024</div>', unsafe_allow_html=True)
+        st.markdown(_render_bill_cards(state_bills), unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div style="font-family:Source Sans 3,sans-serif;font-size:15px;color:var(--s500);padding:16px 0">No bills for <b>{clicked_state_name}</b> in this category.</div>', unsafe_allow_html=True)
+else:
+    st.markdown('<div style="font-family:Source Sans 3,sans-serif;font-size:14px;color:var(--s500);text-align:center;padding:8px 0">Click a state on the map to see its bills.</div>', unsafe_allow_html=True)
 
 with st.expander(f"View all {len(filtered)} bills"):
-    st.markdown(bill_table_html, unsafe_allow_html=True)
+    st.markdown(_render_bill_cards(filtered), unsafe_allow_html=True)
 
 
 # ===========================================================================
