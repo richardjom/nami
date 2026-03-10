@@ -1,6 +1,8 @@
 import streamlit as st
 import json
 import urllib.parse
+from collections import defaultdict
+import plotly.graph_objects as go
 
 # ---------------------------------------------------------------------------
 # Page config
@@ -78,6 +80,22 @@ BILLS = [
     {"state": "Louisiana", "bill": "SR 14", "cat": "Coordination", "url": "https://legis.la.gov/legis/BillInfo.aspx?s=24RS&b=SR14", "summary": "Establishes Community Responder Taskforce to study law enforcement and behavioral health partnerships."},
     {"state": "Washington", "bill": "SB 6251", "cat": "Coordination", "url": "https://app.leg.wa.gov/billsummary?BillNumber=6251&Year=2023", "summary": "Requires BH-ASOs to coordinate crisis response and dispatch protocols for mobile crisis teams."},
 ]
+
+STATE_ABBREV = {
+    "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR",
+    "California": "CA", "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE",
+    "Florida": "FL", "Georgia": "GA", "Hawaii": "HI", "Idaho": "ID",
+    "Illinois": "IL", "Indiana": "IN", "Iowa": "IA", "Kansas": "KS",
+    "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+    "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS",
+    "Missouri": "MO", "Montana": "MT", "Nebraska": "NE", "Nevada": "NV",
+    "New Hampshire": "NH", "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY",
+    "North Carolina": "NC", "North Dakota": "ND", "Ohio": "OH", "Oklahoma": "OK",
+    "Oregon": "OR", "Pennsylvania": "PA", "Rhode Island": "RI", "South Carolina": "SC",
+    "South Dakota": "SD", "Tennessee": "TN", "Texas": "TX", "Utah": "UT",
+    "Vermont": "VT", "Virginia": "VA", "Washington": "WA", "West Virginia": "WV",
+    "Wisconsin": "WI", "Wyoming": "WY",
+}
 
 ADVOCATES = [
     {"quote": "Too many people in our country can't get the help they need and don't know where to turn. But 988 is changing that.", "name": "Daniel H. Gillison, Jr.", "role": "CEO, NAMI", "accent": "#2D6A4F"},
@@ -638,7 +656,7 @@ st.markdown(pol_cards_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
-# 10. 2024 LEGISLATION CARDS
+# 10. 2024 LEGISLATION MAP
 # ===========================================================================
 st.markdown("""
 <div class="sh"><div class="ey">2024 Legislation</div>
@@ -649,14 +667,70 @@ st.markdown("""
 bill_cats = ["All"] + sorted(set(b["cat"] for b in BILLS))
 bill_filter = st.radio("Filter by category", bill_cats, horizontal=True, label_visibility="collapsed")
 
-cat_class_map = {"988 Fee": "", "Appropriations": " approp", "Insurance": " ins", "Youth": " youth", "Coordination": " coord"}
 filtered = BILLS if bill_filter == "All" else [b for b in BILLS if b["cat"] == bill_filter]
 
-cards_html = '<div class="bill-grid">'
+# Aggregate bills per state
+bill_counts = defaultdict(int)
+bill_hover = defaultdict(list)
+for b in filtered:
+    bill_counts[b["state"]] += 1
+    bill_hover[b["state"]].append(f"{b['bill']} — {b['cat']}")
+
+# Build map data for all 50 states
+all_states = sorted(STATE_ABBREV.keys())
+abbrevs = [STATE_ABBREV[s] for s in all_states]
+z_vals = [bill_counts.get(s, 0) for s in all_states]
+hover_texts = []
+for s in all_states:
+    if s in bill_hover:
+        lines = "<br>".join(bill_hover[s])
+        hover_texts.append(f"<b>{s}</b><br>{bill_counts[s]} bill(s)<br>{lines}")
+    else:
+        hover_texts.append(f"<b>{s}</b><br>No bills in this category")
+
+cat_colors = {
+    "All": [[0, "#E2E8F0"], [0.01, "#D8F3DC"], [0.5, "#52B788"], [1, "#1B4332"]],
+    "988 Fee": [[0, "#E2E8F0"], [0.01, "#D8F3DC"], [0.5, "#52B788"], [1, "#1B4332"]],
+    "Appropriations": [[0, "#E2E8F0"], [0.01, "#DBEAFE"], [0.5, "#60A5FA"], [1, "#1E40AF"]],
+    "Insurance": [[0, "#E2E8F0"], [0.01, "#FEF3C7"], [0.5, "#F59E0B"], [1, "#92400E"]],
+    "Youth": [[0, "#E2E8F0"], [0.01, "#D8F3DC"], [0.5, "#52B788"], [1, "#166534"]],
+    "Coordination": [[0, "#E2E8F0"], [0.01, "#EDE9FE"], [0.5, "#A78BFA"], [1, "#5B21B6"]],
+}
+
+max_z = max(z_vals) if max(z_vals) > 0 else 1
+fig = go.Figure(go.Choropleth(
+    locations=abbrevs,
+    z=z_vals,
+    locationmode="USA-states",
+    colorscale=cat_colors.get(bill_filter, cat_colors["All"]),
+    zmin=0,
+    zmax=max_z,
+    text=hover_texts,
+    hoverinfo="text",
+    hoverlabel=dict(bgcolor="#FFF", font_size=13, font_family="Source Sans 3, sans-serif"),
+    marker_line_color="#FFF",
+    marker_line_width=1.5,
+    showscale=False,
+))
+fig.update_layout(
+    geo=dict(scope="usa", bgcolor="rgba(0,0,0,0)", lakecolor="rgba(0,0,0,0)",
+             landcolor="#E2E8F0", showlakes=False),
+    margin=dict(l=0, r=0, t=0, b=0),
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    height=420,
+    dragmode=False,
+)
+fig.update_geos(showframe=False)
+st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+
+# Compact bill detail table below the map
+cat_class_map = {"988 Fee": "", "Appropriations": " approp", "Insurance": " ins", "Youth": " youth", "Coordination": " coord"}
+bill_table_html = '<div class="bill-grid">'
 for b in filtered:
     cat_cls = cat_class_map.get(b["cat"], "")
     sponsor_line = f'<div class="bill-sponsor">{b["sponsors"]}</div>' if b.get("sponsors") else ""
-    cards_html += (
+    bill_table_html += (
         f'<div class="bill-card">'
         f'<div class="bill-state">{b["state"]}</div>'
         f'<a class="bill-num" href="{b["url"]}" target="_blank">{b["bill"]} ↗</a>'
@@ -665,8 +739,10 @@ for b in filtered:
         f'{sponsor_line}'
         f'</div>'
     )
-cards_html += '</div>'
-st.markdown(cards_html, unsafe_allow_html=True)
+bill_table_html += '</div>'
+
+with st.expander(f"View all {len(filtered)} bills"):
+    st.markdown(bill_table_html, unsafe_allow_html=True)
 
 
 # ===========================================================================
