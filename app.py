@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import json
 import urllib.parse
 from collections import defaultdict
@@ -736,38 +737,30 @@ try:
 except (AttributeError, IndexError, KeyError):
     pass
 
-cat_class_map = {"988 Fee": "", "Appropriations": " approp", "Insurance": " ins", "Youth": " youth", "Coordination": " coord"}
-
-def _render_bill_cards(bills):
-    html = '<div class="bill-grid">'
-    for b in bills:
-        cat_cls = cat_class_map.get(b["cat"], "")
-        sponsor_line = f'<div class="bill-sponsor">{b["sponsors"]}</div>' if b.get("sponsors") else ""
-        html += (
-            f'<div class="bill-card">'
-            f'<div class="bill-state">{b["state"]}</div>'
-            f'<a class="bill-num" href="{b["url"]}" target="_blank">{b["bill"]} ↗</a>'
-            f'<span class="bill-cat{cat_cls}">{b["cat"]}</span>'
-            f'<div class="bill-summary">{b["summary"]}</div>'
-            f'{sponsor_line}'
-            f'</div>'
-        )
-    html += '</div>'
-    return html
-
 if clicked_state_name:
     state_bills = [b for b in filtered if b["state"] == clicked_state_name]
-    if state_bills:
-        st.markdown(f'<div style="font-family:Playfair Display,serif;font-size:24px;font-weight:900;color:var(--s900);margin:8px 0 4px">{clicked_state_name}</div>'
-                     f'<div style="font-family:Source Sans 3,sans-serif;font-size:14px;color:var(--s500);margin-bottom:12px">{len(state_bills)} bill(s) in 2024</div>', unsafe_allow_html=True)
-        st.markdown(_render_bill_cards(state_bills), unsafe_allow_html=True)
+    if len(state_bills) == 1:
+        b = state_bills[0]
+        components.html(
+            f'<script>window.open("{b["url"]}", "_blank");</script>'
+            f'<div style="font-family:Source Sans 3,sans-serif;font-size:14px;color:#64748B;text-align:center;padding:4px 0">'
+            f'Opening <a href="{b["url"]}" target="_blank" style="color:#2D6A4F;font-weight:600">{b["bill"]}</a>'
+            f' for {clicked_state_name}...</div>',
+            height=32,
+        )
+    elif len(state_bills) > 1:
+        st.markdown(f'<div style="font-family:Playfair Display,serif;font-size:22px;font-weight:900;color:var(--s900);margin:8px 0 4px">'
+                     f'{clicked_state_name} — {len(state_bills)} bills</div>', unsafe_allow_html=True)
+        cols = st.columns(len(state_bills))
+        for i, b in enumerate(state_bills):
+            with cols[i]:
+                st.link_button(f"{b['bill']} ({b['cat']})", b["url"], use_container_width=True)
     else:
-        st.markdown(f'<div style="font-family:Source Sans 3,sans-serif;font-size:15px;color:var(--s500);padding:16px 0">No bills for <b>{clicked_state_name}</b> in this category.</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="font-family:Source Sans 3,sans-serif;font-size:14px;color:var(--s500);text-align:center;padding:8px 0">'
+                     f'No bills for <b>{clicked_state_name}</b> in this category.</div>', unsafe_allow_html=True)
 else:
-    st.markdown('<div style="font-family:Source Sans 3,sans-serif;font-size:14px;color:var(--s500);text-align:center;padding:8px 0">Click a state on the map to see its bills.</div>', unsafe_allow_html=True)
-
-with st.expander(f"View all {len(filtered)} bills"):
-    st.markdown(_render_bill_cards(filtered), unsafe_allow_html=True)
+    st.markdown('<div style="font-family:Source Sans 3,sans-serif;font-size:14px;color:var(--s500);text-align:center;padding:8px 0">'
+                'Click a state on the map to view its legislation.</div>', unsafe_allow_html=True)
 
 
 # ===========================================================================
